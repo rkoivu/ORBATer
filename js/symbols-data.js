@@ -11,58 +11,58 @@ const EM={team:'·',squad:'··',platoon:'···',company:'|',battalion:'||',reg
 
 const UT=[
   // COMBAT
-  {cat:'Combat',id:'infantry',label:'Infantry',tip:'Standard infantry',icon:c=>`<image href="assets/icons/types/infantry/infantry.svg" x="0" y="0" width="50" height="30"/>`},
-  {cat:'Combat',id:'armour',label:'Armour',tip:'Armoured / tank unit',icon:c=>`<image href="assets/icons/types/armour/armour.svg" x="0" y="0" width="50" height="30"/>`},
-  {cat:'Combat',id:'mech_inf',label:'Mechanised Infantry',tip:'Infantry on tracks',icon:c=>`<image href="assets/icons/types/infantry/mechanised_infantry.svg" x="0" y="0" width="50" height="30"/>`},
-  {cat:'Combat',id:'motorised',label:'Motorised',tip:'Infantry on wheels',icon:c=>`<image href="assets/icons/types/infantry/motorised_infantry.svg" x="0" y="0" width="50" height="30"/>`},
-  {cat:'Combat',id:'armd_recon',label:'Armoured Recon',tip:'Armoured reconnaissance',icon:c=>`<ellipse cx="25" cy="14" rx="14" ry="7" fill="none" stroke="${c.stroke}" stroke-width="2"/><line x1="25" y1="5" x2="36" y2="2" stroke="${c.stroke}" stroke-width="2"/>`},
-  {cat:'Combat',id:'recon',label:'Recon (Cavalry)',tip:'Cavalry/reconnaissance',icon:c=>`<line x1="5" y1="5" x2="45" y2="23" stroke="${c.stroke}" stroke-width="2.5"/>`},
-  {cat:'Combat',id:'airborne',label:'Airborne Infantry',tip:'Paracute infantry',icon:c=>`<image href="assets/icons/types/infantry/airborne_infantry.svg" x="0" y="0" width="50" height="30"/>`},
-  {cat:'Combat',id:'air_assault',label:'Air Assault Infantry',tip:'Saltire + rotor arc — air assault',icon:c=>`<image href="assets/icons/types/infantry/air_assault_infantry.svg" x="0" y="0" width="50" height="30"/>`},
-  {cat:'Combat',id:'special_ops',label:'Spec Ops',tip:'Saltire + S — special operations forces',icon:c=>`<image href="assets/icons/types/infantry/sniper_infantry.svg" x="0" y="0" width="50" height="30"/>`},
-  {cat:'Combat',id:'ranger',label:'Ranger',tip:'Saltire + R — ranger unit',icon:c=>`<image href="assets/icons/types/infantry/sniper_infantry.svg" x="0" y="0" width="50" height="30"/>`},
-  {cat:'Combat',id:'amphibious',label:'Amphibious',tip:'Amphibious infantry',icon:c=>`<image href="assets/icons/types/infantry/amphibious_infantry.svg" x="0" y="0" width="50" height="30"/>`},
-  {cat:'Combat',id:'mountain',label:'Mountain',tip:'Saltire + peak — mountain infantry',icon:c=>`<image href="assets/icons/types/infantry/mountain_infantry.svg" x="0" y="0" width="50" height="30"/>`},
-  {cat:'Combat',id:'arctic',label:'Arctic',tip:'Saltire + snowflake — arctic/winter infantry',icon:c=>`<line x1="5" y1="4" x2="45" y2="24" stroke="${c.stroke}" stroke-width="2"/><line x1="45" y1="4" x2="5" y2="24" stroke="${c.stroke}" stroke-width="2"/><line x1="25" y1="2" x2="25" y2="26" stroke="${c.stroke}" stroke-width="1.5"/>`},
+  {cat:'Combat',id:'infantry',label:'Infantry',icon:c=>`<image href="assets/icons/types/infantry/infantry.svg" x="0" y="0" width="0" height="0"/>`},
+  {cat:'Combat',id:'armour',label:'Armour',icon:c=>`<image href="assets/icons/types/armour/armour.svg" x="0" y="0" width="50" height="30"/>`},
+  {cat:'Combat',id:'mech_inf',label:'Mechanised Infantry',icon:c=>`<image href="assets/icons/types/infantry/mechanised_infantry.svg" x="0" y="0" width="50" height="30"/>`},
+  {cat:'Combat',id:'motorised',label:'Motorised',icon:c=>`<image href="assets/icons/types/infantry/motorised_infantry.svg" x="0" y="0" width="50" height="30"/>`},
+  {cat:'Combat',id:'armd_recon',label:'Armoured Recon',icon:c=>`<ellipse cx="25" cy="14" rx="14" ry="7" fill="none" stroke="${c.stroke}" stroke-width="2"/><line x1="25" y1="5" x2="36" y2="2" stroke="${c.stroke}" stroke-width="2"/>`},
+  {cat:'Combat',id:'recon',label:'Recon (Cavalry)',icon:c=>`<line x1="5" y1="5" x2="45" y2="23" stroke="${c.stroke}" stroke-width="2.5"/>`},
+  {cat:'Combat',id:'airborne',label:'Airborne Infantry',icon:c=>`<image href="assets/icons/types/infantry/airborne_infantry.svg" x="0" y="0" width="50" height="30"/>`},
+  {cat:'Combat',id:'air_assault',label:'Air Assault Infantry',icon:c=>`<image href="assets/icons/types/infantry/air_assault_infantry.svg" x="0" y="0" width="50" height="30"/>`},
+  {cat:'Combat',id:'special_ops',label:'Spec Ops',icon:c=>`<image href="assets/icons/types/infantry/sniper_infantry.svg" x="0" y="0" width="50" height="30"/>`},
+  {cat:'Combat',id:'ranger',label:'Ranger',icon:c=>`<image href="assets/icons/types/infantry/sniper_infantry.svg" x="0" y="0" width="50" height="30"/>`},
+  {cat:'Combat',id:'amphibious',label:'Amphibious',icon:c=>`<image href="assets/icons/types/infantry/amphibious_infantry.svg" x="0" y="0" width="50" height="30"/>`},
+  {cat:'Combat',id:'mountain',label:'Mountain',icon:c=>`<image href="assets/icons/types/infantry/mountain_infantry.svg" x="0" y="0" width="50" height="30"/>`},
+  {cat:'Combat',id:'arctic',label:'Arctic',icon:c=>`<line x1="5" y1="4" x2="45" y2="24" stroke="${c.stroke}" stroke-width="2"/><line x1="45" y1="4" x2="5" y2="24" stroke="${c.stroke}" stroke-width="2"/><line x1="25" y1="2" x2="25" y2="26" stroke="${c.stroke}" stroke-width="1.5"/>`},
   // FIRES
-  {cat:'Fires',id:'artillery',label:'Artillery',tip:'Filled circle — field artillery',icon:c=>`<image href="assets/icons/types/artillery/artillery.svg" x="0" y="0" width="50" height="30"/>`},
-  {cat:'Fires',id:'rockets',label:'Rockets/MLRS',tip:'Circle + launcher — rocket artillery',icon:c=>`<circle cx="25" cy="14" r="6" fill="${c.stroke}"/><line x1="25" y1="8" x2="25" y2="2" stroke="${c.stroke}" stroke-width="2"/><line x1="21" y1="5" x2="29" y2="5" stroke="${c.stroke}" stroke-width="1.5"/>`},
-  {cat:'Fires',id:'mortar',label:'Mortar',tip:'Circle + tube — mortar unit',icon:c=>`<circle cx="25" cy="17" r="5" fill="${c.stroke}"/><line x1="25" y1="12" x2="25" y2="5" stroke="${c.stroke}" stroke-width="2"/>`},
-  {cat:'Fires',id:'air_defense',label:'Air Defence',tip:'Circle + antennas — air defence/SAM',icon:c=>`<image href="assets/icons/types/artillery/air_defence.svg" x="0" y="0" width="50" height="30"/>`},
-  {cat:'Fires',id:'ew',label:'Elec. Warfare',tip:'EW — electronic warfare unit',icon:c=>`<text x="25" y="20" text-anchor="middle" font-size="10" font-weight="bold" fill="${c.stroke}">EW</text>`},
-  {cat:'Fires',id:'cyber',label:'Cyber',tip:'CY — cyber operations unit',icon:c=>`<text x="25" y="20" text-anchor="middle" font-size="10" font-weight="bold" fill="${c.stroke}">CY</text>`},
+  {cat:'Fires',id:'artillery',label:'Artillery',icon:c=>`<image href="assets/icons/types/artillery/artillery.svg" x="0" y="0" width="50" height="30"/>`},
+  {cat:'Fires',id:'rockets',label:'Rockets/MLRS',icon:c=>`<circle cx="25" cy="14" r="6" fill="${c.stroke}"/><line x1="25" y1="8" x2="25" y2="2" stroke="${c.stroke}" stroke-width="2"/><line x1="21" y1="5" x2="29" y2="5" stroke="${c.stroke}" stroke-width="1.5"/>`},
+  {cat:'Fires',id:'mortar',label:'Mortar',icon:c=>`<circle cx="25" cy="17" r="5" fill="${c.stroke}"/><line x1="25" y1="12" x2="25" y2="5" stroke="${c.stroke}" stroke-width="2"/>`},
+  {cat:'Fires',id:'air_defense',label:'Air Defence',icon:c=>`<image href="assets/icons/types/artillery/air_defence.svg" x="0" y="0" width="50" height="30"/>`},
+  {cat:'Fires',id:'ew',label:'Elec. Warfare',icon:c=>`<text x="25" y="20" text-anchor="middle" font-size="10" font-weight="bold" fill="${c.stroke}">EW</text>`},
+  {cat:'Fires',id:'cyber',label:'Cyber',icon:c=>`<text x="25" y="20" text-anchor="middle" font-size="10" font-weight="bold" fill="${c.stroke}">CY</text>`},
   // AVIATION
-  {cat:'Aviation',id:'aviation',label:'Aviation',tip:'Rotor wave — rotary-wing aviation',icon:c=>`<path d="M5,14 Q15,6 25,14 Q35,22 45,14" fill="none" stroke="${c.stroke}" stroke-width="2.5"/>`},
-  {cat:'Aviation',id:'attack_helo',label:'Attack Helo',tip:'Rotor wave + circle — attack helicopter',icon:c=>`<path d="M5,14 Q15,6 25,14 Q35,22 45,14" fill="none" stroke="${c.stroke}" stroke-width="2.5"/><circle cx="25" cy="21" r="4" fill="${c.stroke}"/>`},
-  {cat:'Aviation',id:'fixed_wing',label:'Fixed Wing',tip:'Cross — fixed-wing aviation',icon:c=>`<path d="M25,5 L25,23 M10,13 L40,13" stroke="${c.stroke}" stroke-width="2.5"/>`},
-  {cat:'Aviation',id:'uav',label:'UAV',tip:'Cross + circle — unmanned aerial vehicle',icon:c=>`<path d="M25,5 L25,23 M10,13 L40,13" stroke="${c.stroke}" stroke-width="2"/><circle cx="25" cy="13" r="4" fill="${c.stroke}"/>`},
-  {cat:'Aviation',id:'istar',label:'ISTAR',tip:'ISR — intelligence, surveillance, target acquisition',icon:c=>`<path d="M5,14 Q15,6 25,14 Q35,22 45,14" fill="none" stroke="${c.stroke}" stroke-width="2"/><text x="25" y="24" text-anchor="middle" font-size="7" font-weight="bold" fill="${c.stroke}">ISR</text>`},
+  {cat:'Aviation',id:'aviation',label:'Aviation',icon:c=>`<path d="M5,14 Q15,6 25,14 Q35,22 45,14" fill="none" stroke="${c.stroke}" stroke-width="2.5"/>`},
+  {cat:'Aviation',id:'attack_helo',label:'Attack Helo',icon:c=>`<path d="M5,14 Q15,6 25,14 Q35,22 45,14" fill="none" stroke="${c.stroke}" stroke-width="2.5"/><circle cx="25" cy="21" r="4" fill="${c.stroke}"/>`},
+  {cat:'Aviation',id:'fixed_wing',label:'Fixed Wing',icon:c=>`<path d="M25,5 L25,23 M10,13 L40,13" stroke="${c.stroke}" stroke-width="2.5"/>`},
+  {cat:'Aviation',id:'uav',label:'UAV',icon:c=>`<path d="M25,5 L25,23 M10,13 L40,13" stroke="${c.stroke}" stroke-width="2"/><circle cx="25" cy="13" r="4" fill="${c.stroke}"/>`},
+  {cat:'Aviation',id:'istar',label:'ISTAR',icon:c=>`<path d="M5,14 Q15,6 25,14 Q35,22 45,14" fill="none" stroke="${c.stroke}" stroke-width="2"/><text x="25" y="24" text-anchor="middle" font-size="7" font-weight="bold" fill="${c.stroke}">ISR</text>`},
   // SUPPORT
-  {cat:'Support',id:'engineer',label:'Engineer',tip:'T-shape — engineer / combat engineer',icon:c=>`<line x1="10" y1="20" x2="40" y2="20" stroke="${c.stroke}" stroke-width="2.5"/><line x1="25" y1="20" x2="25" y2="8" stroke="${c.stroke}" stroke-width="2.5"/>`},
-  {cat:'Support',id:'bridging',label:'Bridging',tip:'T-shape + arc — bridging engineer',icon:c=>`<line x1="10" y1="20" x2="40" y2="20" stroke="${c.stroke}" stroke-width="2.5"/><line x1="25" y1="20" x2="25" y2="8" stroke="${c.stroke}" stroke-width="2.5"/><path d="M12,20 Q25,12 38,20" fill="none" stroke="${c.stroke}" stroke-width="1.5"/>`},
-  {cat:'Support',id:'signals',label:'Signals',tip:'Wave + circle — signals / communications',icon:c=>`<path d="M10,14 Q17,4 25,14 Q33,24 40,14" fill="none" stroke="${c.stroke}" stroke-width="2"/><circle cx="25" cy="14" r="3" fill="${c.stroke}"/>`},
-  {cat:'Support',id:'intel',label:'Intel',tip:'I — intelligence unit',icon:c=>`<text x="25" y="20" text-anchor="middle" font-size="16" font-weight="bold" fill="${c.stroke}">I</text>`},
-  {cat:'Support',id:'log',label:'Logistics',tip:'Box — logistics / supply unit',icon:c=>`<rect x="12" y="8" width="26" height="16" rx="2" fill="none" stroke="${c.stroke}" stroke-width="2"/><line x1="12" y1="16" x2="38" y2="16" stroke="${c.stroke}" stroke-width="1.5"/>`},
-  {cat:'Support',id:'medical',label:'Medical',tip:'Red cross — medical / health service',icon:_=>`<line x1="25" y1="6" x2="25" y2="22" stroke="#cc0000" stroke-width="3"/><line x1="17" y1="14" x2="33" y2="14" stroke="#cc0000" stroke-width="3"/>`},
-  {cat:'Support',id:'maintenance',label:'Maint.',tip:'Chevron — maintenance / recovery',icon:c=>`<path d="M16,20 L20,10 L25,16 L30,10 L34,20 Z" fill="none" stroke="${c.stroke}" stroke-width="2"/>`},
-  {cat:'Support',id:'mp',label:'Mil Police',tip:'MP — military police',icon:c=>`<text x="25" y="20" text-anchor="middle" font-size="11" font-weight="bold" fill="${c.stroke}">MP</text>`},
-  {cat:'Support',id:'chem',label:'CBRN',tip:'Circle + cross — CBRN defence',icon:c=>`<circle cx="25" cy="14" r="9" fill="none" stroke="${c.stroke}" stroke-width="2"/><line x1="25" y1="5" x2="25" y2="23" stroke="${c.stroke}" stroke-width="1.5"/><line x1="16" y1="14" x2="34" y2="14" stroke="${c.stroke}" stroke-width="1.5"/>`},
-  {cat:'Support',id:'eod',label:'EOD',tip:'EOD — explosive ordnance disposal',icon:c=>`<text x="25" y="20" text-anchor="middle" font-size="9" font-weight="bold" fill="${c.stroke}">EOD</text>`},
-  {cat:'Support',id:'psyops',label:'PSYOPS',tip:'PO — psychological operations',icon:c=>`<text x="25" y="20" text-anchor="middle" font-size="9" font-weight="bold" fill="${c.stroke}">PO</text>`},
-  {cat:'Support',id:'cimic',label:'CIMIC',tip:'CI — civil-military cooperation',icon:c=>`<text x="25" y="20" text-anchor="middle" font-size="9" font-weight="bold" fill="${c.stroke}">CI</text>`},
+  {cat:'Support',id:'engineer',label:'Engineer',icon:c=>`<line x1="10" y1="20" x2="40" y2="20" stroke="${c.stroke}" stroke-width="2.5"/><line x1="25" y1="20" x2="25" y2="8" stroke="${c.stroke}" stroke-width="2.5"/>`},
+  {cat:'Support',id:'bridging',label:'Bridging',icon:c=>`<line x1="10" y1="20" x2="40" y2="20" stroke="${c.stroke}" stroke-width="2.5"/><line x1="25" y1="20" x2="25" y2="8" stroke="${c.stroke}" stroke-width="2.5"/><path d="M12,20 Q25,12 38,20" fill="none" stroke="${c.stroke}" stroke-width="1.5"/>`},
+  {cat:'Support',id:'signals',label:'Signals',icon:c=>`<path d="M10,14 Q17,4 25,14 Q33,24 40,14" fill="none" stroke="${c.stroke}" stroke-width="2"/><circle cx="25" cy="14" r="3" fill="${c.stroke}"/>`},
+  {cat:'Support',id:'intel',label:'Intel',icon:c=>`<text x="25" y="20" text-anchor="middle" font-size="16" font-weight="bold" fill="${c.stroke}">I</text>`},
+  {cat:'Support',id:'log',label:'Logistics',icon:c=>`<rect x="12" y="8" width="26" height="16" rx="2" fill="none" stroke="${c.stroke}" stroke-width="2"/><line x1="12" y1="16" x2="38" y2="16" stroke="${c.stroke}" stroke-width="1.5"/>`},
+  {cat:'Support',id:'medical',label:'Medical',icon:_=>`<line x1="25" y1="6" x2="25" y2="22" stroke="#cc0000" stroke-width="3"/><line x1="17" y1="14" x2="33" y2="14" stroke="#cc0000" stroke-width="3"/>`},
+  {cat:'Support',id:'maintenance',label:'Maint.',icon:c=>`<path d="M16,20 L20,10 L25,16 L30,10 L34,20 Z" fill="none" stroke="${c.stroke}" stroke-width="2"/>`},
+  {cat:'Support',id:'mp',label:'Mil Police',icon:c=>`<text x="25" y="20" text-anchor="middle" font-size="11" font-weight="bold" fill="${c.stroke}">MP</text>`},
+  {cat:'Support',id:'chem',label:'CBRN',icon:c=>`<circle cx="25" cy="14" r="9" fill="none" stroke="${c.stroke}" stroke-width="2"/><line x1="25" y1="5" x2="25" y2="23" stroke="${c.stroke}" stroke-width="1.5"/><line x1="16" y1="14" x2="34" y2="14" stroke="${c.stroke}" stroke-width="1.5"/>`},
+  {cat:'Support',id:'eod',label:'EOD',icon:c=>`<text x="25" y="20" text-anchor="middle" font-size="9" font-weight="bold" fill="${c.stroke}">EOD</text>`},
+  {cat:'Support',id:'psyops',label:'PSYOPS',icon:c=>`<text x="25" y="20" text-anchor="middle" font-size="9" font-weight="bold" fill="${c.stroke}">PO</text>`},
+  {cat:'Support',id:'cimic',label:'CIMIC',icon:c=>`<text x="25" y="20" text-anchor="middle" font-size="9" font-weight="bold" fill="${c.stroke}">CI</text>`},
   // COMMAND
-  {cat:'Command',id:'hq',label:'HQ',tip:'Saltire + bar — headquarters',icon:c=>`<line x1="5" y1="4" x2="45" y2="24" stroke="${c.stroke}" stroke-width="2"/><line x1="45" y1="4" x2="5" y2="24" stroke="${c.stroke}" stroke-width="2"/><line x1="5" y1="14" x2="45" y2="14" stroke="${c.stroke}" stroke-width="2"/>`},
-  {cat:'Command',id:'joint_hq',label:'Joint HQ',tip:'J — joint headquarters',icon:c=>`<text x="25" y="20" text-anchor="middle" font-size="10" font-weight="bold" fill="${c.stroke}">J</text><line x1="5" y1="14" x2="45" y2="14" stroke="${c.stroke}" stroke-width="1.5"/>`},
-  {cat:'Command',id:'tac_cp',label:'TAC CP',tip:'TAC — tactical command post',icon:c=>`<text x="25" y="20" text-anchor="middle" font-size="9" font-weight="bold" fill="${c.stroke}">TAC</text>`},
-  {cat:'Command',id:'fire_coord',label:'Fire Coord',tip:'FC — fires coordination element',icon:c=>`<text x="25" y="20" text-anchor="middle" font-size="9" font-weight="bold" fill="${c.stroke}">FC</text>`},
+  {cat:'Command',id:'hq',label:'HQ',icon:c=>`<line x1="5" y1="4" x2="45" y2="24" stroke="${c.stroke}" stroke-width="2"/><line x1="45" y1="4" x2="5" y2="24" stroke="${c.stroke}" stroke-width="2"/><line x1="5" y1="14" x2="45" y2="14" stroke="${c.stroke}" stroke-width="2"/>`},
+  {cat:'Command',id:'joint_hq',label:'Joint HQ',icon:c=>`<text x="25" y="20" text-anchor="middle" font-size="10" font-weight="bold" fill="${c.stroke}">J</text><line x1="5" y1="14" x2="45" y2="14" stroke="${c.stroke}" stroke-width="1.5"/>`},
+  {cat:'Command',id:'tac_cp',label:'TAC CP',icon:c=>`<text x="25" y="20" text-anchor="middle" font-size="9" font-weight="bold" fill="${c.stroke}">TAC</text>`},
+  {cat:'Command',id:'fire_coord',label:'Fire Coord',icon:c=>`<text x="25" y="20" text-anchor="middle" font-size="9" font-weight="bold" fill="${c.stroke}">FC</text>`},
   // NAVAL
-  {cat:'Naval',id:'naval_surface',label:'Surface',tip:'Diamond — naval surface unit',icon:c=>`<path d="M8,20 L20,8 L32,8 L44,20 Z" fill="none" stroke="${c.stroke}" stroke-width="2"/>`},
-  {cat:'Naval',id:'submarine',label:'Submarine',tip:'Open-bottom frame — subsurface',icon:c=>`<path d="M8,14 Q18,6 25,14 Q32,22 42,14" fill="none" stroke="${c.stroke}" stroke-width="2.5"/><line x1="25" y1="8" x2="25" y2="2" stroke="${c.stroke}" stroke-width="1.5"/>`},
-  {cat:'Naval',id:'maritime_patrol',label:'Maritime Patrol',tip:'Fixed wing + wave — maritime patrol',icon:c=>`<path d="M25,5 L25,23 M10,13 L40,13" stroke="${c.stroke}" stroke-width="2"/><path d="M8,22 Q16,18 24,22" fill="none" stroke="${c.stroke}" stroke-width="1.5"/>`},
+  {cat:'Naval',id:'naval_surface',label:'Surface',icon:c=>`<path d="M8,20 L20,8 L32,8 L44,20 Z" fill="none" stroke="${c.stroke}" stroke-width="2"/>`},
+  {cat:'Naval',id:'submarine',label:'Submarine',icon:c=>`<path d="M8,14 Q18,6 25,14 Q32,22 42,14" fill="none" stroke="${c.stroke}" stroke-width="2.5"/><line x1="25" y1="8" x2="25" y2="2" stroke="${c.stroke}" stroke-width="1.5"/>`},
+  {cat:'Naval',id:'maritime_patrol',label:'Maritime Patrol',icon:c=>`<path d="M25,5 L25,23 M10,13 L40,13" stroke="${c.stroke}" stroke-width="2"/><path d="M8,22 Q16,18 24,22" fill="none" stroke="${c.stroke}" stroke-width="1.5"/>`},
   // OTHER
-  {cat:'Other',id:'space',label:'Space',tip:'Open frame — space-based asset',icon:c=>`<path d="M10,20 L26,5 L42,20" fill="none" stroke="${c.stroke}" stroke-width="2"/>`},
-  {cat:'Other',id:'sigint',label:'SIGINT',tip:'SIGINT — signals intelligence',icon:c=>`<text x="25" y="20" text-anchor="middle" font-size="8" font-weight="bold" fill="${c.stroke}">SIGINT</text>`},
-  {cat:'Other',id:'port',label:'Port / Log Base',tip:'Box+line — port or logistics base',icon:c=>`<rect x="10" y="8" width="30" height="16" rx="2" fill="none" stroke="${c.stroke}" stroke-width="2"/><line x1="25" y1="8" x2="25" y2="24" stroke="${c.stroke}" stroke-width="1.5"/>`},
+  {cat:'Other',id:'space',label:'Space',icon:c=>`<path d="M10,20 L26,5 L42,20" fill="none" stroke="${c.stroke}" stroke-width="2"/>`},
+  {cat:'Other',id:'sigint',label:'SIGINT',icon:c=>`<text x="25" y="20" text-anchor="middle" font-size="8" font-weight="bold" fill="${c.stroke}">SIGINT</text>`},
+  {cat:'Other',id:'port',label:'Port / Log Base',icon:c=>`<rect x="10" y="8" width="30" height="16" rx="2" fill="none" stroke="${c.stroke}" stroke-width="2"/><line x1="25" y1="8" x2="25" y2="24" stroke="${c.stroke}" stroke-width="1.5"/>`},
 ];
 let customTypes=[];
 
@@ -810,6 +810,10 @@ canvasWrap.addEventListener('drop',e=>{
    AUTO LAYOUT
 ══════════════════════════════════════ */
 function autoLayout(onlyIds=null){
+  const mode = window.layoutMode || 'tree';
+  if(mode === 'radial') return autoLayoutRadial(onlyIds);
+  if(mode === 'force') return autoLayoutForce(onlyIds);
+  // default tree
   const HG=26,VG=72,ROOT_PAD=90,COLLAPSED_STACK=18;
   const pool=onlyIds?Object.values(nodes).filter(n=>onlyIds.has(n.id)):Object.values(nodes);
   if(!pool.length)return;
@@ -853,7 +857,89 @@ function autoLayout(onlyIds=null){
   drawConnectors();saveState();showToast(onlyIds?'Selection layout applied':'Layout applied');
 }
 
-function autoLayoutSel(){if(multiSel.size)autoLayout(multiSel);}
+function autoLayoutRadial(onlyIds=null){
+  const pool=onlyIds?Object.values(nodes).filter(n=>onlyIds.has(n.id)):Object.values(nodes);
+  if(!pool.length)return;
+  const poolMap=Object.fromEntries(pool.map(n=>[n.id,n]));
+  const roots=pool.filter(n=>!n.parentId||!poolMap[n.parentId]);
+  if(!roots.length)return;
+  const centerX = 400, centerY = 300, radius = 200;
+  roots.forEach((r, i) => {
+    const angle = (i / roots.length) * 2 * Math.PI;
+    r.x = snapV(centerX + radius * Math.cos(angle));
+    r.y = snapV(centerY + radius * Math.sin(angle));
+  });
+  // Then layout children as tree
+  const childMap={};pool.forEach(n=>{(childMap[n.parentId||'root']||(childMap[n.parentId||'root']=[])).push(n)});
+  const widths=new Map();
+  function meas(id){
+    if(widths.has(id))return widths.get(id);
+    const n=poolMap[id];
+    const size=getNodeCardSize(n);
+    const visibleKids=(childMap[id]||[]).filter(ch=>!ch.locked);
+    let w=size.w;
+    if(visibleKids.length){
+      w=Math.max(size.w,visibleKids.reduce((sum,ch)=>sum+meas(ch.id),0)+26*(visibleKids.length-1));
+    }
+    widths.set(id,w);
+    return w;
+  }
+  function place(id,left,top){
+    const n=poolMap[id];
+    const size=getNodeCardSize(n);
+    const span=meas(id);
+    if(!n.locked){n.x=snapV(left+span/2-size.w/2);n.y=snapV(top);}
+    const visibleKids=(childMap[id]||[]).filter(ch=>!ch.locked);
+    if(!visibleKids.length||n.collapsed)return;
+    let cursor=left;
+    const childTop=top+size.h+72;
+    visibleKids.forEach(ch=>{const cw=meas(ch.id);place(ch.id,cursor,childTop);cursor+=cw+26;});
+  }
+  roots.forEach(r=>{place(r.id, r.x - meas(r.id)/2, r.y + 50);});
+  pool.forEach(n=>{const el=document.getElementById('el-'+n.id);if(el){el.style.left=n.x+'px';el.style.top=n.y+'px';}});
+  drawConnectors();saveState();showToast('Radial layout applied');
+}
+
+function autoLayoutForce(onlyIds=null){
+  // Simple force-directed for roots only
+  const pool=onlyIds?Object.values(nodes).filter(n=>onlyIds.has(n.id)):Object.values(nodes);
+  if(!pool.length)return;
+  const poolMap=Object.fromEntries(pool.map(n=>[n.id,n]));
+  const roots=pool.filter(n=>!n.parentId||!poolMap[n.parentId]);
+  if(roots.length < 2) return autoLayout(onlyIds); // fallback to tree
+  // Simple repulsion
+  const iterations = 50, k = 100;
+  roots.forEach(r => { if(!r.x) r.x = Math.random()*800; if(!r.y) r.y = Math.random()*600; });
+  for(let it=0; it<iterations; it++){
+    roots.forEach(a => {
+      let fx=0, fy=0;
+      roots.forEach(b => {
+        if(a.id === b.id) return;
+        const dx = a.x - b.x, dy = a.y - b.y;
+        const dist = Math.sqrt(dx*dx + dy*dy) || 1;
+        const force = k / dist;
+        fx += (dx / dist) * force;
+        fy += (dy / dist) * force;
+      });
+      a.x += fx * 0.1;
+      a.y += fy * 0.1;
+    });
+  }
+  roots.forEach(r => { r.x = snapV(r.x); r.y = snapV(r.y); });
+  // Then layout children
+  const childMap={};pool.forEach(n=>{(childMap[n.parentId||'root']||(childMap[n.parentId||'root']=[])).push(n)});
+  roots.forEach(r=>{ 
+    const visibleKids=(childMap[r.id]||[]).filter(ch=>!ch.locked);
+    if(visibleKids.length){
+      visibleKids.forEach((ch, i) => {
+        ch.x = snapV(r.x + (i - (visibleKids.length-1)/2) * 150);
+        ch.y = snapV(r.y + 100);
+      });
+    }
+  });
+  pool.forEach(n=>{const el=document.getElementById('el-'+n.id);if(el){el.style.left=n.x+'px';el.style.top=n.y+'px';}});
+  drawConnectors();saveState();showToast('Force layout applied');
+}
 
 /* ══════════════════════════════════════
    ALIGN TOOLS

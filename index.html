@@ -20,6 +20,11 @@
   <div class="tb-sep"></div>
   <button class="tb-btn" onclick="addRootUnit()">＋ Root</button>
   <button class="tb-btn" onclick="autoLayout()">⊞ Layout</button>
+  <select id="layout-mode-sel" onchange="setLayoutMode(this.value)" title="Layout mode" style="margin-left:4px">
+    <option value="tree">Tree</option>
+    <option value="radial">Radial</option>
+    <option value="force">Force</option>
+  </select>
   <button class="tb-btn" id="btn-snap" onclick="toggleSnap()">⌗ Snap</button>
   <button class="tb-btn" id="btn-link" onclick="toggleLinkMode()">⤢ Link</button>
   <button class="tb-btn" onclick="fitScreen()">↔ Fit</button>
@@ -54,6 +59,7 @@
   <div class="tb-spacer"></div>
   <button class="tb-btn danger" onclick="clearAll()">✕ Clear</button>
 </div>
+<div id="tab-bar"></div>
 <div id="main">
 <div id="sidebar">
   <div id="sidebar-header">
