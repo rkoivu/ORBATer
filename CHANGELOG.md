@@ -60,6 +60,11 @@ All notable changes to the ORBATer project are documented here. The format follo
   - Affects rendering of new units; existing diagrams unaffected until re-rendered
 
 ### Changed
+- **Palette and Node Affordance Polish**
+  - Palette tiles now keep a more consistent height and clamp longer labels cleanly across two lines
+  - Selected and multi-selected nodes now expose add, link, and collapse controls without requiring hover
+  - Minimap chrome and status-bar readouts were refined for faster scanning
+
 - **Documentation Refresh**
   - README now links to the new backlog in `TODO.md`
   - The repository now keeps planned features and cleanup work alongside the main docs
@@ -97,6 +102,11 @@ All notable changes to the ORBATer project are documented here. The format follo
   - Fixed localStorage quota handling for all persistence functions
 
 ### Fixed
+- **Bug: Tab Dirty State and View Transform Drift**
+  - Dirty markers now initialize and clear reliably for newly created and restored tabs
+  - Tab switching now clears the correct tab after document restore instead of relying on the previous active id
+  - Saved views and snapshots now preserve valid `0` pan values instead of losing them through `||` fallback logic
+
 - **Workspace Stability: Sidebar Scrolling & Minimap Placement**
   - Re-established the flex height chain after the UI shell split
   - Forced palette and properties panels into reliable scroll regions
