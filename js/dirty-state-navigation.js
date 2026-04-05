@@ -24,7 +24,7 @@
   const prevSaveState=saveState;
   saveState=function(){
     prevSaveState();
-    markDirty();
+    markSaved();
   };
   const prevRestoreState=restoreState;
   restoreState=function(s){ prevRestoreState(s); markSaved(); };
@@ -74,7 +74,7 @@
   const prevToggleCollapse=toggleCollapse;
   toggleCollapse=function(e,id){ prevToggleCollapse(e,id); markDirty(); };
   const prevToggleSnap=toggleSnap;
-  toggleSnap=function(){ prevToggleSnap(); };
+  toggleSnap=function(){ prevToggleSnap(); showToast('Snap ' + ((window.snapOn || typeof snapOn !== 'undefined' && snapOn) ? 'enabled' : 'disabled')); };
   const prevClearAll=clearAll;
   clearAll=function(silent=false){ prevClearAll(silent); if(!silent) showToast('ORBAT cleared'); markDirty(); };
 
