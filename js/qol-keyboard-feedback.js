@@ -145,6 +145,61 @@
   // Wait for page to load then enhance imports
   setTimeout(enhanceImports, 200);
 
+  function enhanceEmptyState() {
+    const emptyHint = document.getElementById('empty-hint');
+    if (!emptyHint || emptyHint.dataset.enhanced === '1') return;
+    emptyHint.dataset.enhanced = '1';
+    emptyHint.innerHTML = [
+      '<div class="eh-hero">🪖</div>',
+      '<div class="eh-title">Start Building</div>',
+      '<div class="eh-copy">Drag a unit from the palette, click <b>+ Root</b>, or double-click the canvas to drop your first unit.</div>',
+      '<div class="eh-kbd-row"><span><kbd>/</kbd> Search</span><span><kbd>L</kbd> Layout</span><span><kbd>Ctrl</kbd> + <kbd>K</kbd> Commands</span></div>'
+    ].join('');
+  }
+
+  function addQuickCanvasActions() {
+    const wrap = document.getElementById('canvas-wrap');
+    const canvas = document.getElementById('canvas');
+    if (!wrap || !canvas || wrap.dataset.qolCanvas === '1') return;
+    wrap.dataset.qolCanvas = '1';
+
+    wrap.addEventListener('dblclick', e => {
+      const blocked = e.target.closest('.orbat-node, #minimap, #ctx, #edit-panel, #sidebar, .tb-btn, input, select, textarea, button');
+      if (blocked) return;
+      try {
+        if (typeof addRootUnit === 'function') addRootUnit();
+      } catch (_) {}
+    });
+  }
+
+  function improveSearchInputs() {
+    const search = document.getElementById('unit-search-input');
+    const tag = document.getElementById('tag-filter-input');
+    if (search && search.dataset.qolBound !== '1') {
+      search.dataset.qolBound = '1';
+      search.placeholder = 'Search units /';
+      search.addEventListener('focus', () => search.select());
+      search.addEventListener('keydown', e => {
+        if (e.key === 'Escape') {
+          search.value = '';
+          search.dispatchEvent(new Event('input', { bubbles: true }));
+          search.blur();
+        }
+      });
+    }
+    if (tag && tag.dataset.qolBound !== '1') {
+      tag.dataset.qolBound = '1';
+      tag.placeholder = 'Tag filter #';
+      tag.addEventListener('keydown', e => {
+        if (e.key === 'Escape') {
+          tag.value = '';
+          tag.dispatchEvent(new Event('input', { bubbles: true }));
+          tag.blur();
+        }
+      });
+    }
+  }
+
   // Final layout enforcement after all other modules have patched the page.
   function enforceLayoutFixes() {
     const topbar = document.getElementById('topbar');
@@ -210,6 +265,9 @@
     }
   }
 
+  setTimeout(enhanceEmptyState, 120);
+  setTimeout(addQuickCanvasActions, 150);
+  setTimeout(improveSearchInputs, 180);
   setTimeout(enforceLayoutFixes, 400);
   window.addEventListener('resize', enforceLayoutFixes);
   document.addEventListener('click', () => setTimeout(enforceLayoutFixes, 0), true);
