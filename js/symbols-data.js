@@ -1373,4 +1373,5 @@ function toggleIconMode(){
   drawConnectors();
   updSB();
   saveState();
+  showToast(useSymbolPackImages?'NATO symbols enabled':'Symbol rendering disabled');
 }
