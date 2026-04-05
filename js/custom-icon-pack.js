@@ -77,9 +77,9 @@
       const echSvg=ech?`<text x="26" y="5" text-anchor="middle" font-size="7" font-family="monospace" fill="${c.stroke}">${EM[ech]||''}</text>`:'';
       const dash=planned?'stroke-dasharray="4,2"':'';
       const inner=`<image x="8" y="9" width="36" height="26" href="${def.symbolDataUrl}" preserveAspectRatio="xMidYMid meet"/>`;
-      if(affil==='hostile')return`<svg viewBox="0 0 52 42" xmlns="http://www.w3.org/2000/svg">${echSvg}<polygon points="26,8 51,22 26,36 1,22" fill="${c.fill}" stroke="${c.stroke}" stroke-width="2" ${dash}/>${inner}</svg>`;
-      if(affil==='neutral'||affil==='unknown')return`<svg viewBox="0 0 52 42" xmlns="http://www.w3.org/2000/svg">${echSvg}<ellipse cx="26" cy="22" rx="23" ry="13" fill="${c.fill}" stroke="${c.stroke}" stroke-width="2" ${dash}/>${inner}</svg>`;
-      return`<svg viewBox="0 0 52 42" xmlns="http://www.w3.org/2000/svg">${echSvg}<rect x="1" y="8" width="50" height="28" fill="${c.fill}" stroke="${c.stroke}" stroke-width="2" ${dash}/>${inner}</svg>`;
+      if(affil==='hostile')return`<svg viewBox="0 0 52 42" xmlns="http://www.w3.org/2000/svg">${echSvg}${inner}</svg>`;
+      if(affil==='neutral'||affil==='unknown')return`<svg viewBox="0 0 52 42" xmlns="http://www.w3.org/2000/svg">${echSvg}${inner}</svg>`;
+      return`<svg viewBox="0 0 52 42" xmlns="http://www.w3.org/2000/svg">${echSvg}${inner}</svg>`;
     }
     return oldGetSym(typeId, affil, ech, planned);
   };
