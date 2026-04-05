@@ -10,6 +10,10 @@
    height="400"
    id="NATO Map Symbol">
   <path
+     id="path815"
+     d="M 300,5 V 395"
+     style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:10;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none" />
+  <path
      style="fill:none;stroke:#000000;stroke-width:10;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
      id="path3881"
      d="M 595,395 5,5" />
@@ -17,10 +21,6 @@
      style="fill:none;stroke:#000000;stroke-width:10;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
      id="path3883"
      d="M 595,5 5,395" />
-  <path
-     style="fill:none;stroke:#000000;stroke-width:10;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-     id="path2985"
-     d="m 127.45491,350.6791 c 0,0 51.37907,-47.77921 102.95826,-46.07902 58.71371,1.93537 69.4221,60.91803 69.4221,60.91803 0,0 9.31493,-58.86706 69.4221,-60.91803 60.10717,-2.05096 102.95826,46.07902 102.95826,46.07902" />
   <path
      id="Friendly Frame"
      d="M 5,5 H 595 V 395 H 5 Z"

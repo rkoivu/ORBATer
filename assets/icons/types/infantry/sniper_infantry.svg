@@ -12,15 +12,28 @@
   <path
      style="fill:none;stroke:#000000;stroke-width:10;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
      id="path3881"
-     d="M 595,395 5,5" />
+     d="M 595,395 5.000002,4.9999985" />
   <path
      style="fill:none;stroke:#000000;stroke-width:10;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
      id="path3883"
-     d="M 595,5 5,395" />
+     d="M 595,4.9999985 5.000002,395" />
+  <g
+     style="stroke-width:10;stroke-miterlimit:4;stroke-dasharray:none"
+     id="Sniper"
+     transform="translate(21.362251,1.0112305)">
   <path
-     style="fill:none;stroke:#000000;stroke-width:10;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-     id="path2985"
-     d="m 127.45491,350.6791 c 0,0 51.37907,-47.77921 102.95826,-46.07902 58.71371,1.93537 69.4221,60.91803 69.4221,60.91803 0,0 9.31493,-58.86706 69.4221,-60.91803 60.10717,-2.05096 102.95826,46.07902 102.95826,46.07902" />
+       style="fill:none;stroke:#000000;stroke-width:10;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="path2985"
+       d="m 173.47371,49.258321 h 76.90072" />
+  <path
+       style="fill:none;stroke:#000000;stroke-width:10;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="path2985-1"
+       d="m 313.86225,49.258321 h 76.90072" />
+  <path
+       style="fill:none;stroke:#000000;stroke-width:10;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="path2985-7"
+       d="M 282.11834,143.14873 V 66.24801" />
+  </g>
   <path
      id="Friendly Frame"
      d="M 5,5 H 595 V 395 H 5 Z"
