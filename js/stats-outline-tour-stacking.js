@@ -138,7 +138,7 @@
     const FAMILY = {
       infantry:  ['infantry','mech_inf','motorised','airborne','air_assault',
                   'amphibious','mountain','arctic','special_ops','ranger'],
-      armor:     ['armor','armd_recon'],
+      armour:     ['armour','armd_recon'],
       fires:     ['artillery','rockets','mortar'],
       aviation:  ['aviation','attack_helo','fixed_wing','uav','istar'],
       engineer:  ['engineer','bridging'],
@@ -269,7 +269,7 @@
           if(raw.length<4) return;
           const inf=inferTypeAndEchelon(raw);
           if(inf.typeId!==n.typeId){
-            const FAMILY2={infantry:['infantry','mech_inf','motorised','airborne','air_assault','amphibious','mountain','arctic','special_ops','ranger'],armor:['armor','armd_recon'],fires:['artillery','rockets','mortar'],aviation:['aviation','attack_helo','fixed_wing','uav','istar'],engineer:['engineer','bridging'],support:['log','medical','signals','intel','maintenance','mp','chem','eod','psyops','cimic'],command:['hq','joint_hq','tac_cp','fire_coord'],naval:['naval_surface','submarine','maritime_patrol'],other:['ew','cyber','recon','space','sigint','port','air_defense']};
+            const FAMILY2={infantry:['infantry','mech_inf','motorised','airborne','air_assault','amphibious','mountain','arctic','special_ops','ranger'],armour:['armour','armd_recon'],fires:['artillery','rockets','mortar'],aviation:['aviation','attack_helo','fixed_wing','uav','istar'],engineer:['engineer','bridging'],support:['log','medical','signals','intel','maintenance','mp','chem','eod','psyops','cimic'],command:['hq','joint_hq','tac_cp','fire_coord'],naval:['naval_surface','submarine','maritime_patrol'],other:['ew','cyber','recon','space','sigint','port','air_defense']};
             const tf2={};Object.entries(FAMILY2).forEach(([fm,ids])=>ids.forEach(id=>tf2[id]=fm));
             if(!(tf2[n.typeId]&&tf2[n.typeId]===tf2[inf.typeId])){
               n.typeId=inf.typeId; (window.renderNode||renderNode)(n.id); fixed++;
@@ -328,9 +328,9 @@
     { type:'mech_inf',     rx:/mech(anize[d]?|anise[d]?|anised)?\s*inf|mechanize[d]?\s*inf|m(ech)?\s*inf|ifv|bradley|warrior|puma|cv90/ },
     { type:'motorised',    rx:/motori[sz]ed\s*inf|motori[sz]ed|mot\s*inf|wheeled\s*inf/ },
     { type:'recon',        rx:/recon|cav(alry)?|scout|household\s*cavalry|light\s*dragoon|hussars?|lancers?/ },
-    { type:'armd_recon',   rx:/armo(u?)red\s*recon|armoured\s*cav|armored\s*cav/ },
+    { type:'armd_recon',   rx:/armou?red\s*recon|armou?red\s*cav/ },
     // ── Armour (before generic infantry) ─────────────────────────
-    { type:'armor',        rx:/armou?r(ed)?|tank|tanks|cavalry\s*tank|rtrs?|dragoons?\s*(regiment)?|royal\s*tank|hussars?\s*regiment/ },
+    { type:'armour',        rx:/armou?r(ed)?|tank\b|tanks\b|cavalry\s*tank|\brtrs?\b|dragoons?\s*(regiment)?|royal\s*tank|hussars?\s*regiment/ },
     // ── Support ──────────────────────────────────────────────────
     { type:'bridging',     rx:/bridg(e|ing)|assault\s*crossing|close\s*support\s*eng/ },
     { type:'engineer',     rx:/engineer|engr?|sapper|combat\s*support\s*eng|royal\s*eng/ },
