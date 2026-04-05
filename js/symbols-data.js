@@ -1378,6 +1378,7 @@ updEmpty();updSB();syncRelLabelBtn();
 canvasWrap.className='snap-on';document.getElementById('btn-snap').textContent='⌗ Dot Grid';
 
 document.getElementById('minimap').style.display='block';
+updateMinimap();
 
 // Restore autosave or seed starter
 setTimeout(()=>{
