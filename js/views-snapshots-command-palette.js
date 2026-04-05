@@ -158,8 +158,49 @@
       const isDirty = tabDirtyStates[t.id] || false;
       const dirtyMark = isDirty ? '<span class="tab-dirty" aria-hidden="true">●</span>' : '';
       const closeBtn = t.id === 'default' ? '' : `<button class="tab-close" type="button" onclick="event.stopPropagation(); window.__closeTab('${t.id}')" aria-label="Close ${esc(t.name)}">×</button>`;
-      return `<div class="tab ${t.id === currentTabId ? 'active' : ''}" onclick="window.__switchTab('${t.id}')" title="${isDirty ? 'Unsaved changes' : ''}">${dirtyMark}<span class="tab-label">${esc(t.name)}</span>${closeBtn}</div>`;
+      return `<div class="tab ${t.id === currentTabId ? 'active' : ''}" onclick="window.__switchTab('${t.id}')" ondblclick="event.stopPropagation(); window.__renameTabPrompt('${t.id}')" title="${isDirty ? 'Unsaved changes · Double-click to rename' : 'Double-click to rename'}">${dirtyMark}<span class="tab-label">${esc(t.name)}</span>${closeBtn}</div>`;
     }).join('') + '<button class="tab-add" type="button" onclick="window.__newTab()" title="New tab" aria-label="New tab">+</button>';
+  };
+
+  window.__renameTabPrompt = function(id){
+    const tab = tabs.find(t=>t.id===id);
+    const bar = q('tab-bar');
+    if(!tab || !bar) return;
+    renderTabs();
+    const tabEls = [...bar.querySelectorAll('.tab')];
+    const idx = tabs.findIndex(t=>t.id===id);
+    const el = tabEls[idx];
+    if(!el) return;
+    const label = el.querySelector('.tab-label');
+    if(!label) return;
+    const oldName = tab.name || 'Tab';
+    label.innerHTML = '';
+    const input = document.createElement('input');
+    input.className = 'tab-rename-input';
+    input.type = 'text';
+    input.maxLength = 40;
+    input.value = oldName;
+    label.appendChild(input);
+    input.focus();
+    input.select();
+    let done = false;
+    const finish = commit => {
+      if(done) return;
+      done = true;
+      if(commit){
+        const nextName = input.value.trim() || oldName;
+        tab.name = nextName;
+        saveTabs();
+      }
+      renderTabs();
+    };
+    input.addEventListener('click', ev => ev.stopPropagation());
+    input.addEventListener('dblclick', ev => ev.stopPropagation());
+    input.addEventListener('keydown', ev => {
+      if(ev.key === 'Enter'){ ev.preventDefault(); finish(true); }
+      if(ev.key === 'Escape'){ ev.preventDefault(); finish(false); }
+    });
+    input.addEventListener('blur', ()=>finish(true), {once:true});
   };
 
   function markTabDirty(tabId = currentTabId){

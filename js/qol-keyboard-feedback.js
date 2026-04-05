@@ -20,6 +20,8 @@
       { key: 'Enter (in search)', desc: 'Next search result' },
       { key: 'Shift+Enter (in search)', desc: 'Previous search result' },
       { key: 'L', desc: 'Auto layout' },
+      { key: '[', desc: 'Toggle palette sidebar' },
+      { key: ']', desc: 'Toggle properties panel' },
     ];
     
     let html = '<div class="modal-box" style="min-width:420px"><h2>Keyboard Shortcuts <span class="modal-x" onclick="closeModal(\'help-modal\')">✕</span></h2><div style="margin-top:12px">';
@@ -321,6 +323,35 @@
     applyState();
   }
 
+  function setupPanelShortcuts() {
+    if (document.body.dataset.panelShortcuts === '1') return;
+    document.body.dataset.panelShortcuts = '1';
+    document.addEventListener('keydown', e => {
+      const ae = document.activeElement;
+      if (ae && (ae.tagName === 'INPUT' || ae.tagName === 'TEXTAREA' || ae.tagName === 'SELECT' || ae.isContentEditable)) return;
+      if (e.ctrlKey || e.metaKey || e.altKey) return;
+      if (e.key === '[') {
+        e.preventDefault();
+        try {
+          if (typeof toggleSidebar === 'function') toggleSidebar();
+          if (typeof showToast === 'function') {
+            const hidden = document.getElementById('sidebar')?.classList.contains('sb-collapsed');
+            showToast(hidden ? 'Palette hidden' : 'Palette shown');
+          }
+        } catch (_) {}
+      }
+      if (e.key === ']') {
+        e.preventDefault();
+        try {
+          const panel = document.getElementById('edit-panel');
+          if (!panel) return;
+          panel.classList.toggle('hid');
+          if (typeof showToast === 'function') showToast(panel.classList.contains('hid') ? 'Properties hidden' : 'Properties shown');
+        } catch (_) {}
+      }
+    }, true);
+  }
+
   // Final layout enforcement after all other modules have patched the page.
   function enforceLayoutFixes() {
     const topbar = document.getElementById('topbar');
@@ -391,6 +422,7 @@
   setTimeout(improveSearchInputs, 180);
   setTimeout(addSearchClearButtons, 220);
   setTimeout(setupPaletteControls, 260);
+  setTimeout(setupPanelShortcuts, 300);
   setTimeout(enforceLayoutFixes, 400);
   window.addEventListener('resize', enforceLayoutFixes);
   document.addEventListener('click', () => setTimeout(enforceLayoutFixes, 0), true);
