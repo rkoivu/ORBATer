@@ -114,8 +114,8 @@ function getSym(typeId,affil,echelon,planned=false){
   const custom=customTypes.find(u=>u.id===typeId);
   const echSvg=ech?`<text x="26" y="6" text-anchor="middle" font-size="10" font-family="monospace" fill="${c.stroke}">${ech}</text>`:'';
   const dash=planned?'stroke-dasharray="4,2"':'';
-  const bg=`<rect x="2" y="2" width="48" height="38" rx="6" ry="6" fill="#ffffffdd" stroke="rgba(0,0,0,0.12)" stroke-width="1"/>`;
-  if(custom)return`<svg viewBox="0 0 52 42" xmlns="http://www.w3.org/2000/svg">${bg}${echSvg}<image x="8" y="9" width="36" height="26" href="${custom.dataUrl}" preserveAspectRatio="xMidYMid meet"/></svg>`;
+  const bg=`<rect x="1" y="8" width="50" height="30" rx="7" ry="7" fill="#ffffffdd" stroke="rgba(0,0,0,0.12)" stroke-width="1"/>`;
+  if(custom)return`<svg viewBox="0 0 52 42" xmlns="http://www.w3.org/2000/svg">${bg}${echSvg}<image x="1" y="8" width="50" height="30" href="${custom.dataUrl}" preserveAspectRatio="xMidYMid meet"/></svg>`;
   const def=UT.find(u=>u.id===typeId)||UT[0];const inner=def.icon(c);
   if(affil==='hostile')return`<svg viewBox="0 0 52 42" xmlns="http://www.w3.org/2000/svg">${bg}${echSvg}<polygon points="26,8 51,22 26,36 1,22" fill="${c.fill}" stroke="${c.stroke}" stroke-width="2" ${dash}/><g transform="translate(1,8)">${inner}</g></svg>`;
   if(affil==='neutral'||affil==='unknown')return`<svg viewBox="0 0 52 42" xmlns="http://www.w3.org/2000/svg">${bg}${echSvg}<ellipse cx="26" cy="22" rx="23" ry="13" fill="${c.fill}" stroke="${c.stroke}" stroke-width="2" ${dash}/><g transform="translate(1,8)">${inner}</g></svg>`;

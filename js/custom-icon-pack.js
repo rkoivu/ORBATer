@@ -106,8 +106,8 @@
     if(k && SYMBOL_PACK[k]){
       const c = AC[affil] || AC.friendly;
       const echSvg=ech?`<text x="26" y="6" text-anchor="middle" font-size="10" font-family="monospace" fill="${c.stroke}">${EM[ech]||''}</text>`:'';
-      const bg=`<rect x="2" y="2" width="48" height="38" rx="6" ry="6" fill="#ffffffdd" stroke="rgba(0,0,0,0.12)" stroke-width="1"/>`;
-      const inner=`<image x="8" y="9" width="36" height="26" href="${SYMBOL_PACK[k]}" preserveAspectRatio="xMidYMid meet"/>`;
+      const bg=`<rect x="1" y="8" width="50" height="30" rx="7" ry="7" fill="#ffffffdd" stroke="rgba(0,0,0,0.12)" stroke-width="1"/>`;
+      const inner=`<image x="1" y="8" width="50" height="30" href="${SYMBOL_PACK[k]}" preserveAspectRatio="xMidYMid meet"/>`;
       if(affil==='hostile')return`<svg viewBox="0 0 52 42" xmlns="http://www.w3.org/2000/svg">${bg}${echSvg}${inner}</svg>`;
       if(affil==='neutral'||affil==='unknown')return`<svg viewBox="0 0 52 42" xmlns="http://www.w3.org/2000/svg">${bg}${echSvg}${inner}</svg>`;
       return`<svg viewBox="0 0 52 42" xmlns="http://www.w3.org/2000/svg">${bg}${echSvg}${inner}</svg>`;
