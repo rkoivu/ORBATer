@@ -829,7 +829,7 @@ function fitScreen(){
 /* ══════════════════════════════════════
    MINIMAP
 ══════════════════════════════════════ */
-let mmVisible=false;
+let mmVisible=true;
 function toggleMinimap(){mmVisible=!mmVisible;document.getElementById('minimap').style.display=mmVisible?'block':'none';if(mmVisible)updateMinimap();}
 function updateMinimap(){
   if(!mmVisible)return;
@@ -1376,6 +1376,8 @@ buildSwatches('mp-swatches',col=>{multiSel.forEach(id=>{nodes[id].tint=col;rende
 updEmpty();updSB();syncRelLabelBtn();
 // Init grid
 canvasWrap.className='snap-on';document.getElementById('btn-snap').textContent='⌗ Dot Grid';
+
+document.getElementById('minimap').style.display='block';
 
 // Restore autosave or seed starter
 setTimeout(()=>{
