@@ -44,7 +44,7 @@
       populateEditPanel(selectedId);
       saveState();
       showToast('Attachments cleared');
-    }});
+    });
   }
   ensureUnitFields();
 
@@ -94,7 +94,6 @@
     medical: 'assets/icons/types/service_support/medical.svg',
     supply_transport: 'assets/icons/types/service_support/supply_transport.svg',
     maintenance: 'assets/icons/types/service_support/maintenance.svg',
-    transport: 'assets/icons/types/service_support/transport.svg'
     transport: 'assets/icons/types/service_support/transport.svg'
   });
   const oldGetSym = getSym;
@@ -175,6 +174,91 @@
     e.target.value='';
   });
 
+  function addSubunits(parentId, specs){
+    return specs.map(spec=>createNode({
+      typeId: spec.typeId,
+      name: spec.name,
+      designation: spec.designation,
+      echelon: spec.echelon,
+      parentId,
+      affil: spec.affil,
+      reltype: spec.reltype,
+      equipmentItems: spec.equipmentItems || []
+    }));
+  }
+
+  function addLineCompanies(parentId, prefix, companyType, platoonType, count, affil){
+    for(let i=0;i<count;i++){
+      const label = String.fromCharCode(65 + i);
+      const coyId = createNode({
+        typeId: companyType,
+        name: `${label} COY`,
+        designation: `${label} COY`,
+        echelon: 'company',
+        parentId,
+        affil,
+        equipmentItems: ['3 x Rifle Platoon', '1 x Weapons Platoon']
+      });
+      addSubunits(coyId, [
+        {typeId: platoonType, name:`${label} 1 PLT`, echelon:'platoon', affil},
+        {typeId: platoonType, name:`${label} 2 PLT`, echelon:'platoon', affil},
+        {typeId: platoonType, name:`${label} 3 PLT`, echelon:'platoon', affil},
+        {typeId: 'infantry', name:`${label} WPNS PLT`, echelon:'platoon', affil, reltype:'support'}
+      ]);
+    }
+  }
+
+  function addTankBattalion(parentId, name, affil){
+    const bnId = createNode({typeId:'armour',name,echelon:'battalion',parentId,affil,equipmentItems:['3 x Tank Company','1 x HQ / support company']});
+    ['A','B','C'].forEach(label=>{
+      const coyId = createNode({typeId:'armour',name:`${label} COY`,designation:`${label} COY`,echelon:'company',parentId:bnId,affil,equipmentItems:['3 x Tank Platoon']});
+      addSubunits(coyId, [
+        {typeId:'armour',name:`${label} 1 PLT`,echelon:'platoon',affil},
+        {typeId:'armour',name:`${label} 2 PLT`,echelon:'platoon',affil},
+        {typeId:'armour',name:`${label} 3 PLT`,echelon:'platoon',affil}
+      ]);
+    });
+    const hqCoyId = createNode({typeId:'hq',name:'HQ COY',echelon:'company',parentId:bnId,affil,reltype:'support'});
+    addSubunits(hqCoyId, [
+      {typeId:'recon',name:'SCOUT PLT',echelon:'platoon',affil},
+      {typeId:'engineer',name:'ENGR PLT',echelon:'platoon',affil,reltype:'support'},
+      {typeId:'supply',name:'MAINT / SUPPLY PLT',echelon:'platoon',affil,reltype:'support'}
+    ]);
+    return bnId;
+  }
+
+  function addMechanizedBattalion(parentId, name, affil){
+    const bnId = createNode({typeId:'mech_inf',name,echelon:'battalion',parentId,affil,equipmentItems:['3 x Mechanized company','1 x weapons company']});
+    ['A','B','C'].forEach(label=>{
+      const coyId = createNode({typeId:'mech_inf',name:`${label} COY`,designation:`${label} COY`,echelon:'company',parentId:bnId,affil,equipmentItems:['3 x Mechanized platoon']});
+      addSubunits(coyId, [
+        {typeId:'mech_inf',name:`${label} 1 PLT`,echelon:'platoon',affil},
+        {typeId:'mech_inf',name:`${label} 2 PLT`,echelon:'platoon',affil},
+        {typeId:'mech_inf',name:`${label} 3 PLT`,echelon:'platoon',affil}
+      ]);
+    });
+    const weaponsCoyId = createNode({typeId:'infantry',name:'WPNS COY',echelon:'company',parentId:bnId,affil,reltype:'support'});
+    addSubunits(weaponsCoyId, [
+      {typeId:'mortar',name:'MORTAR PLT',echelon:'platoon',affil,reltype:'support'},
+      {typeId:'anti_tank',name:'AT PLT',echelon:'platoon',affil,reltype:'support'},
+      {typeId:'air_defense',name:'SHORAD PLT',echelon:'platoon',affil,reltype:'support'}
+    ]);
+    return bnId;
+  }
+
+  function addFiresBattalion(parentId, name, typeId, affil){
+    const bnId = createNode({typeId,name,echelon:'battalion',parentId,affil});
+    ['A','B','C'].forEach(label=>{
+      const batteryId = createNode({typeId,name:`${label} BTRY`,designation:`${label} BTRY`,echelon:'company',parentId:bnId,affil});
+      addSubunits(batteryId, [
+        {typeId,name:`${label} 1 PLT`,echelon:'platoon',affil},
+        {typeId,name:`${label} 2 PLT`,echelon:'platoon',affil},
+        {typeId:'hq',name:`${label} FDC PLT`,echelon:'platoon',affil,reltype:'support'}
+      ]);
+    });
+    return bnId;
+  }
+
   function doctrinalTemplates(){
     return [
       {
@@ -182,9 +266,19 @@
         desc:'HQ, 4 rifle companies, support company, mortars, logistics',
         fn:()=>{
           const hq=createNode({typeId:'hq',name:'1-22 IN',designation:'1-22 IN',echelon:'battalion',x:340,y:60,equipmentItems:['4 x Rifle Company','1 x Support Company','1 x Mortar Platoon']});
-          ['A COY','B COY','C COY','D COY'].forEach((nm,i)=>createNode({typeId:'infantry',name:nm,echelon:'company',parentId:hq,x:60+i*170,y:220,equipmentItems:['3 x Rifle Platoon','1 x Weapons Platoon']}));
-          createNode({typeId:'mortar',name:'MORTAR PLT',echelon:'company',parentId:hq,x:760,y:220,reltype:'support'});
-          createNode({typeId:'supply',name:'SUPPORT COY',echelon:'company',parentId:hq,x:930,y:220,reltype:'support'});
+          addLineCompanies(hq, 'Rifle', 'infantry', 'infantry', 4);
+          const mortarCoyId = createNode({typeId:'mortar',name:'MORTAR COY',echelon:'company',parentId:hq,reltype:'support'});
+          addSubunits(mortarCoyId, [
+            {typeId:'mortar',name:'1 MORTAR PLT',echelon:'platoon',reltype:'support'},
+            {typeId:'mortar',name:'2 MORTAR PLT',echelon:'platoon',reltype:'support'},
+            {typeId:'hq',name:'FDC PLT',echelon:'platoon',reltype:'support'}
+          ]);
+          const supportCoyId = createNode({typeId:'supply',name:'SUPPORT COY',echelon:'company',parentId:hq,reltype:'support'});
+          addSubunits(supportCoyId, [
+            {typeId:'engineer',name:'PIONEER PLT',echelon:'platoon',reltype:'support'},
+            {typeId:'signals',name:'SIGNALS PLT',echelon:'platoon',reltype:'support'},
+            {typeId:'supply',name:'LOG PLT',echelon:'platoon',reltype:'support'}
+          ]);
           autoLayout();
         }
       },
@@ -193,14 +287,30 @@
         desc:'HQ, tank battalions, mechanized infantry, artillery, engineers, logistics',
         fn:()=>{
           const hq=createNode({typeId:'hq',name:'1 ARMD BDE',designation:'1 ARMD BDE',echelon:'brigade',x:360,y:60,equipmentItems:['3 x Tank Battalion','2 x Mechanized Infantry Battalion']});
-          createNode({typeId:'armour',name:'1 TANK BN',echelon:'battalion',parentId:hq,x:40,y:220,equipmentItems:['58 x MBT']});
-          createNode({typeId:'armour',name:'2 TANK BN',echelon:'battalion',parentId:hq,x:220,y:220,equipmentItems:['58 x MBT']});
-          createNode({typeId:'armour',name:'3 TANK BN',echelon:'battalion',parentId:hq,x:400,y:220,equipmentItems:['58 x MBT']});
-          createNode({typeId:'mech_inf',name:'1 MECH BN',echelon:'battalion',parentId:hq,x:580,y:220,equipmentItems:['44 x IFV/APC']});
-          createNode({typeId:'mech_inf',name:'2 MECH BN',echelon:'battalion',parentId:hq,x:760,y:220,equipmentItems:['44 x IFV/APC']});
-          createNode({typeId:'artillery',name:'BDE ARTY',echelon:'battalion',parentId:hq,x:940,y:220});
-          createNode({typeId:'engineer',name:'ENGR COY',echelon:'company',parentId:hq,x:1120,y:220,reltype:'support'});
-          createNode({typeId:'supply',name:'BDE SPT BN',echelon:'battalion',parentId:hq,x:1300,y:220,reltype:'support'});
+          addTankBattalion(hq, '1 TANK BN');
+          addTankBattalion(hq, '2 TANK BN');
+          addTankBattalion(hq, '3 TANK BN');
+          addMechanizedBattalion(hq, '1 MECH BN');
+          addMechanizedBattalion(hq, '2 MECH BN');
+          addFiresBattalion(hq, 'BDE ARTY', 'artillery');
+          const engrCoyId = createNode({typeId:'engineer',name:'ENGR COY',echelon:'company',parentId:hq,reltype:'support'});
+          addSubunits(engrCoyId, [
+            {typeId:'engineer',name:'MOBILITY PLT',echelon:'platoon',reltype:'support'},
+            {typeId:'engineer',name:'COUNTERMOBILITY PLT',echelon:'platoon',reltype:'support'},
+            {typeId:'engineer',name:'ASSAULT PLT',echelon:'platoon',reltype:'support'}
+          ]);
+          const sptBnId = createNode({typeId:'supply',name:'BDE SPT BN',echelon:'battalion',parentId:hq,reltype:'support'});
+          addSubunits(sptBnId, [
+            {typeId:'supply',name:'DIST COY',echelon:'company',reltype:'support'},
+            {typeId:'supply',name:'MAINT COY',echelon:'company',reltype:'support'},
+            {typeId:'medical',name:'MED COY',echelon:'company',reltype:'support'}
+          ]).forEach(coyId=>{
+            addSubunits(coyId, [
+              {typeId:'supply',name:'1 PLT',echelon:'platoon',reltype:'support'},
+              {typeId:'supply',name:'2 PLT',echelon:'platoon',reltype:'support'},
+              {typeId:'hq',name:'HQ PLT',echelon:'platoon',reltype:'support'}
+            ]);
+          });
           autoLayout();
         }
       },
@@ -209,14 +319,40 @@
         desc:'Motor rifle core with tanks, artillery, air defense and support',
         fn:()=>{
           const hq=createNode({typeId:'hq',name:'BTG',designation:'BTG',echelon:'battalion',affil:'hostile',x:340,y:60});
-          createNode({typeId:'motorised',name:'MR COY A',echelon:'company',parentId:hq,affil:'hostile',x:60,y:220});
-          createNode({typeId:'motorised',name:'MR COY B',echelon:'company',parentId:hq,affil:'hostile',x:220,y:220});
-          createNode({typeId:'motorised',name:'MR COY C',echelon:'company',parentId:hq,affil:'hostile',x:380,y:220});
-          createNode({typeId:'armour',name:'TANK COY',echelon:'company',parentId:hq,affil:'hostile',x:540,y:220});
-          createNode({typeId:'artillery',name:'ARTY BTRY',echelon:'company',parentId:hq,affil:'hostile',x:700,y:220});
-          createNode({typeId:'rockets',name:'MLRS SEC',echelon:'company',parentId:hq,affil:'hostile',x:860,y:220,reltype:'support'});
-          createNode({typeId:'air_defense',name:'SHORAD',echelon:'company',parentId:hq,affil:'hostile',x:1020,y:220,reltype:'support'});
-          createNode({typeId:'engineer',name:'ENGR PLT',echelon:'platoon',parentId:hq,affil:'hostile',x:1180,y:220,reltype:'support'});
+          ['A','B','C'].forEach(label=>{
+            const coyId = createNode({typeId:'motorised',name:`MR COY ${label}`,echelon:'company',parentId:hq,affil:'hostile',equipmentItems:['3 x Motor rifle platoon']});
+            addSubunits(coyId, [
+              {typeId:'motorised',name:`${label} 1 PLT`,echelon:'platoon',affil:'hostile'},
+              {typeId:'motorised',name:`${label} 2 PLT`,echelon:'platoon',affil:'hostile'},
+              {typeId:'motorised',name:`${label} 3 PLT`,echelon:'platoon',affil:'hostile'}
+            ]);
+          });
+          const tankCoyId = createNode({typeId:'armour',name:'TANK COY',echelon:'company',parentId:hq,affil:'hostile'});
+          addSubunits(tankCoyId, [
+            {typeId:'armour',name:'1 TK PLT',echelon:'platoon',affil:'hostile'},
+            {typeId:'armour',name:'2 TK PLT',echelon:'platoon',affil:'hostile'},
+            {typeId:'armour',name:'3 TK PLT',echelon:'platoon',affil:'hostile'}
+          ]);
+          const artyBtryId = createNode({typeId:'artillery',name:'ARTY BTRY',echelon:'company',parentId:hq,affil:'hostile'});
+          addSubunits(artyBtryId, [
+            {typeId:'artillery',name:'1 GUN PLT',echelon:'platoon',affil:'hostile'},
+            {typeId:'artillery',name:'2 GUN PLT',echelon:'platoon',affil:'hostile'},
+            {typeId:'hq',name:'FDC PLT',echelon:'platoon',affil:'hostile',reltype:'support'}
+          ]);
+          const mlrsId = createNode({typeId:'rockets',name:'MLRS BTRY',echelon:'company',parentId:hq,affil:'hostile',reltype:'support'});
+          addSubunits(mlrsId, [
+            {typeId:'rockets',name:'1 LAUNCHER PLT',echelon:'platoon',affil:'hostile',reltype:'support'},
+            {typeId:'rockets',name:'2 LAUNCHER PLT',echelon:'platoon',affil:'hostile',reltype:'support'}
+          ]);
+          const shoradId = createNode({typeId:'air_defense',name:'SHORAD BTRY',echelon:'company',parentId:hq,affil:'hostile',reltype:'support'});
+          addSubunits(shoradId, [
+            {typeId:'air_defense',name:'1 AD PLT',echelon:'platoon',affil:'hostile',reltype:'support'},
+            {typeId:'air_defense',name:'2 AD PLT',echelon:'platoon',affil:'hostile',reltype:'support'}
+          ]);
+          addSubunits(hq, [
+            {typeId:'engineer',name:'ENGR PLT',echelon:'platoon',affil:'hostile',reltype:'support'},
+            {typeId:'signals',name:'SIG PLT',echelon:'platoon',affil:'hostile',reltype:'support'}
+          ]);
           autoLayout();
         }
       },
@@ -225,13 +361,40 @@
         desc:'HQ, 3 maneuver battalions, cavalry, artillery, engineer, sustainment',
         fn:()=>{
           const hq=createNode({typeId:'hq',name:'1 BCT',designation:'1 BCT',echelon:'brigade',x:340,y:60});
-          createNode({typeId:'infantry',name:'1-22 IN',echelon:'battalion',parentId:hq,x:40,y:220});
-          createNode({typeId:'infantry',name:'2-22 IN',echelon:'battalion',parentId:hq,x:220,y:220});
-          createNode({typeId:'armour',name:'1-66 AR',echelon:'battalion',parentId:hq,x:400,y:220});
-          createNode({typeId:'recon',name:'SQDN',echelon:'battalion',parentId:hq,x:580,y:220});
-          createNode({typeId:'artillery',name:'FA BN',echelon:'battalion',parentId:hq,x:760,y:220});
-          createNode({typeId:'engineer',name:'EN BN',echelon:'battalion',parentId:hq,x:940,y:220});
-          createNode({typeId:'supply',name:'BSB',echelon:'battalion',parentId:hq,x:1120,y:220,reltype:'support'});
+          addLineCompanies(createNode({typeId:'infantry',name:'1-22 IN',echelon:'battalion',parentId:hq,equipmentItems:['3 x Rifle company','1 x weapons company']}), 'Rifle', 'infantry', 'infantry', 3);
+          addLineCompanies(createNode({typeId:'infantry',name:'2-22 IN',echelon:'battalion',parentId:hq,equipmentItems:['3 x Rifle company','1 x weapons company']}), 'Rifle', 'infantry', 'infantry', 3);
+          addTankBattalion(hq, '1-66 AR');
+          const cavSqdnId = createNode({typeId:'recon',name:'SQDN',echelon:'battalion',parentId:hq});
+          ['A','B','C'].forEach(label=>{
+            const troopId = createNode({typeId:'recon',name:`${label} TRP`,echelon:'company',parentId:cavSqdnId});
+            addSubunits(troopId, [
+              {typeId:'recon',name:`${label} 1 PLT`,echelon:'platoon'},
+              {typeId:'recon',name:`${label} 2 PLT`,echelon:'platoon'},
+              {typeId:'recon',name:`${label} SCOUT PLT`,echelon:'platoon'}
+            ]);
+          });
+          addFiresBattalion(hq, 'FA BN', 'artillery');
+          const enBnId = createNode({typeId:'engineer',name:'EN BN',echelon:'battalion',parentId:hq});
+          ['A','B','C'].forEach(label=>{
+            const coyId = createNode({typeId:'engineer',name:`${label} COY`,echelon:'company',parentId:enBnId,reltype:'support'});
+            addSubunits(coyId, [
+              {typeId:'engineer',name:`${label} MOBILITY PLT`,echelon:'platoon',reltype:'support'},
+              {typeId:'engineer',name:`${label} SAPR PLT`,echelon:'platoon',reltype:'support'},
+              {typeId:'engineer',name:`${label} CLEARANCE PLT`,echelon:'platoon',reltype:'support'}
+            ]);
+          });
+          const bsbId = createNode({typeId:'supply',name:'BSB',echelon:'battalion',parentId:hq,reltype:'support'});
+          addSubunits(bsbId, [
+            {typeId:'supply',name:'DIST COY',echelon:'company',reltype:'support'},
+            {typeId:'supply',name:'FIELD MAINT COY',echelon:'company',reltype:'support'},
+            {typeId:'medical',name:'MED COY',echelon:'company',reltype:'support'}
+          ]).forEach(coyId=>{
+            addSubunits(coyId, [
+              {typeId:'supply',name:'1 PLT',echelon:'platoon',reltype:'support'},
+              {typeId:'supply',name:'2 PLT',echelon:'platoon',reltype:'support'},
+              {typeId:'hq',name:'HQ PLT',echelon:'platoon',reltype:'support'}
+            ]);
+          });
           autoLayout();
         }
       },
@@ -240,11 +403,36 @@
         desc:'HQ, combined arms battalions, artillery, air defense, service support',
         fn:()=>{
           const hq=createNode({typeId:'hq',name:'CA BDE',designation:'CA BDE',echelon:'brigade',x:340,y:60});
-          ['1 CABN','2 CABN','3 CABN','4 CABN'].forEach((nm,i)=>createNode({typeId:i<2?'mech_inf':'armour',name:nm,echelon:'battalion',parentId:hq,x:40+i*180,y:220}));
-          createNode({typeId:'artillery',name:'ARTY BN',echelon:'battalion',parentId:hq,x:780,y:220});
-          createNode({typeId:'air_defense',name:'AD BN',echelon:'battalion',parentId:hq,x:960,y:220});
-          createNode({typeId:'engineer',name:'ENGR BN',echelon:'battalion',parentId:hq,x:1140,y:220});
-          createNode({typeId:'supply',name:'SVC SPT BN',echelon:'battalion',parentId:hq,x:1320,y:220,reltype:'support'});
+          ['1 CABN','2 CABN'].forEach(nm=>addMechanizedBattalion(hq, nm));
+          ['3 CABN','4 CABN'].forEach(nm=>addTankBattalion(hq, nm));
+          addFiresBattalion(hq, 'ARTY BN', 'artillery');
+          const adBnId = createNode({typeId:'air_defense',name:'AD BN',echelon:'battalion',parentId:hq});
+          ['1','2','3'].forEach(num=>{
+            const btryId = createNode({typeId:'air_defense',name:`AD BTRY ${num}`,echelon:'company',parentId:adBnId,reltype:'support'});
+            addSubunits(btryId, [
+              {typeId:'air_defense',name:`${num} 1 PLT`,echelon:'platoon',reltype:'support'},
+              {typeId:'air_defense',name:`${num} 2 PLT`,echelon:'platoon',reltype:'support'}
+            ]);
+          });
+          const engrBnId = createNode({typeId:'engineer',name:'ENGR BN',echelon:'battalion',parentId:hq});
+          ['1','2','3'].forEach(num=>{
+            const coyId = createNode({typeId:'engineer',name:`ENGR COY ${num}`,echelon:'company',parentId:engrBnId,reltype:'support'});
+            addSubunits(coyId, [
+              {typeId:'engineer',name:`${num} 1 PLT`,echelon:'platoon',reltype:'support'},
+              {typeId:'engineer',name:`${num} 2 PLT`,echelon:'platoon',reltype:'support'}
+            ]);
+          });
+          const svcBnId = createNode({typeId:'supply',name:'SVC SPT BN',echelon:'battalion',parentId:hq,reltype:'support'});
+          addSubunits(svcBnId, [
+            {typeId:'supply',name:'SUPPLY COY',echelon:'company',reltype:'support'},
+            {typeId:'supply',name:'REPAIR COY',echelon:'company',reltype:'support'},
+            {typeId:'medical',name:'MED COY',echelon:'company',reltype:'support'}
+          ]).forEach(coyId=>{
+            addSubunits(coyId, [
+              {typeId:'supply',name:'1 PLT',echelon:'platoon',reltype:'support'},
+              {typeId:'supply',name:'2 PLT',echelon:'platoon',reltype:'support'}
+            ]);
+          });
           autoLayout();
         }
       }
