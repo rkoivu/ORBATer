@@ -32,6 +32,8 @@ button{background:transparent;border:none}
 /* SIDEBAR */
 #sidebar{width:var(--sidebar-w);background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;flex-shrink:0;min-height:0;height:100%}
 #sidebar-header{padding:10px 12px 8px;font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:2px;color:var(--text2);border-bottom:1px solid var(--border);background:linear-gradient(180deg,rgba(28,35,48,.9),rgba(22,27,34,.94));text-transform:uppercase;display:flex;justify-content:space-between;align-items:center}
+#sidebar-header .sidebar-actions{display:flex;align-items:center;gap:6px}
+#sidebar-header .sidebar-actions .tb-btn{padding:2px 7px;font-size:9px}
 #sidebar-scroll{overflow-y:scroll;flex:1;min-height:0;overscroll-behavior:contain;height:0}
 .palette-section{border-bottom:1px solid var(--border)}
 .palette-section-title{padding:7px 12px;font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:1.5px;color:var(--text2);text-transform:uppercase;cursor:pointer;display:flex;justify-content:space-between;align-items:center;text-align:left;transition:background .15s,color .15s}
@@ -235,6 +237,9 @@ kbd{background:var(--surface2);border:1px solid var(--border);border-radius:3px;
 #unit-search-input{width:160px}#tag-filter-input{width:110px}
 #unit-search-input,#tag-filter-input{background:rgba(13,17,23,.46);border-radius:999px;padding:6px 10px}
 #unit-search-input:focus,#tag-filter-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(59,130,246,.16);background:rgba(17,24,39,.74)}
+.input-clear-btn{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;margin-left:-4px;border:1px solid transparent;border-radius:999px;background:transparent;color:var(--text2);font-family:'Share Tech Mono',monospace;font-size:11px;flex-shrink:0;opacity:.7;transition:background .15s,border-color .15s,color .15s,opacity .15s}
+.input-clear-btn:hover{opacity:1;background:rgba(255,255,255,.05);border-color:var(--border);color:var(--text)}
+.input-clear-btn.hidden{display:none}
 .orbat-node.search-hit .node-card{box-shadow:0 0 0 3px rgba(59,130,246,.45)!important}
 .orbat-node.filtered-out{display:none!important}
 .node-readiness-pill{position:absolute;top:-7px;left:-7px;min-width:24px;height:14px;padding:0 4px;border-radius:999px;border:1px solid var(--bg);background:#111827;color:#fff;font-family:'Share Tech Mono',monospace;font-size:8px;line-height:12px;text-align:center}

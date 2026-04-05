@@ -200,6 +200,127 @@
     }
   }
 
+  function addSearchClearButtons() {
+    const pairs = [
+      { inputId: 'unit-search-input', btnId: 'btn-clear-unit-search', title: 'Clear unit search' },
+      { inputId: 'tag-filter-input', btnId: 'btn-clear-tag-filter', title: 'Clear tag filter' }
+    ];
+    pairs.forEach(({ inputId, btnId, title }) => {
+      const input = document.getElementById(inputId);
+      const topbar = document.getElementById('topbar');
+      if (!input || !topbar) return;
+      let btn = document.getElementById(btnId);
+      if (!btn) {
+        btn = document.createElement('button');
+        btn.type = 'button';
+        btn.id = btnId;
+        btn.className = 'input-clear-btn hidden';
+        btn.textContent = '×';
+        btn.title = title;
+        btn.onclick = () => {
+          input.value = '';
+          input.dispatchEvent(new Event('input', { bubbles: true }));
+          input.focus();
+        };
+        input.insertAdjacentElement('afterend', btn);
+      }
+      const sync = () => btn.classList.toggle('hidden', !input.value.trim());
+      if (btn.dataset.bound !== '1') {
+        btn.dataset.bound = '1';
+        input.addEventListener('input', sync);
+        input.addEventListener('change', sync);
+        input.addEventListener('blur', sync);
+      }
+      sync();
+    });
+  }
+
+  function setupPaletteControls() {
+    const header = document.getElementById('sidebar-header');
+    const scroll = document.getElementById('sidebar-scroll');
+    if (!header || !scroll) return;
+    const LS_KEY = 'orbat_palette_sections_v1';
+    const readState = () => {
+      try { return JSON.parse(localStorage.getItem(LS_KEY) || '{}') || {}; } catch (_) { return {}; }
+    };
+    const writeState = state => {
+      try { localStorage.setItem(LS_KEY, JSON.stringify(state)); } catch (_) {}
+    };
+    const sectionKey = title => title.textContent.replace(/[▼▾▸]/g, '').trim();
+    const saveCurrentState = () => {
+      const state = {};
+      scroll.querySelectorAll('.palette-section-title').forEach(title => {
+        state[sectionKey(title)] = title.classList.contains('collapsed');
+      });
+      writeState(state);
+    };
+    const applyState = () => {
+      const state = readState();
+      scroll.querySelectorAll('.palette-section').forEach(sec => {
+        const title = sec.querySelector('.palette-section-title');
+        const grid = sec.querySelector('.palette-grid');
+        if (!title || !grid) return;
+        const collapsed = state[sectionKey(title)] === true;
+        title.classList.toggle('collapsed', collapsed);
+        grid.classList.toggle('hidden', collapsed);
+        if (title.dataset.paletteBound !== '1') {
+          title.dataset.paletteBound = '1';
+          title.addEventListener('click', () => setTimeout(saveCurrentState, 0));
+        }
+      });
+    };
+    const setAll = collapsed => {
+      scroll.querySelectorAll('.palette-section').forEach(sec => {
+        const title = sec.querySelector('.palette-section-title');
+        const grid = sec.querySelector('.palette-grid');
+        if (!title || !grid) return;
+        title.classList.toggle('collapsed', collapsed);
+        grid.classList.toggle('hidden', collapsed);
+      });
+      saveCurrentState();
+      try { if (typeof showToast === 'function') showToast(collapsed ? 'Palette collapsed' : 'Palette expanded'); } catch (_) {}
+    };
+
+    let actions = header.querySelector('.sidebar-actions');
+    if (!actions) {
+      actions = document.createElement('div');
+      actions.className = 'sidebar-actions';
+      header.appendChild(actions);
+    }
+    if (!document.getElementById('btn-palette-collapse')) {
+      const collapseBtn = document.createElement('button');
+      collapseBtn.type = 'button';
+      collapseBtn.id = 'btn-palette-collapse';
+      collapseBtn.className = 'tb-btn';
+      collapseBtn.textContent = 'Fold';
+      collapseBtn.title = 'Collapse all palette sections';
+      collapseBtn.onclick = () => setAll(true);
+      actions.insertBefore(collapseBtn, actions.firstChild);
+    }
+    if (!document.getElementById('btn-palette-expand')) {
+      const expandBtn = document.createElement('button');
+      expandBtn.type = 'button';
+      expandBtn.id = 'btn-palette-expand';
+      expandBtn.className = 'tb-btn';
+      expandBtn.textContent = 'Open';
+      expandBtn.title = 'Expand all palette sections';
+      expandBtn.onclick = () => setAll(false);
+      actions.insertBefore(expandBtn, actions.firstChild);
+    }
+
+    if (typeof buildPalette === 'function' && !buildPalette._qolPaletteWrapped) {
+      const prevBuildPalette = buildPalette;
+      buildPalette = function() {
+        const result = prevBuildPalette.apply(this, arguments);
+        applyState();
+        return result;
+      };
+      buildPalette._qolPaletteWrapped = true;
+    }
+
+    applyState();
+  }
+
   // Final layout enforcement after all other modules have patched the page.
   function enforceLayoutFixes() {
     const topbar = document.getElementById('topbar');
@@ -268,6 +389,8 @@
   setTimeout(enhanceEmptyState, 120);
   setTimeout(addQuickCanvasActions, 150);
   setTimeout(improveSearchInputs, 180);
+  setTimeout(addSearchClearButtons, 220);
+  setTimeout(setupPaletteControls, 260);
   setTimeout(enforceLayoutFixes, 400);
   window.addEventListener('resize', enforceLayoutFixes);
   document.addEventListener('click', () => setTimeout(enforceLayoutFixes, 0), true);
