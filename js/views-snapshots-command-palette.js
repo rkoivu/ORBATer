@@ -4,6 +4,33 @@
   let orbatMode=(()=>{try{return localStorage.getItem('orbat_mode_v1')||'admin';}catch(e){return 'admin';}})();
   let lastAutoDiffBase='';
 
+  // Tabs for multiple canvases
+  let tabs = (()=>{try{return JSON.parse(localStorage.getItem('orbat_tabs_v1')||'[{"id":"default","name":"Main","nodes":{},"selectedId":null}]')}catch(e){return [{"id":"default","name":"Main","nodes":{},"selectedId":null}]}}());
+  let currentTabId = 'default';
+
+  function saveTabs(){ localStorage.setItem('orbat_tabs_v1', JSON.stringify(tabs)); }
+
+  // Check for readonly mode
+  const urlParams = new URLSearchParams(window.location.search);
+  const readonly = urlParams.get('readonly') === '1';
+  const sharedViewId = urlParams.get('view');
+  if (readonly) {
+    document.body.classList.add('readonly-mode');
+    // Disable editing buttons, etc.
+    // This is a basic implementation; more can be added
+  }
+  if (sharedViewId) {
+    // Load the shared view
+    setTimeout(() => {
+      window.__loadView(sharedViewId);
+    }, 100);
+  }
+
+  // Layout mode
+  window.layoutMode = localStorage.getItem('orbat_layout_mode') || 'tree';
+  window.setLayoutMode = function(mode){ window.layoutMode = mode; localStorage.setItem('orbat_layout_mode', mode); };
+  setTimeout(() => { const sel = q('layout-mode-sel'); if(sel) sel.value = window.layoutMode; }, 100);
+
   function toast(msg){ try{ (window.showToast||function(){})(msg); }catch(e){} }
   function q(id){ return document.getElementById(id); }
   function ensureBtn(id,text,title,onclick,beforeId){
@@ -69,33 +96,102 @@
   function renderViews(){
     const box=q('view-list'); if(!box) return; const views=getViews();
     if(!views.length){ box.innerHTML='<div class="panel-help">No saved views yet.</div>'; return; }
-    box.innerHTML=views.map(v=>`<div class="view-row"><div><div style="font-weight:700">${esc(v.name)}</div><div class="panel-help">Scale ${Math.round((v.transform?.scale||1)*100)}%</div></div><div style="display:flex;gap:6px"><button class="pb" onclick="window.__loadView('${v.id}')">Load</button><button class="pb del" onclick="window.__deleteView('${v.id}')">Delete</button></div></div>`).join('');
+    box.innerHTML=views.map(v=>`<div class="view-row"><div><div style="font-weight:700">${esc(v.name)}</div><div class="panel-help">Scale ${Math.round((v.transform?.scale||1)*100)}%</div></div><div style="display:flex;gap:6px"><button class="pb" onclick="window.__loadView('${v.id}')">Load</button><button class="pb" onclick="window.__shareView('${v.id}')">Share</button><button class="pb del" onclick="window.__deleteView('${v.id}')">Delete</button></div></div>`).join('');
   }
   function renderSnapshots(){
     const box=q('snapshot-list'); if(!box) return; const snaps=getSnaps();
     if(!snaps.length){ box.innerHTML='<div class="panel-help">No snapshots yet.</div>'; return; }
     box.innerHTML=snaps.map(s=>`<div class="snap-row"><div><div style="font-weight:700">${esc(s.reason)}</div><div class="panel-help">${new Date(s.ts).toLocaleString()} · <span class="diff-pill">+${s.diff?.added||0} −${s.diff?.removed||0} Δ${s.diff?.changed||0}</span></div></div><div style="display:flex;gap:6px"><button class="pb" onclick="window.__restoreSnap('${s.id}')">Restore</button><button class="pb" onclick="window.__loadSnapView('${s.id}')">View</button><button class="pb del" onclick="window.__deleteSnap('${s.id}')">Delete</button></div></div>`).join('');
+    // Update slider
+    const slider = q('phase-slider');
+    if(slider) {
+      slider.max = snaps.length - 1;
+      slider.value = 0;
+      updatePhaseLabel(0);
+      slider.oninput = () => { updatePhaseLabel(slider.value); window.__loadPhaseSnap(snaps[slider.value].id); };
+    }
   }
+  function updatePhaseLabel(idx){ const snaps=getSnaps(); const s=snaps[idx]; q('phase-label').textContent = s ? new Date(s.ts).toLocaleString() + ' - ' + s.reason : 'Current'; }
+  window.__loadPhaseSnap = function(id){ const s=getSnaps().find(x=>x.id===id); if(!s) return; if(typeof window.restoreState==='function') window.restoreState(s.state); applyTransformState(s.transform); if(typeof window.updSB==='function') window.updSB(); };
   window.__loadView=function(id){ const v=getViews().find(x=>x.id===id); if(!v) return; applyTransformState(v.transform); close('view-modal'); toast('View loaded'); };
+  window.__shareView=function(id){ const url = window.location.origin + window.location.pathname + '?view=' + encodeURIComponent(id) + '&readonly=1'; navigator.clipboard.writeText(url).then(() => toast('Shareable link copied to clipboard')).catch(() => toast('Link: ' + url)); };
   window.__deleteView=function(id){ setViews(getViews().filter(x=>x.id!==id)); renderViews(); };
   window.__restoreSnap=function(id){ const s=getSnaps().find(x=>x.id===id); if(!s) return; if(typeof window.restoreState==='function') window.restoreState(s.state); applyTransformState(s.transform); if(typeof window.updSB==='function') window.updSB(); close('snapshot-modal'); toast('Snapshot restored'); };
   window.__loadSnapView=function(id){ const s=getSnaps().find(x=>x.id===id); if(!s) return; applyTransformState(s.transform); toast('Snapshot camera restored'); };
   window.__deleteSnap=function(id){ setSnaps(getSnaps().filter(x=>x.id!==id)); renderSnapshots(); };
 
   function ensureViewsUI(){
+    // Add tab bar
+    if (!q('tab-bar')) {
+      const tb = document.createElement('div'); tb.id='tab-bar'; tb.style.cssText='display:flex;background:#f0f0f0;border-bottom:1px solid #ccc;padding:4px;';
+      document.body.insertBefore(tb, q('topbar'));
+      renderTabs();
+    }
+
     ensureBtn('btn-org-toggle','≋ ORBAT','Toggle admin/task-organised ORBAT',()=>{ orbatMode=orbatMode==='admin'?'task':'admin'; try{localStorage.setItem('orbat_mode_v1',orbatMode);}catch(e){} updateOrgBtn(); if(typeof window.autoLayout==='function') window.autoLayout(); toast(orbatMode==='admin'?'Admin ORBAT':'Task-organised ORBAT'); },'btn-random-orbat');
     ensureBtn('btn-views','👁 Views','Saved views',()=>{ renderViews(); open('view-modal'); },'btn-org-toggle');
     ensureBtn('btn-snapshots','🗂 Snaps','Version snapshots',()=>{ renderSnapshots(); open('snapshot-modal'); },'btn-views');
     ensureBtn('btn-export-pdf','⤓ PDF','Export PDF',()=>window.exportPDF&&window.exportPDF(),'btn-random-orbat');
     ensureBtn('btn-cmdk','⌘K','Command palette',()=>window.openCommandPalette&&window.openCommandPalette(),'btn-export-pdf');
     ensureModal('view-modal','Saved Views',`<div class="fg"><label>Save current view as</label><div style="display:flex;gap:8px"><input id="view-name-input" type="text" placeholder="e.g. Corps overview"><button class="pb" style="width:auto;margin:0" id="save-view-btn">Save</button></div></div><div id="view-list"></div>`);
-    ensureModal('snapshot-modal','Version Snapshots',`<div style="display:flex;gap:8px;margin-bottom:10px"><button class="pb" style="width:auto;margin:0" id="snap-now-btn">Create snapshot</button></div><div id="snapshot-list"></div>`);
+    ensureModal('snapshot-modal','Version Snapshots',`<div style="display:flex;gap:8px;margin-bottom:10px"><button class="pb" style="width:auto;margin:0" id="snap-now-btn">Create snapshot</button></div><div id="timeline-slider" style="margin-bottom:10px"><input type="range" id="phase-slider" min="0" max="0" value="0" style="width:100%"><div id="phase-label"></div></div><div id="snapshot-list"></div>`);
     ensureModal('cmdk-modal','Command Palette',`<input id="cmdk-input" placeholder="Type a command…"><div id="cmdk-list"></div><div class="cmdk-hint">Enter to run · Esc to close · Cmd/Ctrl+K to open</div>`);
     q('save-view-btn')?.addEventListener('click',()=>{ const name=q('view-name-input').value.trim(); if(!name) return; const views=getViews(); views.unshift({id:Date.now()+Math.random().toString(16).slice(2), name, transform:currentTransform()}); setViews(views.slice(0,20)); q('view-name-input').value=''; renderViews(); toast('View saved'); });
     q('snap-now-btn')?.addEventListener('click',()=>{ snapshotNow('Manual snapshot'); toast('Snapshot created'); });
     updateOrgBtn(); renderViews(); renderSnapshots();
   }
-  function updateOrgBtn(){ const b=q('btn-org-toggle'); if(!b) return; b.classList.toggle('org-mode-on', orbatMode==='task'); b.textContent=orbatMode==='task'?'≋ Task ORBAT':'≋ Admin ORBAT'; }
+  function renderTabs(){
+    const tb = q('tab-bar'); if(!tb) return;
+    tb.innerHTML = tabs.map(t => `<div class="tab ${t.id === currentTabId ? 'active' : ''}" onclick="window.__switchTab('${t.id}')">${esc(t.name)} <span onclick="event.stopPropagation(); window.__closeTab('${t.id}')">✕</span></div>`).join('') + '<button onclick="window.__newTab()">+</button>';
+    tb.innerHTML += '<style>.tab {padding:4px 8px; border:1px solid #ccc; cursor:pointer; background:#fff;} .tab.active {background:#e0e0e0;} .tab:hover {background:#f0f0f0;}</style>';
+  }
+  window.__switchTab = function(id){
+    if(id === currentTabId) return;
+    // Save current state to current tab
+    const currTab = tabs.find(t=>t.id===currentTabId);
+    if(currTab && window.nodes){
+      currTab.nodes = JSON.parse(JSON.stringify(window.nodes));
+      currTab.selectedId = window.selectedId || null;
+      currTab.multiSel = [...(window.multiSel || [])];
+      currTab.nodeIdC = window.nodeIdC || 1;
+    }
+    // Load new tab state
+    const tab = tabs.find(t=>t.id===id);
+    if(tab){
+      window.nodes = JSON.parse(JSON.stringify(tab.nodes || {}));
+      window.selectedId = tab.selectedId || null;
+      window.multiSel = new Set(tab.multiSel || []);
+      window.nodeIdC = tab.nodeIdC || 1;
+      currentTabId = id;
+      // Redraw
+      if(typeof clearCanvas === 'function') clearCanvas();
+      Object.keys(window.nodes).forEach(nid=> { if(typeof renderNode === 'function') renderNode(nid); });
+      if(typeof updSB === 'function') updSB();
+      renderTabs();
+    }
+  };
+  window.__closeTab = function(id){
+    if(id === 'default' || tabs.length <= 1) return;
+    const idx = tabs.findIndex(t=>t.id===id);
+    if(idx > -1){
+      tabs.splice(idx, 1);
+      saveTabs();
+      if(currentTabId === id){
+        const nextId = tabs[0].id;
+        __switchTab(nextId);
+      } else {
+        renderTabs();
+      }
+    }
+  };
+  window.__newTab = function(){
+    const newId = Date.now() + Math.random().toString(16).slice(2);
+    const newName = 'Tab ' + (tabs.length + 1);
+    tabs.push({id: newId, name: newName, nodes: {}, selectedId: null, multiSel: [], nodeIdC: 1});
+    saveTabs();
+    __switchTab(newId);
+  };
+  function loadTab(id){ /* placeholder */ }
 
   // Animated layout transitions
   function animateNodes(){ document.querySelectorAll('.orbat-node').forEach(el=>{ el.classList.add('anim-layout'); setTimeout(()=>el.classList.remove('anim-layout'), 420); }); }
@@ -226,5 +322,17 @@ ${xrefPos}
   setTimeout(()=>{ q('cmdk-input')?.addEventListener('input',e=>renderCmdk(e.target.value)); q('cmdk-input')?.addEventListener('keydown',e=>{ if(e.key==='Enter'){ const btn=q('#cmdk-list [data-cmd-idx]'); if(btn) btn.click(); }}); }, 100);
 
   // init
-  setTimeout(()=>{ ensureViewsUI(); enhanceHistory(); }, 120);
+  setTimeout(()=>{ 
+    ensureViewsUI(); 
+    enhanceHistory(); 
+    // Initialize default tab with current state
+    if(tabs.length === 1 && tabs[0].id === 'default' && window.nodes){
+      tabs[0].nodes = JSON.parse(JSON.stringify(window.nodes));
+      tabs[0].selectedId = window.selectedId || null;
+      tabs[0].multiSel = [...(window.multiSel || [])];
+      tabs[0].nodeIdC = window.nodeIdC || 1;
+      saveTabs();
+    }
+    renderTabs();
+  }, 120);
 })();
