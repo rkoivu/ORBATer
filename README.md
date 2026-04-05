@@ -53,7 +53,7 @@ A modern, browser-based tool for creating and managing orders of battle (ORBATs)
 - **Affiliation Colors** — Auto-colored by friendly (blue), hostile (red), neutral (green), unknown (purple)
 - **Theme Controls** — Toggle light/dark themes and legend display
 - **Canvas Backgrounds** — Apply a background image with adjustable opacity for briefing-map style layouts
-- **Aesthetic UI Polish** — Styled tab bar, glassy menus, refined overlays, improved empty-state guidance, and stronger focus states
+- **Aesthetic UI Polish** — Styled tab bar, glassy menus, refined overlays, improved empty-state guidance, stronger focus states, clearer minimap chrome, and pill-based status readouts
 
 ### 🏷️ Unit Metadata
 - **Rich Entity Data** — Name, designation, commander, strength, readiness, task, equipment, notes
@@ -163,6 +163,8 @@ Unit operational conditions:
 - **New Tab** — Click **+** button on tab bar to create new workspace
 - **Switch Tab** — Click tab name to load workspace
 - **Close Tab** — Click ✕ on tab (Main/default cannot be closed)
+- **Rename Tab** — Double-click a tab name to rename it inline
+- **Dirty Indicators** — Tabs show when a workspace has unsaved changes and now clear correctly after tab restores and saves
 
 ### Snapshots & Timeline
 1. Snapshots auto-create on significant edits
@@ -256,6 +258,8 @@ This means script order matters: later modules patch or augment functions define
 1. The runtime shell is split between a thin `index.html`, generated UI markup in `js/ui-shell.js`, base layout in `css/base.css`, and late-stage enhancement modules that progressively refine menus, tabs, overlays, and interaction affordances.
 2. Sidebar scrolling and minimap placement are enforced both structurally and at the final QOL layer so later feature modules do not break the workspace layout.
 3. Current UI polish is concentrated in `css/base.css`, `css/toolbar-menus-import.css`, `js/themes-locks-search-background.js`, and `js/qol-keyboard-feedback.js`.
+4. Recent polish work improved palette label readability, selected-node action discoverability, minimap labeling, and status-bar scanability without changing the no-build architecture.
+5. Recent bug-fix work in the tab/view layer hardened dirty-state tracking and preserved valid zero-value pan coordinates in saved views.
 
 ### Data Model
 ```javascript
