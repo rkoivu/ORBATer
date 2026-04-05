@@ -140,11 +140,58 @@
     q('snap-now-btn')?.addEventListener('click',()=>{ snapshotNow('Manual snapshot'); toast('Snapshot created'); });
     updateOrgBtn(); renderViews(); renderSnapshots();
   }
+  let tabDirtyStates = {}; // Track dirty state per tab
+  
   function renderTabs(){
     const tb = q('tab-bar'); if(!tb) return;
-    tb.innerHTML = tabs.map(t => `<div class="tab ${t.id === currentTabId ? 'active' : ''}" onclick="window.__switchTab('${t.id}')">${esc(t.name)} <span onclick="event.stopPropagation(); window.__closeTab('${t.id}')">✕</span></div>`).join('') + '<button onclick="window.__newTab()">+</button>';
-    tb.innerHTML += '<style>.tab {padding:4px 8px; border:1px solid #ccc; cursor:pointer; background:#fff;} .tab.active {background:#e0e0e0;} .tab:hover {background:#f0f0f0;}</style>';
+    tb.innerHTML = tabs.map(t => {
+      const isDirty = tabDirtyStates[t.id] || false;
+      const dirtyMark = isDirty ? '●' : '';
+      return `<div class="tab ${t.id === currentTabId ? 'active' : ''}" onclick="window.__switchTab('${t.id}')" title="${isDirty ? 'Unsaved changes' : ''}">${dirtyMark} ${esc(t.name)} <span onclick="event.stopPropagation(); window.__closeTab('${t.id}')">✕</span></div>`;
+    }).join('') + '<button onclick="window.__newTab()" title="New tab">+</button>';
+    tb.innerHTML += '<style>.tab {padding:4px 8px; border:1px solid #ccc; cursor:pointer; background:#fff; position:relative;} .tab.active {background:#e0e0e0; border-color:#666;} .tab:hover {background:#f0f0f0;} .tab[title] {font-weight:600;}</style>';
   }
+  
+  function markTabDirty(tabId = currentTabId){
+    if(!tabId) return;
+    if(tabDirtyStates[tabId] === false) {
+      tabDirtyStates[tabId] = true;
+      renderTabs();
+    }
+  }
+  
+  function clearTabDirty(tabId = currentTabId){
+    if(!tabId) return;
+    if(tabDirtyStates[tabId] !== false) {
+      tabDirtyStates[tabId] = false;
+      renderTabs();
+    }
+  }
+  
+  // Hook into existing saveState to clear tab dirty flag
+  const prevSaveState = (typeof window.saveState === 'function') ? window.saveState : null;
+  if(prevSaveState) {
+    window.saveState = function(){
+      const result = prevSaveState.apply(this, arguments);
+      clearTabDirty(currentTabId);
+      return result;
+    };
+  }
+  
+  // Hook into applyDocumentState to clear tab dirty flag
+  const prevApplyDocumentState = (typeof window.applyDocumentState === 'function') ? window.applyDocumentState : null;
+  if(prevApplyDocumentState) {
+    window.applyDocumentState = function(){
+      const result = prevApplyDocumentState.apply(this, arguments);
+      clearTabDirty(currentTabId);
+      return result;
+    };
+  }
+  
+  // Track mutations as dirty
+  const markDirtyListener = () => markTabDirty(currentTabId);
+  document.addEventListener('input', markDirtyListener, true);
+  document.addEventListener('change', markDirtyListener, true);
   window.__switchTab = function(id){
     if(id === currentTabId) return;
     // Save current state to current tab
