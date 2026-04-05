@@ -1,6 +1,7 @@
 :root{--bg:#0d1117;--surface:#161b22;--surface2:#1c2330;--surface3:#222c3a;--border:#30363d;--accent:#3b82f6;--accent2:#f59e0b;--text:#e6edf3;--text2:#8b949e;--red:#ef4444;--green:#22c55e;--orange:#f97316;--friendly:#3b82f6;--hostile:#ef4444;--neutral:#f59e0b;--unknown:#a855f7;--sidebar-w:272px;--panel-w:294px}
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Barlow',sans-serif;background:var(--bg);color:var(--text);height:100vh;display:flex;flex-direction:column;overflow:hidden;user-select:none}
+#app-root{display:flex;flex-direction:column;flex:1;min-height:0;overflow:hidden}
 button,select,input,textarea{font-family:'Barlow',sans-serif;letter-spacing:.2px;color:var(--text)}
 button,select{cursor:pointer}
 select{background:var(--surface2);border:1px solid var(--border);border-radius:5px;color:var(--text);padding:4px 7px;outline:none}
