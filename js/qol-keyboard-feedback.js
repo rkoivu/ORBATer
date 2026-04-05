@@ -330,6 +330,14 @@
       const ae = document.activeElement;
       if (ae && (ae.tagName === 'INPUT' || ae.tagName === 'TEXTAREA' || ae.tagName === 'SELECT' || ae.isContentEditable)) return;
       if (e.ctrlKey || e.metaKey || e.altKey) return;
+      if (e.key === '/') {
+        const search = document.getElementById('unit-search-input');
+        if (!search) return;
+        e.preventDefault();
+        search.focus();
+        search.select();
+        return;
+      }
       if (e.key === '[') {
         e.preventDefault();
         try {
