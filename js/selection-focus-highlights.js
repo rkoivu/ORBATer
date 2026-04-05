@@ -60,7 +60,7 @@
   const prevCtx=ctxAct;
   ctxAct=function(act){
     if(act==='qa-inf' && ctxTarget){ hideCtx(); createNode({parentId:ctxTarget,typeId:'infantry',name:'Infantry',echelon:'company',x:nodes[ctxTarget].x,y:nodes[ctxTarget].y+120}); drawConnectors(); saveState(); return; }
-    if(act==='qa-arm' && ctxTarget){ hideCtx(); createNode({parentId:ctxTarget,typeId:'armor',name:'Armour',echelon:'company',x:nodes[ctxTarget].x,y:nodes[ctxTarget].y+120}); drawConnectors(); saveState(); return; }
+    if(act==='qa-arm' && ctxTarget){ hideCtx(); createNode({parentId:ctxTarget,typeId:'armour',name:'Armour',echelon:'company',x:nodes[ctxTarget].x,y:nodes[ctxTarget].y+120}); drawConnectors(); saveState(); return; }
     if(act==='qa-arty' && ctxTarget){ hideCtx(); createNode({parentId:ctxTarget,typeId:'artillery',name:'Artillery',echelon:'company',x:nodes[ctxTarget].x,y:nodes[ctxTarget].y+120}); drawConnectors(); saveState(); return; }
     return prevCtx(act);
   };
