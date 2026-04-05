@@ -12,13 +12,13 @@ const EM={team:'·',squad:'··',platoon:'···',company:'|',battalion:'||',reg
 const UT=[
   // COMBAT
   {cat:'Combat',id:'infantry',label:'Infantry',tip:'Standard infantry',icon:c=>`<image href="assets/icons/types/infantry/infantry.svg" x="0" y="0" width="50" height="30"/>`},
-  {cat:'Combat',id:'armor',label:'Armour',tip:'Oval — armoured / tank unit',icon:c=>`<image href="assets/icons/types/armor/armor.svg" x="0" y="0" width="50" height="30"/>`},
-  {cat:'Combat',id:'mech_inf',label:'Mech Inf',tip:'Saltire + oval — mechanised infantry',icon:c=>`<line x1="5" y1="4" x2="45" y2="24" stroke="${c.stroke}" stroke-width="2"/><line x1="45" y1="4" x2="5" y2="24" stroke="${c.stroke}" stroke-width="2"/><ellipse cx="25" cy="14" rx="14" ry="7" fill="${c.fill}" stroke="${c.stroke}" stroke-width="1.5"/>`},
-  {cat:'Combat',id:'motorised',label:'Motorised',tip:'Saltire + wheels — motorised infantry',icon:c=>`<line x1="5" y1="4" x2="45" y2="24" stroke="${c.stroke}" stroke-width="2"/><line x1="45" y1="4" x2="5" y2="24" stroke="${c.stroke}" stroke-width="2"/><circle cx="18" cy="23" r="3" fill="none" stroke="${c.stroke}" stroke-width="1.5"/><circle cx="32" cy="23" r="3" fill="none" stroke="${c.stroke}" stroke-width="1.5"/>`},
-  {cat:'Combat',id:'armd_recon',label:'Armd Recon',tip:'Oval + antenna — armoured reconnaissance',icon:c=>`<ellipse cx="25" cy="14" rx="14" ry="7" fill="none" stroke="${c.stroke}" stroke-width="2"/><line x1="25" y1="5" x2="36" y2="2" stroke="${c.stroke}" stroke-width="2"/>`},
-  {cat:'Combat',id:'recon',label:'Recon',tip:'Diagonal line — cavalry/reconnaissance',icon:c=>`<line x1="5" y1="5" x2="45" y2="23" stroke="${c.stroke}" stroke-width="2.5"/>`},
-  {cat:'Combat',id:'airborne',label:'Airborne',tip:'Saltire + parachute arc',icon:c=>`<line x1="5" y1="4" x2="45" y2="24" stroke="${c.stroke}" stroke-width="2"/><line x1="45" y1="4" x2="5" y2="24" stroke="${c.stroke}" stroke-width="2"/><path d="M15,26 Q25,18 35,26" fill="none" stroke="${c.stroke}" stroke-width="1.5"/>`},
-  {cat:'Combat',id:'air_assault',label:'Air Assault',tip:'Saltire + rotor arc — air assault',icon:c=>`<line x1="5" y1="4" x2="45" y2="24" stroke="${c.stroke}" stroke-width="2"/><line x1="45" y1="4" x2="5" y2="24" stroke="${c.stroke}" stroke-width="2"/><path d="M15,4 Q25,0 35,4" fill="none" stroke="${c.stroke}" stroke-width="1.5"/>`},
+  {cat:'Combat',id:'armour',label:'Armour',tip:'Armoured / tank unit',icon:c=>`<image href="assets/icons/types/armour/armour.svg" x="0" y="0" width="50" height="30"/>`},
+  {cat:'Combat',id:'mech_inf',label:'Mechanised Infantry',tip:'Infantry on tracks',icon:c=>`<image href="assets/icons/types/infantry/mechanised_infantry.svg" x="0" y="0" width="50" height="30"/>`},
+  {cat:'Combat',id:'motorised',label:'Motorised',tip:'Infantry on wheels',icon:c=>`<image href="assets/icons/types/infantry/motorised_infantry.svg" x="0" y="0" width="50" height="30"/>`},
+  {cat:'Combat',id:'armd_recon',label:'Armoured Recon',tip:'Armoured reconnaissance',icon:c=>`<image href="assets/icons/types/armour/armoured_recon.svg" x="0" y="0" width="50" height="30"/>`},
+  {cat:'Combat',id:'recon',label:'Recon (Cavalry)',tip:'Diagonal line — cavalry/reconnaissance',icon:c=>`<image href="assets/icons/types/infantry/recon.svg" x="0" y="0" width="50" height="30"/>`},
+  {cat:'Combat',id:'airborne',label:'Airborne Infantry',tip:'Saltire + parachute arc',icon:c=>`<image href="assets/icons/types/infantry/airborne_infantry.svg" x="0" y="0" width="50" height="30"/>`},
+  {cat:'Combat',id:'air_assault',label:'Air Assault Infantry',tip:'Saltire + rotor arc — air assault',icon:c=>`<image href="assets/icons/types/infantry/air_assault_infantry.svg" x="0" y="0" width="50" height="30"/>`},
   {cat:'Combat',id:'special_ops',label:'Spec Ops',tip:'Saltire + S — special operations forces',icon:c=>`<line x1="5" y1="4" x2="45" y2="24" stroke="${c.stroke}" stroke-width="2"/><line x1="45" y1="4" x2="5" y2="24" stroke="${c.stroke}" stroke-width="2"/><text x="25" y="18" text-anchor="middle" font-size="10" font-weight="bold" fill="${c.stroke}">S</text>`},
   {cat:'Combat',id:'ranger',label:'Ranger',tip:'Saltire + R — ranger unit',icon:c=>`<line x1="5" y1="4" x2="45" y2="24" stroke="${c.stroke}" stroke-width="2"/><line x1="45" y1="4" x2="5" y2="24" stroke="${c.stroke}" stroke-width="2"/><text x="25" y="18" text-anchor="middle" font-size="9" font-weight="bold" fill="${c.stroke}">R</text>`},
   {cat:'Combat',id:'amphibious',label:'Amphibious',tip:'Saltire + wave — amphibious infantry',icon:c=>`<line x1="5" y1="4" x2="45" y2="24" stroke="${c.stroke}" stroke-width="2"/><line x1="45" y1="4" x2="5" y2="24" stroke="${c.stroke}" stroke-width="2"/><path d="M8,24 Q16,20 24,24 Q32,28 40,24" fill="none" stroke="${c.stroke}" stroke-width="1.5"/>`},
@@ -71,7 +71,7 @@ function getSym(typeId,affil,echelon,planned=false){
   const custom=customTypes.find(u=>u.id===typeId);
   const echSvg=ech?`<text x="26" y="5" text-anchor="middle" font-size="7" font-family="monospace" fill="${c.stroke}">${ech}</text>`:'';
   const dash=planned?'stroke-dasharray="4,2"':'';
-  if(custom)return`<svg viewBox="0 0 52 42" xmlns="http://www.w3.org/2000/svg">${echSvg}<rect x="1" y="8" width="50" height="28" fill="${c.fill}" stroke="${c.stroke}" stroke-width="2" ${dash}/><image x="8" y="9" width="36" height="26" href="${custom.dataUrl}" preserveAspectRatio="xMidYMid meet"/></svg>`;
+  if(custom)return`<svg viewBox="0 0 52 42" xmlns="http://www.w3.org/2000/svg">${echSvg}<image x="8" y="9" width="36" height="26" href="${custom.dataUrl}" preserveAspectRatio="xMidYMid meet"/></svg>`;
   const def=UT.find(u=>u.id===typeId)||UT[0];const inner=def.icon(c);
   if(affil==='hostile')return`<svg viewBox="0 0 52 42" xmlns="http://www.w3.org/2000/svg">${echSvg}<polygon points="26,8 51,22 26,36 1,22" fill="${c.fill}" stroke="${c.stroke}" stroke-width="2" ${dash}/><g transform="translate(1,8)">${inner}</g></svg>`;
   if(affil==='neutral'||affil==='unknown')return`<svg viewBox="0 0 52 42" xmlns="http://www.w3.org/2000/svg">${echSvg}<ellipse cx="26" cy="22" rx="23" ry="13" fill="${c.fill}" stroke="${c.stroke}" stroke-width="2" ${dash}/><g transform="translate(1,8)">${inner}</g></svg>`;
@@ -1039,7 +1039,7 @@ const TEMPLATES=[
     const bHQ=createNode({typeId:'hq',name:'BLUFOR HQ',echelon:'division',affil:'friendly',x:200,y:60});
     ['1 BDE','2 BDE'].forEach((nm,i)=>createNode({typeId:'infantry',name:nm,echelon:'brigade',parentId:bHQ,affil:'friendly',x:60+i*200,y:220}));
     const rHQ=createNode({typeId:'hq',name:'OPFOR HQ',echelon:'division',affil:'hostile',x:700,y:60});
-    ['1 GD','2 GD'].forEach((nm,i)=>createNode({typeId:'armor',name:nm,echelon:'brigade',parentId:rHQ,affil:'hostile',x:580+i*200,y:220}));
+    ['1 GD','2 GD'].forEach((nm,i)=>createNode({typeId:'armour',name:nm,echelon:'brigade',parentId:rHQ,affil:'hostile',x:580+i*200,y:220}));
     autoLayout();
   }},
   {name:'Special Operations TG',desc:'SOF HQ + SF, ranger, SOAR, ISR',fn:()=>{
