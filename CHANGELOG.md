@@ -5,6 +5,11 @@ All notable changes to the ORBATer project are documented here. The format follo
 ## [Unreleased]
 
 ### Added
+- **UI Shell Module** — Extracted the static page chrome out of `index.html` into `js/ui-shell.js`
+  - Toolbar, workspace shell, panels, overlays, modals, and file inputs now come from a dedicated runtime UI module
+  - Preserves existing DOM ids and inline handlers so the current no-build architecture continues to work
+  - Makes the HTML entrypoint easier to scan and maintain
+
 - **Multiple Canvases/Tabs System** — Work on multiple independent diagram versions with persistent per-tab state
   - New tab bar below toolbar with active tab highlighting
   - Automatic state preservation when switching tabs (`nodes`, `selectedId`, `multiSel`, `nodeIdC`)
@@ -41,6 +46,10 @@ All notable changes to the ORBATer project are documented here. The format follo
   - Affects rendering of new units; existing diagrams unaffected until re-rendered
 
 ### Changed
+- **Entry Point Simplification** — `index.html` now acts as a thin loader instead of containing the full application markup
+  - Loads stylesheets, external libraries, `js/ui-shell.js`, and the ordered runtime module chain
+  - Reduces the maintenance burden of the monolithic HTML file
+
 - **Improved Error Handling** — Robust null-check and exception handling throughout
   - Added try-catch to `restoreState()` JSON.parse to prevent crash on corrupted history
   - Tab switching now uses proper `window.__` scope to avoid reference errors

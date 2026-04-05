@@ -204,7 +204,7 @@ Perfect for stakeholder review.
 ## Architecture
 
 ### Technology Stack
-- **Vanilla JavaScript** — No external frameworks; ~3000 lines of modular code
+- **Vanilla JavaScript** — No external frameworks; ~4600 lines of browser-side code split across focused files
 - **HTML5 Canvas** — For minimap rendering
 - **SVG** — For connector rendering and symbol graphics
 - **LocalStorage** — For persistence (views, snapshots, state)
@@ -217,10 +217,14 @@ Perfect for stakeholder review.
 - `css/interaction-overlays.css` — Connectors, tooltips, dimming, resize handles
 - `css/toolbar-menus-import.css` — Toolbar groups, status bar, import UI
 - `css/views-command-history.css` — Views, snapshots, command palette, animations
-- `css/patch-*.css` — Incremental feature patches
+
+#### HTML / UI Shell
+- **`index.html`** - Thin application loader; includes stylesheets, external libraries, and ordered script bootstrapping
+- **`ui-shell.js`** - Generates the static application chrome (toolbar, workspace, panels, overlays, modals, and file inputs) at runtime
 
 #### JavaScript Modules (by responsibility)
-- **`symbols-data.js`** — APP-6 symbol definitions (60+ unit types), rendering engine, node/history management
+- **`symbols-data.js`** — APP-6 symbol definitions (60+ unit types), rendering engine, core node/state/history management
+- **`ui-shell.js`** — Static DOM shell assembly for the app UI
 - **`views-snapshots-command-palette.js`** — Saved views, snapshots, tabs, timeline slider, command palette, layout modes
 - **`identity-search-insignia.js`** — Tags, insignia, labels, search state
 - **`custom-icon-pack.js`** — Custom icon upload/management
@@ -232,6 +236,14 @@ Perfect for stakeholder review.
 - **`stats-outline-tour-stacking.js`** — Statistics, text import, guided tour
 - **`toolbar-menus-auto-organise.js`** — Toolbar grouping, auto-organize, bottom bar
 - ...and 4 other specialized modules
+
+### Boot Sequence
+1. `index.html` loads the shared CSS and third-party dependencies
+2. `js/ui-shell.js` creates the static DOM structure expected by the runtime
+3. `js/symbols-data.js` binds the core application logic to that DOM and initializes the app
+4. Feature modules loaded after `symbols-data.js` progressively extend or wrap the base behavior
+
+This means script order matters: later modules patch or augment functions defined earlier.
 
 ### Data Model
 ```javascript
