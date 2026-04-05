@@ -12,10 +12,10 @@ const EM={team:'·',squad:'··',platoon:'···',company:'|',battalion:'||',reg
 const UT=[
   // COMBAT
   {cat:'Combat',id:'infantry',label:'Infantry',tip:'Standard infantry',icon:c=>`<image href="assets/icons/types/infantry/infantry.svg" x="0" y="0" width="50" height="30"/>`},
-  {cat:'Combat',id:'armour',label:'Armour',tip:'Oval — armoured / tank unit',icon:c=>`<image href="assets/icons/types/armour/armour.svg" x="0" y="0" width="50" height="30"/>`},
-  {cat:'Combat',id:'mech_inf',label:'Mechanised Infantry',tip:'Saltire + oval — mechanised infantry',icon:c=>`<image href="assets/icons/types/infantry/mech_inf.svg" x="0" y="0" width="50" height="30"/>`},
-  {cat:'Combat',id:'motorised',label:'Motorised',tip:'Saltire + wheels — motorised infantry',icon:c=>`<line x1="5" y1="4" x2="45" y2="24" stroke="${c.stroke}" stroke-width="2"/><line x1="45" y1="4" x2="5" y2="24" stroke="${c.stroke}" stroke-width="2"/><circle cx="18" cy="23" r="3" fill="none" stroke="${c.stroke}" stroke-width="1.5"/><circle cx="32" cy="23" r="3" fill="none" stroke="${c.stroke}" stroke-width="1.5"/>`},
-  {cat:'Combat',id:'armd_recon',label:'Armoured Recon',tip:'Oval + antenna — armoured reconnaissance',icon:c=>`<image href="assets/icons/types/armour/armd_recon.svg" x="0" y="0" width="50" height="30"/>`},
+  {cat:'Combat',id:'armour',label:'Armour',tip:'Armoured / tank unit',icon:c=>`<image href="assets/icons/types/armour/armour.svg" x="0" y="0" width="50" height="30"/>`},
+  {cat:'Combat',id:'mech_inf',label:'Mechanised Infantry',tip:'Infantry on tracks',icon:c=>`<image href="assets/icons/types/infantry/mechanised_infantry.svg" x="0" y="0" width="50" height="30"/>`},
+  {cat:'Combat',id:'motorised',label:'Motorised',tip:'Infantry on wheels',icon:c=>`<image href="assets/icons/types/infantry/motorised_infantry.svg" x="0" y="0" width="50" height="30"/>`},
+  {cat:'Combat',id:'armd_recon',label:'Armoured Recon',tip:'Armoured reconnaissance',icon:c=>`<image href="assets/icons/types/armour/armoured_recon.svg" x="0" y="0" width="50" height="30"/>`},
   {cat:'Combat',id:'recon',label:'Recon (Cavalry)',tip:'Diagonal line — cavalry/reconnaissance',icon:c=>`<image href="assets/icons/types/infantry/recon.svg" x="0" y="0" width="50" height="30"/>`},
   {cat:'Combat',id:'airborne',label:'Airborne Infantry',tip:'Saltire + parachute arc',icon:c=>`<image href="assets/icons/types/infantry/airborne_infantry.svg" x="0" y="0" width="50" height="30"/>`},
   {cat:'Combat',id:'air_assault',label:'Air Assault Infantry',tip:'Saltire + rotor arc — air assault',icon:c=>`<image href="assets/icons/types/infantry/air_assault_infantry.svg" x="0" y="0" width="50" height="30"/>`},
@@ -71,7 +71,7 @@ function getSym(typeId,affil,echelon,planned=false){
   const custom=customTypes.find(u=>u.id===typeId);
   const echSvg=ech?`<text x="26" y="5" text-anchor="middle" font-size="7" font-family="monospace" fill="${c.stroke}">${ech}</text>`:'';
   const dash=planned?'stroke-dasharray="4,2"':'';
-  if(custom)return`<svg viewBox="0 0 52 42" xmlns="http://www.w3.org/2000/svg">${echSvg}<rect x="1" y="8" width="50" height="28" fill="${c.fill}" stroke="${c.stroke}" stroke-width="2" ${dash}/><image x="8" y="9" width="36" height="26" href="${custom.dataUrl}" preserveAspectRatio="xMidYMid meet"/></svg>`;
+  if(custom)return`<svg viewBox="0 0 52 42" xmlns="http://www.w3.org/2000/svg">${echSvg}<image x="8" y="9" width="36" height="26" href="${custom.dataUrl}" preserveAspectRatio="xMidYMid meet"/></svg>`;
   const def=UT.find(u=>u.id===typeId)||UT[0];const inner=def.icon(c);
   if(affil==='hostile')return`<svg viewBox="0 0 52 42" xmlns="http://www.w3.org/2000/svg">${echSvg}<polygon points="26,8 51,22 26,36 1,22" fill="${c.fill}" stroke="${c.stroke}" stroke-width="2" ${dash}/><g transform="translate(1,8)">${inner}</g></svg>`;
   if(affil==='neutral'||affil==='unknown')return`<svg viewBox="0 0 52 42" xmlns="http://www.w3.org/2000/svg">${echSvg}<ellipse cx="26" cy="22" rx="23" ry="13" fill="${c.fill}" stroke="${c.stroke}" stroke-width="2" ${dash}/><g transform="translate(1,8)">${inner}</g></svg>`;
