@@ -128,6 +128,10 @@
     }
     return oldGetSym(typeId, affil, ech, planned);
   };
+  useSymbolPackImages = false;
+  window.getSym = getSym = function(typeId, affil='friendly', ech='battalion', planned=false){
+    return oldGetSym(typeId, affil, ech, planned);
+  };
 
   const oldNormalizeNode = normalizeNode;
   normalizeNode = function(id, raw={}){
