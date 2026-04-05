@@ -74,7 +74,7 @@
     const def = UT.find(u=>u.id===typeId) || customTypes.find(u=>u.id===typeId);
     if(useSymbolPackImages && def && def.symbolDataUrl){
       const c = AC[affil] || AC.friendly;
-      const echSvg=ech?`<text x="26" y="5" text-anchor="middle" font-size="7" font-family="monospace" fill="${c.stroke}">${EM[ech]||''}</text>`:'';
+      const echSvg=ech?`<text x="26" y="6" text-anchor="middle" font-size="10" font-family="monospace" fill="${c.stroke}">${EM[ech]||''}</text>`:'';
       const dash=planned?'stroke-dasharray="4,2"':'';
       const inner=`<image x="8" y="9" width="36" height="26" href="${def.symbolDataUrl}" preserveAspectRatio="xMidYMid meet"/>`;
       if(affil==='hostile')return`<svg viewBox="0 0 52 42" xmlns="http://www.w3.org/2000/svg">${echSvg}${inner}</svg>`;
