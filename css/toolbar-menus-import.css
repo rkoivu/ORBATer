@@ -1,0 +1,10 @@
+.tb-menu{position:relative;display:inline-flex;align-items:center;flex-shrink:0}
+  .tb-menu-btn::after{content:' ▾';font-size:10px;color:var(--text2)}
+  .tb-menu-panel{position:fixed;top:56px;left:0;display:none;min-width:180px;max-height:60vh;overflow:auto;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:6px;box-shadow:0 10px 30px rgba(0,0,0,.45);z-index:2000}
+  .tb-menu.open .tb-menu-panel{display:flex;flex-direction:column;gap:6px}
+  .tb-menu-panel .tb-btn,.tb-menu-panel select,.tb-menu-panel input{width:100%;justify-content:flex-start}
+  .tb-menu-panel .tb-sep{width:auto;height:1px;margin:2px 0}
+  #statusbar.hidden-bar{display:none!important}
+  #outline-modal .opt-row{display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin:10px 0 4px}
+  #outline-modal .opt-row label{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text2);cursor:pointer}
+  #outline-modal .subtle{font-size:11px;color:var(--text2);margin-top:6px}
