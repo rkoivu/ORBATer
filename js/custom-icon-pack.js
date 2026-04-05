@@ -56,27 +56,45 @@
   }
 
   const iconTypes = {
-    infantry:'infantry', armour:'armour', mech_inf:'armd_recon', motorised:'armour', armd_recon:'armd_recon',
-    recon:'recon', airborne:'infantry', air_assault:'aviation', special_ops:'infantry', ranger:'infantry',
-    amphibious:'infantry', mountain:'infantry', arctic:'infantry',
-    artillery:'artillery', rockets:'rockets', mortar:'mortar', air_defense:'air_defense', ew:'ew', cyber:'ew',
-    aviation:'aviation', attack_helo:'attack_helo', fixed_wing:'fixed_wing', uav:'uav', istar:'uav',
-    engineer:'engineer', bridging:'engineer', signals:'signals', intel:'intel', log:'log', medical:'medical',
-    maintenance:'engineer', mp:'mp', chem:'chem', eod:'engineer', psyops:'ew', cimic:'intel',
-    hq:'hq', joint_hq:'hq'
-  };
-  UT.forEach(ut=>{ const k=iconTypes[ut.id]; if(k && SYMBOL_PACK[k]) ut.symbolDataUrl=SYMBOL_PACK[k]; });
+    infantry:'infantry', armour:'armour', armoured_inf:'infantry', mech_inf:'armd_recon', motorised:'armour', armd_recon:'armd_recon',
+    armoured_recon:'armd_recon', recon:'recon', airborne:'infantry', air_assault:'aviation', special_ops:'infantry', ranger:'rangers', special_forces:'special_forces',
+    aviation_special_forces:'aviation_special_forces', naval_special_forces:'naval_special_forces', special_forces_cbrn:'special_forces_cbrn',
+    special_forces_engineers:'special_forces_engineers', special_forces_recon:'special_forces_recon',
 
+    artillery:'artillery', rockets:'rockets', mortar:'mortar', air_defense:'air_defense', ew:'ew', cyber:'ew', aviation:'aviation', attack_helo:'attack_helo', fixed_wing:'fixed_wing',
+    uav:'uav', istar:'uav', engineer:'engineer', bridging:'engineer', signals:'signals', intel:'intel', log:'log', medical:'medical', maintenance:'engineer', mp:'mp', chem:'chem', eod:'engineer',
+    psyops:'ew', cimic:'intel', combat_support:'combat_support', radar:'radar', hq:'hq', joint_hq:'hq'
+  };
+  Object.assign(SYMBOL_PACK, {
+    light_infantry: 'assets/icons/types/infantry/light_infantry.svg',
+    mounted_infantry: 'assets/icons/types/infantry/mounted_infantry.svg',
+    amphibious_mechanised_infantry: 'assets/icons/types/infantry/amphibious_mechanised_infantry.svg',
+    rangers: 'assets/icons/types/infantry/rangers.svg',
+    special_forces: 'assets/icons/types/special_forces/special_forces.svg',
+    aviation_special_forces: 'assets/icons/types/special_forces/aviation_special_forces.svg',
+    naval_special_forces: 'assets/icons/types/special_forces/naval_special_forces.svg',
+    special_forces_cbrn: 'assets/icons/types/special_forces/special_forces_cbrn.svg',
+    special_forces_engineers: 'assets/icons/types/special_forces/special_forces_engineers.svg',
+    special_forces_recon: 'assets/icons/types/special_forces/special_forces_reconnaissance.svg',
+    air_defense: 'assets/icons/types/artillery/air_defense.svg',
+    ew: 'assets/icons/types/support/electronic_warfare.svg',
+    uav: 'assets/icons/types/support/unmanned_aerial_systems.svg',
+    signals: 'assets/icons/types/support/signals.svg',
+    chem: 'assets/icons/types/support/cbrn.svg',
+    combat_support: 'assets/icons/types/support/combat_support.svg',
+    radar: 'assets/icons/types/support/radar.svg'
+  });
   const oldGetSym = getSym;
   // Assign to window.getSym explicitly so every caller — whether resolving via the
   // lexical function-declaration binding or via window property — gets the patched version.
   window.getSym = getSym = function(typeId, affil='friendly', ech='battalion', planned=false){
     const def = UT.find(u=>u.id===typeId) || customTypes.find(u=>u.id===typeId);
-    if(useSymbolPackImages && def && def.symbolDataUrl){
+    const k = iconTypes[typeId];
+    if(k && SYMBOL_PACK[k]){
       const c = AC[affil] || AC.friendly;
       const echSvg=ech?`<text x="26" y="6" text-anchor="middle" font-size="10" font-family="monospace" fill="${c.stroke}">${EM[ech]||''}</text>`:'';
       const dash=planned?'stroke-dasharray="4,2"':'';
-      const inner=`<image x="8" y="9" width="36" height="26" href="${def.symbolDataUrl}" preserveAspectRatio="xMidYMid meet"/>`;
+      const inner=`<image x="8" y="9" width="36" height="26" href="${SYMBOL_PACK[k]}" preserveAspectRatio="xMidYMid meet"/>`;
       if(affil==='hostile')return`<svg viewBox="0 0 52 42" xmlns="http://www.w3.org/2000/svg">${echSvg}${inner}</svg>`;
       if(affil==='neutral'||affil==='unknown')return`<svg viewBox="0 0 52 42" xmlns="http://www.w3.org/2000/svg">${echSvg}${inner}</svg>`;
       return`<svg viewBox="0 0 52 42" xmlns="http://www.w3.org/2000/svg">${echSvg}${inner}</svg>`;
