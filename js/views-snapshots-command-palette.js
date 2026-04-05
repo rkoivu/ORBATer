@@ -358,10 +358,10 @@
   // Autosave version diffing by wrapping scheduleAutosave/saveState
   if(window.saveState && !window.saveState._v15Diff){
     const prev=window.saveState;
-    window.saveState=function(){ const r=prev.apply(this, arguments); try{ const now=window.serializeDocument?.()||''; if(lastAutoDiffBase && now!==lastAutoDiffBase){ const d=diffSummary(lastAutoDiffBase, now); if((d.added+d.removed+d.changed)>0){ snapshotNow('Autosave diff'); } } lastAutoDiffBase=now; }catch(e){} return r; };
+    window.saveState=function(){ const r=prev.apply(this, arguments); try{ const now=JSON.stringify(window.serializeDocument?.()||{}); if(lastAutoDiffBase && now!==lastAutoDiffBase){ const d=diffSummary(lastAutoDiffBase, now); if((d.added+d.removed+d.changed)>0){ snapshotNow('Autosave diff'); } } lastAutoDiffBase=now; }catch(e){} return r; };
     window.saveState._v15Diff=true;
   }
-  setTimeout(()=>{ try{ lastAutoDiffBase=window.serializeDocument?.()||''; }catch(e){} }, 100);
+  setTimeout(()=>{ try{ lastAutoDiffBase=JSON.stringify(window.serializeDocument?.()||{}); }catch(e){} }, 100);
 
   // PDF export
   window.exportPDF=async function(){
@@ -371,52 +371,33 @@
       const img=cv.toDataURL('image/jpeg',0.92);
       const bin=atob(img.split(',')[1]);
       const bytes=new Uint8Array(bin.length); for(let i=0;i<bin.length;i++) bytes[i]=bin.charCodeAt(i);
-      const w=cv.width, h=cv.height; const pageW=842, pageH=595; // A4 landscape points
+      const w=cv.width, h=cv.height; const pageW=842, pageH=595;
       const scale=Math.min(pageW/w, pageH/h); const drawW=Math.round(w*scale), drawH=Math.round(h*scale); const offX=Math.round((pageW-drawW)/2), offY=Math.round((pageH-drawH)/2);
       const chunks=[]; const add=s=>chunks.push(typeof s==='string'?new TextEncoder().encode(s):s);
-      const offsets=[]; const pushObj=(id,body)=>{ offsets[id]=chunks.reduce((a,b)=>a+b.length,0); add(`${id} 0 obj
-${body}
-endobj
-`); };
-      add('%PDF-1.4
-');
+      const offsets=[]; const pushObj=(id,body)=>{ offsets[id]=chunks.reduce((a,b)=>a+b.length,0); add(`${id} 0 obj\n${body}\nendobj\n`); };
+      add('%PDF-1.4\n');
       pushObj(1,'<< /Type /Catalog /Pages 2 0 R >>');
       pushObj(2,'<< /Type /Pages /Count 1 /Kids [3 0 R] >>');
       pushObj(3,`<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${pageW} ${pageH}] /Resources << /XObject << /Im0 4 0 R >> >> /Contents 5 0 R >>`);
-      // Build image stream object manually — pushObj can't handle binary stream bodies
       offsets[4]=chunks.reduce((a,b)=>a+b.length,0);
-      add(`4 0 obj
-<< /Type /XObject /Subtype /Image /Width ${w} /Height ${h} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${bytes.length} >>
-stream
-`);
-      add(bytes); add('
-endstream
-endobj
-');
-      const content=`q
-${drawW} 0 0 ${drawH} ${offX} ${offY} cm
-/Im0 Do
-Q`;
-      pushObj(5,`<< /Length ${content.length} >>
-stream
-${content}
-endstream`);
+      add(`4 0 obj\n<< /Type /XObject /Subtype /Image /Width ${w} /Height ${h} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${bytes.length} >>\nstream\n`);
+      add(bytes);
+      add('\nendstream\nendobj\n');
+      const content=`q\n${drawW} 0 0 ${drawH} ${offX} ${offY} cm\n/Im0 Do\nQ`;
+      pushObj(5,`<< /Length ${content.length} >>\nstream\n${content}\nendstream`);
       const xrefPos=chunks.reduce((a,b)=>a+b.length,0);
-      add(`xref
-0 6
-0000000000 65535 f 
-`);
-      for(let i=1;i<=5;i++) add(`${String(offsets[i]).padStart(10,'0')} 00000 n 
-`);
-      add(`trailer
-<< /Size 6 /Root 1 0 R >>
-startxref
-${xrefPos}
-%%EOF`);
-      const blob=new Blob(chunks,{type:'application/pdf'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='orbat-export.pdf'; a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),1500); toast('PDF exported');
+      add('xref\n0 6\n0000000000 65535 f \n');
+      for(let i=1;i<=5;i++) add(`${String(offsets[i]).padStart(10,'0')} 00000 n \n`);
+      add(`trailer\n<< /Size 6 /Root 1 0 R >>\nstartxref\n${xrefPos}\n%%EOF`);
+      const blob=new Blob(chunks,{type:'application/pdf'});
+      const a=document.createElement('a');
+      a.href=URL.createObjectURL(blob);
+      a.download='orbat-export.pdf';
+      a.click();
+      setTimeout(()=>URL.revokeObjectURL(a.href),1500);
+      toast('PDF exported');
     }catch(err){ console.error(err); toast('PDF export failed'); }
   };
-
   // Command palette
   const commands=[
     {name:'Add root unit', run:()=>window.addRootUnit&&window.addRootUnit()},
@@ -440,7 +421,7 @@ ${xrefPos}
   }
   window.openCommandPalette=function(){ renderCmdk(''); open('cmdk-modal'); setTimeout(()=>q('cmdk-input')?.focus(),30); };
   document.addEventListener('keydown',e=>{ if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==='k'){ e.preventDefault(); window.openCommandPalette(); } if(e.key==='Escape' && q('cmdk-modal')?.classList.contains('open')) close('cmdk-modal'); });
-  setTimeout(()=>{ q('cmdk-input')?.addEventListener('input',e=>renderCmdk(e.target.value)); q('cmdk-input')?.addEventListener('keydown',e=>{ if(e.key==='Enter'){ const btn=q('#cmdk-list [data-cmd-idx]'); if(btn) btn.click(); }}); }, 100);
+  setTimeout(()=>{ q('cmdk-input')?.addEventListener('input',e=>renderCmdk(e.target.value)); q('cmdk-input')?.addEventListener('keydown',e=>{ if(e.key==='Enter'){ const btn=document.querySelector('#cmdk-list [data-cmd-idx]'); if(btn) btn.click(); }}); }, 100);
 
   // init
   setTimeout(()=>{ 
