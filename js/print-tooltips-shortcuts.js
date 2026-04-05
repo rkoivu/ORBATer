@@ -17,7 +17,6 @@
     'btn-link':'Link mode — drag connector handle',
     'btn-rel-labels':'Toggle relationship labels',
     'btn-smart-labels':'Toggle smart labels',
-    'btn-icon-mode':'Toggle image icons',
     'btn-focus':'Focus selection (Alt+F)',
     'btn-tag-highlight':'Toggle tag highlight',
     'btn-random-orbat':'Generate random ORBAT',
@@ -66,7 +65,6 @@
     wrap('undo',()=> 'Undo applied');
     wrap('redo',()=> 'Redo applied');
     wrap('copySelected',()=> 'Selection copied');
-    wrap('toggleIconMode',()=> document.getElementById('btn-icon-mode')?.classList.contains('active') ? 'Image icons on' : 'Image icons off');
     wrap('toggleTagHighlight',()=> document.getElementById('btn-tag-highlight')?.classList.contains('soft-active') ? 'Tag highlight on' : 'Tag highlight off');
     wrap('toggleSidebar',()=> document.getElementById('sidebar')?.classList.contains('sb-collapsed') ? 'Palette hidden' : 'Palette shown');
   }

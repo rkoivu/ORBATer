@@ -180,25 +180,68 @@
       return null;
     }
 
+    // Valid typeIds
+    const validTypeIds = new Set([...(typeof UT!=='undefined'?UT:[]).map(u => u.id), ...(typeof customTypes!=='undefined'?customTypes:[]).map(u => u.id)]);
+
+    // Valid affiliations and relationship types
+    const validAffils = ['friendly', 'hostile', 'neutral', 'unknown'];
+    const validRelTypes = ['organic', 'attached', 'support', 'reinforced', 'command', 'opcon', 'tacon', 'coord'];
+
     Object.values(nodes).forEach(n=>{
-      // 1. Structural checks (unchanged)
-      if(n.parentId===n.id) out.push(`⚠ Self-parent: <b>${n.name||n.id}</b>`);
+      const nodeId = n.id || 'unknown';
+      const nodeName = n.name || nodeId;
+
+      // 1. Invalid typeId
+      if (!validTypeIds.has(n.typeId)) {
+        out.push(`⚠ Invalid unit type: "${n.typeId}" for <b>${nodeName}</b>`);
+      }
+
+      // 2. Missing required fields
+      if (!n.name || n.name.trim() === '') {
+        out.push(`⚠ Missing name for node <b>${nodeId}</b>`);
+      }
+
+      // 3. Orphaned nodes
+      if (n.parentId && !nodes[n.parentId]) {
+        out.push(`⚠ Orphaned node: <b>${nodeName}</b> references non-existent parent "${n.parentId}"`);
+      }
+
+      // 4. Structural checks (original)
+      if(n.parentId===n.id) out.push(`⚠ Self-parent: <b>${nodeName}</b>`);
       if(n.designation){
         const k=n.designation.trim().toLowerCase();
         if(k){ if(seenDes[k]) out.push(`⚠ Duplicate designation: <b>${n.designation}</b>`); else seenDes[k]=1; }
       }
       const seen=new Set([n.id]); let cur=n;
       while(cur&&cur.parentId){
-        if(seen.has(cur.parentId)){ out.push(`⚠ Circular chain involving <b>${n.name||n.id}</b>`); break; }
+        if(seen.has(cur.parentId)){ out.push(`⚠ Circular chain involving <b>${nodeName}</b>`); break; }
         seen.add(cur.parentId); cur=nodes[cur.parentId];
       }
       if(n.parentId&&nodes[n.parentId]){
         const p=nodes[n.parentId];
         if((echelonRank[p.echelon]||0)<=(echelonRank[n.echelon]||0))
-          out.push(`⚠ Echelon mismatch: <b>${n.name||n.id}</b> (${n.echelon}) is under <b>${p.name||p.id}</b> (${p.echelon})`);
+          out.push(`⚠ Echelon mismatch: <b>${nodeName}</b> (${n.echelon}) is under <b>${p.name||p.id}</b> (${p.echelon})`);
       }
 
-      // 2. Name/icon mismatch check (new)
+      // 5. Affiliation validity
+      if (n.affil && !validAffils.includes(n.affil)) {
+        out.push(`⚠ Invalid affiliation: "${n.affil}" for <b>${nodeName}</b>`);
+      }
+
+      // 6. Relationship type validity
+      if (n.reltype && !validRelTypes.includes(n.reltype)) {
+        out.push(`⚠ Invalid relationship type: "${n.reltype}" for <b>${nodeName}</b>`);
+      }
+
+      // 7. Equipment consistency (basic check)
+      if (n.equipmentItems && Array.isArray(n.equipmentItems)) {
+        const emptyItems = n.equipmentItems.filter(item => !item || item.trim() === '');
+        if (emptyItems.length > 0) {
+          out.push(`⚠ Empty equipment items in <b>${nodeName}</b>`);
+        }
+      }
+
+      // 8. Name/icon mismatch check (original)
       if(!n.customIcon){   // skip custom-icon nodes — user chose those deliberately
         const mm=checkNameTypeMismatch(n);
         if(mm){

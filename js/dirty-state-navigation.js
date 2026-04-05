@@ -206,7 +206,6 @@
     'btn-collapse-all':'Collapse all subtrees',
     'btn-expand-all':'Expand all subtrees',
     'btn-tag-highlight':'Toggle tag highlight',
-    'btn-icon-mode':'Toggle symbol pack images',
     'btn-smart-labels':'Toggle smart labels',
   };
   Object.entries(extraTitles).forEach(([id,title])=>{ const el=document.getElementById(id); if(el) el.title=title; });

@@ -36,12 +36,11 @@
   <div class="tb-sep"></div>
   <select id="conn-style-sel" onchange="drawConnectors()" title="Connector style">
     <option value="bezier">Bezier</option>
-    <option value="elbow">Elbow</option>
+    <option value="elbow" selected="selected">Elbow</option>
     <option value="straight">Straight</option>
   </select>
   <button class="tb-btn" id="btn-rel-labels" onclick="toggleRelLabels()">Rel Labels</button>
   <button class="tb-btn" id="btn-smart-labels">Smart Labels</button>
-  <button class="tb-btn active" id="btn-icon-mode" onclick="toggleIconMode()">🖼 Icons</button>
   <button class="tb-btn" id="btn-focus" onclick="focusSelection()">🎯 Focus</button>
   <button class="tb-btn" id="btn-tag-highlight" onclick="toggleTagHighlight()">🏷 Tags</button>
   <input id="unit-search-input" placeholder="Search /" title="Search units">
