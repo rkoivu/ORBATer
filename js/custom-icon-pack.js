@@ -106,11 +106,11 @@
     if(k && SYMBOL_PACK[k]){
       const c = AC[affil] || AC.friendly;
       const echSvg=ech?`<text x="26" y="6" text-anchor="middle" font-size="10" font-family="monospace" fill="${c.stroke}">${EM[ech]||''}</text>`:'';
-      const dash=planned?'stroke-dasharray="4,2"':'';
+      const bg=`<rect x="2" y="2" width="48" height="38" rx="6" ry="6" fill="#ffffffdd" stroke="rgba(0,0,0,0.12)" stroke-width="1"/>`;
       const inner=`<image x="8" y="9" width="36" height="26" href="${SYMBOL_PACK[k]}" preserveAspectRatio="xMidYMid meet"/>`;
-      if(affil==='hostile')return`<svg viewBox="0 0 52 42" xmlns="http://www.w3.org/2000/svg">${echSvg}${inner}</svg>`;
-      if(affil==='neutral'||affil==='unknown')return`<svg viewBox="0 0 52 42" xmlns="http://www.w3.org/2000/svg">${echSvg}${inner}</svg>`;
-      return`<svg viewBox="0 0 52 42" xmlns="http://www.w3.org/2000/svg">${echSvg}${inner}</svg>`;
+      if(affil==='hostile')return`<svg viewBox="0 0 52 42" xmlns="http://www.w3.org/2000/svg">${bg}${echSvg}${inner}</svg>`;
+      if(affil==='neutral'||affil==='unknown')return`<svg viewBox="0 0 52 42" xmlns="http://www.w3.org/2000/svg">${bg}${echSvg}${inner}</svg>`;
+      return`<svg viewBox="0 0 52 42" xmlns="http://www.w3.org/2000/svg">${bg}${echSvg}${inner}</svg>`;
     }
     return oldGetSym(typeId, affil, ech, planned);
   };
