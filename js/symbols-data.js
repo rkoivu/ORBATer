@@ -158,8 +158,13 @@ function saveState(){
 function undo(){if(histIdx<=0)return;histIdx--;restoreState(history[histIdx]);flash('UNDO')}
 function redo(){if(histIdx>=history.length-1)return;histIdx++;restoreState(history[histIdx]);flash('REDO')}
 function restoreState(s){
-  const d=JSON.parse(s);
-  applyDocumentState(d,{trackHistory:false,preserveView:true});
+  try{
+    const d=JSON.parse(s);
+    applyDocumentState(d,{trackHistory:false,preserveView:true});
+  }catch(e){
+    console.error('Failed to restore state:', e);
+    showToast('Error restoring state');
+  }
 }
 function clearCanvas(){
   Object.keys(nodes).forEach(id=>{const e=document.getElementById('el-'+id);if(e)e.remove()});

@@ -8,7 +8,7 @@
   let tabs = (()=>{try{return JSON.parse(localStorage.getItem('orbat_tabs_v1')||'[{"id":"default","name":"Main","nodes":{},"selectedId":null}]')}catch(e){return [{"id":"default","name":"Main","nodes":{},"selectedId":null}]}}());
   let currentTabId = 'default';
 
-  function saveTabs(){ localStorage.setItem('orbat_tabs_v1', JSON.stringify(tabs)); }
+  function saveTabs(){ try{ localStorage.setItem('orbat_tabs_v1', JSON.stringify(tabs)); }catch(e){ console.warn('Failed to save tabs:', e); } }
 
   // Check for readonly mode
   const urlParams = new URLSearchParams(window.location.search);
@@ -28,7 +28,7 @@
 
   // Layout mode
   window.layoutMode = localStorage.getItem('orbat_layout_mode') || 'tree';
-  window.setLayoutMode = function(mode){ window.layoutMode = mode; localStorage.setItem('orbat_layout_mode', mode); };
+  window.setLayoutMode = function(mode){ window.layoutMode = mode; try{ localStorage.setItem('orbat_layout_mode', mode); }catch(e){ console.warn('Failed to save layout mode:', e); } };
   setTimeout(() => { const sel = q('layout-mode-sel'); if(sel) sel.value = window.layoutMode; }, 100);
 
   function toast(msg){ try{ (window.showToast||function(){})(msg); }catch(e){} }
@@ -49,9 +49,9 @@
   function close(id){ try{ closeModal(id); }catch(e){ q(id)?.classList.remove('open'); } }
   function esc(s){ return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
   function getViews(){ try{return JSON.parse(localStorage.getItem(LS_VIEWS)||'[]')}catch(e){return []} }
-  function setViews(v){ localStorage.setItem(LS_VIEWS, JSON.stringify(v)); }
+  function setViews(v){ try{ localStorage.setItem(LS_VIEWS, JSON.stringify(v)); }catch(e){ console.warn('Failed to save views:', e); } }
   function getSnaps(){ try{return JSON.parse(localStorage.getItem(LS_SNAPS)||'[]')}catch(e){return []} }
-  function setSnaps(v){ localStorage.setItem(LS_SNAPS, JSON.stringify(v.slice(0,40))); }
+  function setSnaps(v){ try{ localStorage.setItem(LS_SNAPS, JSON.stringify(v.slice(0,40))); }catch(e){ console.warn('Failed to save snapshots:', e); } }
   function currentTransform(){ return {scale:window.zoom||(typeof zoom!=='undefined'?zoom:1), panX:window.panX||(typeof panX!=='undefined'?panX:0), panY:window.panY||(typeof panY!=='undefined'?panY:0), selected:window.selectedId||(typeof selectedId!=='undefined'?selectedId:null), multi:[...(window.multiSel||(typeof multiSel!=='undefined'?multiSel:[]))], mode:orbatMode}; }
   function applyTransformState(v){
     if(!v) return;
@@ -108,7 +108,7 @@
       slider.max = snaps.length - 1;
       slider.value = 0;
       updatePhaseLabel(0);
-      slider.oninput = () => { updatePhaseLabel(slider.value); window.__loadPhaseSnap(snaps[slider.value].id); };
+      slider.oninput = () => { updatePhaseLabel(slider.value); const currentSnaps=getSnaps(); if(currentSnaps[slider.value]) window.__loadPhaseSnap(currentSnaps[slider.value].id); };
     }
   }
   function updatePhaseLabel(idx){ const snaps=getSnaps(); const s=snaps[idx]; q('phase-label').textContent = s ? new Date(s.ts).toLocaleString() + ' - ' + s.reason : 'Current'; }
@@ -165,7 +165,7 @@
       currentTabId = id;
       // Redraw
       if(typeof clearCanvas === 'function') clearCanvas();
-      Object.keys(window.nodes).forEach(nid=> { if(typeof renderNode === 'function') renderNode(nid); });
+      Object.keys(window.nodes||{}).forEach(nid=> { if(typeof renderNode === 'function') renderNode(nid); });
       if(typeof updSB === 'function') updSB();
       renderTabs();
     }
@@ -178,7 +178,7 @@
       saveTabs();
       if(currentTabId === id){
         const nextId = tabs[0].id;
-        __switchTab(nextId);
+        window.__switchTab(nextId);
       } else {
         renderTabs();
       }
@@ -189,7 +189,7 @@
     const newName = 'Tab ' + (tabs.length + 1);
     tabs.push({id: newId, name: newName, nodes: {}, selectedId: null, multiSel: [], nodeIdC: 1});
     saveTabs();
-    __switchTab(newId);
+    window.__switchTab(newId);
   };
   function loadTab(id){ /* placeholder */ }
 
