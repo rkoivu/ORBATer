@@ -11,7 +11,7 @@ const EM={team:'·',squad:'··',platoon:'···',company:'|',battalion:'||',reg
 
 const UT=[
   // COMBAT
-  {cat:'Combat',id:'infantry',label:'Infantry',tip:'Crossed belts (saltire) — standard infantry',icon:c=>`<line x1="5" y1="4" x2="45" y2="24" stroke="${c.stroke}" stroke-width="2"/><line x1="45" y1="4" x2="5" y2="24" stroke="${c.stroke}" stroke-width="2"/>`},
+  {cat:'Combat',id:'infantry',label:'Infantry',tip:'Standard infantry',icon:c=>`<image href="assets/icons/types/infantry/infantry.svg" x="0" y="0" width="50" height="30"/>`},
   {cat:'Combat',id:'armor',label:'Armour',tip:'Oval — armoured / tank unit',icon:c=>`<ellipse cx="25" cy="14" rx="14" ry="7" fill="none" stroke="${c.stroke}" stroke-width="2"/>`},
   {cat:'Combat',id:'mech_inf',label:'Mech Inf',tip:'Saltire + oval — mechanised infantry',icon:c=>`<line x1="5" y1="4" x2="45" y2="24" stroke="${c.stroke}" stroke-width="2"/><line x1="45" y1="4" x2="5" y2="24" stroke="${c.stroke}" stroke-width="2"/><ellipse cx="25" cy="14" rx="14" ry="7" fill="${c.fill}" stroke="${c.stroke}" stroke-width="1.5"/>`},
   {cat:'Combat',id:'motorised',label:'Motorised',tip:'Saltire + wheels — motorised infantry',icon:c=>`<line x1="5" y1="4" x2="45" y2="24" stroke="${c.stroke}" stroke-width="2"/><line x1="45" y1="4" x2="5" y2="24" stroke="${c.stroke}" stroke-width="2"/><circle cx="18" cy="23" r="3" fill="none" stroke="${c.stroke}" stroke-width="1.5"/><circle cx="32" cy="23" r="3" fill="none" stroke="${c.stroke}" stroke-width="1.5"/>`},
