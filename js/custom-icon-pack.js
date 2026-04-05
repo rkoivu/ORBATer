@@ -61,8 +61,7 @@
     aviation_special_forces:'aviation_special_forces', naval_special_forces:'naval_special_forces', special_forces_cbrn:'special_forces_cbrn',
     special_forces_engineers:'special_forces_engineers', special_forces_recon:'special_forces_recon',
 
-    artillery:'artillery', rockets:'rockets', mortar:'mortar', air_defense:'air_defense', ew:'ew', cyber:'ew', aviation:'aviation', attack_helo:'attack_helo', fixed_wing:'fixed_wing',
-    uav:'uav', istar:'uav', engineer:'engineer', bridging:'engineer', signals:'signals', intel:'intel', log:'log', medical:'medical', maintenance:'engineer', mp:'mp', chem:'chem', eod:'engineer',
+    artillery:'artillery', rockets:'rockets', mortar:'mortar', air_defense:'air_defense', air_defence_artillery:'air_defence_artillery', air_defense_guns:'air_defense_guns', air_defense_missiles:'air_defense_missiles', anti_tank:'anti_tank', anti_tank_artillery:'anti_tank_artillery', anti_tank_missiles:'anti_tank_missiles', armoured_anti_tank:'armoured_anti_tank', motorised_anti_tank:'motorised_anti_tank', ew:'ew', cyber:'ew', aviation:'aviation', attack_helo:'attack_helo', fixed_wing:'fixed_wing',
     psyops:'ew', cimic:'intel', combat_support:'combat_support', radar:'radar', hq:'hq', joint_hq:'hq'
   };
   Object.assign(SYMBOL_PACK, {
@@ -76,13 +75,27 @@
     special_forces_cbrn: 'assets/icons/types/special_forces/special_forces_cbrn.svg',
     special_forces_engineers: 'assets/icons/types/special_forces/special_forces_engineers.svg',
     special_forces_recon: 'assets/icons/types/special_forces/special_forces_reconnaissance.svg',
-    air_defense: 'assets/icons/types/artillery/air_defense.svg',
+    air_defense: 'assets/icons/types/artillery/air_defence.svg',
+    air_defence_artillery: 'assets/icons/types/artillery/air_defence_artillery.svg',
+    air_defense_guns: 'assets/icons/types/artillery/air_defence_guns.svg',
+    air_defense_missiles: 'assets/icons/types/artillery/air_defence_missiles.svg',
+    anti_tank: 'assets/icons/types/artillery/anti-tank.svg',
+    anti_tank_artillery: 'assets/icons/types/artillery/anti-tank_artillery.svg',
+    anti_tank_missiles: 'assets/icons/types/artillery/anti-tank_missiles.svg',
+    armoured_anti_tank: 'assets/icons/types/artillery/armoured_anti-tank.svg',
+    motorised_anti_tank: 'assets/icons/types/artillery/motorised_anti-tank.svg',
     ew: 'assets/icons/types/support/electronic_warfare.svg',
     uav: 'assets/icons/types/support/unmanned_aerial_systems.svg',
     signals: 'assets/icons/types/support/signals.svg',
     chem: 'assets/icons/types/support/cbrn.svg',
     combat_support: 'assets/icons/types/support/combat_support.svg',
-    radar: 'assets/icons/types/support/radar.svg'
+    radar: 'assets/icons/types/support/radar.svg',
+    hospital: 'assets/icons/types/service_support/hospital.svg',
+    medical: 'assets/icons/types/service_support/medical.svg',
+    supply_transport: 'assets/icons/types/service_support/supply_transport.svg',
+    maintenance: 'assets/icons/types/service_support/maintenance.svg',
+    transport: 'assets/icons/types/service_support/transport.svg'
+    transport: 'assets/icons/types/service_support/transport.svg'
   });
   const oldGetSym = getSym;
   // Assign to window.getSym explicitly so every caller — whether resolving via the
@@ -171,7 +184,7 @@
           const hq=createNode({typeId:'hq',name:'1-22 IN',designation:'1-22 IN',echelon:'battalion',x:340,y:60,equipmentItems:['4 x Rifle Company','1 x Support Company','1 x Mortar Platoon']});
           ['A COY','B COY','C COY','D COY'].forEach((nm,i)=>createNode({typeId:'infantry',name:nm,echelon:'company',parentId:hq,x:60+i*170,y:220,equipmentItems:['3 x Rifle Platoon','1 x Weapons Platoon']}));
           createNode({typeId:'mortar',name:'MORTAR PLT',echelon:'company',parentId:hq,x:760,y:220,reltype:'support'});
-          createNode({typeId:'log',name:'SUPPORT COY',echelon:'company',parentId:hq,x:930,y:220,reltype:'support'});
+          createNode({typeId:'supply',name:'SUPPORT COY',echelon:'company',parentId:hq,x:930,y:220,reltype:'support'});
           autoLayout();
         }
       },
@@ -187,7 +200,7 @@
           createNode({typeId:'mech_inf',name:'2 MECH BN',echelon:'battalion',parentId:hq,x:760,y:220,equipmentItems:['44 x IFV/APC']});
           createNode({typeId:'artillery',name:'BDE ARTY',echelon:'battalion',parentId:hq,x:940,y:220});
           createNode({typeId:'engineer',name:'ENGR COY',echelon:'company',parentId:hq,x:1120,y:220,reltype:'support'});
-          createNode({typeId:'log',name:'BDE SPT BN',echelon:'battalion',parentId:hq,x:1300,y:220,reltype:'support'});
+          createNode({typeId:'supply',name:'BDE SPT BN',echelon:'battalion',parentId:hq,x:1300,y:220,reltype:'support'});
           autoLayout();
         }
       },
@@ -218,7 +231,7 @@
           createNode({typeId:'recon',name:'SQDN',echelon:'battalion',parentId:hq,x:580,y:220});
           createNode({typeId:'artillery',name:'FA BN',echelon:'battalion',parentId:hq,x:760,y:220});
           createNode({typeId:'engineer',name:'EN BN',echelon:'battalion',parentId:hq,x:940,y:220});
-          createNode({typeId:'log',name:'BSB',echelon:'battalion',parentId:hq,x:1120,y:220,reltype:'support'});
+          createNode({typeId:'supply',name:'BSB',echelon:'battalion',parentId:hq,x:1120,y:220,reltype:'support'});
           autoLayout();
         }
       },
@@ -231,7 +244,7 @@
           createNode({typeId:'artillery',name:'ARTY BN',echelon:'battalion',parentId:hq,x:780,y:220});
           createNode({typeId:'air_defense',name:'AD BN',echelon:'battalion',parentId:hq,x:960,y:220});
           createNode({typeId:'engineer',name:'ENGR BN',echelon:'battalion',parentId:hq,x:1140,y:220});
-          createNode({typeId:'log',name:'SVC SPT BN',echelon:'battalion',parentId:hq,x:1320,y:220,reltype:'support'});
+          createNode({typeId:'supply',name:'SVC SPT BN',echelon:'battalion',parentId:hq,x:1320,y:220,reltype:'support'});
           autoLayout();
         }
       }

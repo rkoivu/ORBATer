@@ -23,11 +23,13 @@ const UT=[
   {cat:'Combat',subcat:'Infantry',id:'ranger',label:'Ranger',icon:c=>`<image href="assets/icons/types/infantry/rangers.svg" x="0" y="0" width="50" height="30"/>`},
   {cat:'Combat',subcat:'Infantry',id:'snipers',label:'Snipers',icon:c=>`<image href="assets/icons/types/infantry/snipers.svg" x="0" y="0" width="50" height="30"/>`},
   {cat:'Combat',subcat:'Infantry',id:'special_forces',label:'Special Forces',icon:c=>`<image href="assets/icons/types/special_forces/special_forces.svg" x="0" y="0" width="50" height="30"/>`},
-  {cat:'Combat',subcat:'Infantry',id:'aviation_special_forces',label:'Aviation Special Forces',icon:c=>`<image href="assets/icons/types/special_forces/aviation_special_forces.svg" x="0" y="0" width="50" height="30"/>`},
-  {cat:'Combat',subcat:'Infantry',id:'naval_special_forces',label:'Naval Special Forces',icon:c=>`<image href="assets/icons/types/special_forces/naval_special_forces.svg" x="0" y="0" width="50" height="30"/>`},
-  {cat:'Combat',subcat:'Infantry',id:'special_forces_cbrn',label:'Special Forces CBRN',icon:c=>`<image href="assets/icons/types/special_forces/special_forces_cbrn.svg" x="0" y="0" width="50" height="30"/>`},
-  {cat:'Combat',subcat:'Infantry',id:'special_forces_engineers',label:'Special Forces Engineers',icon:c=>`<image href="assets/icons/types/special_forces/special_forces_engineers.svg" x="0" y="0" width="50" height="30"/>`},
-  {cat:'Combat',subcat:'Infantry',id:'special_forces_recon',label:'Special Forces Reconnaissance',icon:c=>`<image href="assets/icons/types/special_forces/special_forces_reconnaissance.svg" x="0" y="0" width="50" height="30"/>`},
+  {cat:'Combat',subcat:'Infantry',id:'light_infantry',label:'Light Infantry',icon:c=>`<image href="assets/icons/types/infantry/light_infantry.svg" x="0" y="0" width="50" height="30"/>`},
+  // SPECIAL FORCES
+  {cat:'Special Forces',subcat:'Special Forces',id:'aviation_special_forces',label:'Aviation Special Forces',icon:c=>`<image href="assets/icons/types/special_forces/aviation_special_forces.svg" x="0" y="0" width="50" height="30"/>`},
+  {cat:'Special Forces',subcat:'Special Forces',id:'naval_special_forces',label:'Naval Special Forces',icon:c=>`<image href="assets/icons/types/special_forces/naval_special_forces.svg" x="0" y="0" width="50" height="30"/>`},
+  {cat:'Special Forces',subcat:'Special Forces',id:'special_forces_cbrn',label:'Special Forces CBRN',icon:c=>`<image href="assets/icons/types/special_forces/special_forces_cbrn.svg" x="0" y="0" width="50" height="30"/>`},
+  {cat:'Special Forces',subcat:'Special Forces',id:'special_forces_engineers',label:'Special Forces Engineers',icon:c=>`<image href="assets/icons/types/special_forces/special_forces_engineers.svg" x="0" y="0" width="50" height="30"/>`},
+  {cat:'Special Forces',subcat:'Special Forces',id:'special_forces_recon',label:'Special Forces Reconnaissance',icon:c=>`<image href="assets/icons/types/special_forces/special_forces_reconnaissance.svg" x="0" y="0" width="50" height="30"/>`},
   {cat:'Combat',subcat:'Infantry',id:'mounted_infantry',label:'Mounted Infantry',icon:c=>`<image href="assets/icons/types/infantry/mounted_infantry.svg" x="0" y="0" width="50" height="30"/>`},
   {cat:'Combat',subcat:'Infantry',id:'arctic_infantry',label:'Arctic Infantry',icon:c=>`<image href="assets/icons/types/infantry/arctic_infantry.svg" x="0" y="0" width="50" height="30"/>`},
   {cat:'Combat',subcat:'Infantry',id:'amphibious_mechanised_infantry',label:'Amphibious Mechanised Infantry',icon:c=>`<image href="assets/icons/types/infantry/amphibious_mechanised_infantry.svg" x="0" y="0" width="50" height="30"/>`},
@@ -52,7 +54,14 @@ const UT=[
   {cat:'Fires',subcat:'Artillery',id:'air_assault_mortars',label:'Air Assault Mortars',icon:c=>`<image href="assets/icons/types/artillery/air_assault_mortars.svg" x="0" y="0" width="50" height="30"/>`},
   {cat:'Fires',subcat:'Artillery',id:'artillery_recon',label:'Artillery Reconnaissance',icon:c=>`<image href="assets/icons/types/artillery/artillery_reconnaissance.svg" x="0" y="0" width="50" height="30"/>`},
   {cat:'Fires',subcat:'Artillery',id:'ssm',label:'Surface-to-Surface Missiles',icon:c=>`<image href="assets/icons/types/artillery/surface-to-surface_missiles.svg" x="0" y="0" width="50" height="30"/>`},
-  {cat:'Fires',subcat:'Other Fires',id:'air_defense',label:'Air Defence',icon:c=>`<image href="assets/icons/types/artillery/air_defense.svg" x="0" y="0" width="50" height="30"/>`},
+  {cat:'Fires',subcat:'Artillery',id:'air_defence_artillery',label:'Air Defence Artillery',icon:c=>`<image href="assets/icons/types/artillery/air_defence_artillery.svg" x="0" y="0" width="50" height="30"/>`},
+  {cat:'Fires',subcat:'Other Fires',id:'air_defense_guns',label:'Air Defence Guns',icon:c=>`<image href="assets/icons/types/artillery/air_defence_guns.svg" x="0" y="0" width="50" height="30"/>`},
+  {cat:'Fires',subcat:'Other Fires',id:'air_defense_missiles',label:'Air Defence Missiles',icon:c=>`<image href="assets/icons/types/artillery/air_defence_missiles.svg" x="0" y="0" width="50" height="30"/>`},
+  {cat:'Fires',subcat:'Other Fires',id:'anti_tank',label:'Anti-Tank',icon:c=>`<image href="assets/icons/types/artillery/anti-tank.svg" x="0" y="0" width="50" height="30"/>`},
+  {cat:'Fires',subcat:'Other Fires',id:'anti_tank_artillery',label:'Anti-Tank Artillery',icon:c=>`<image href="assets/icons/types/artillery/anti-tank_artillery.svg" x="0" y="0" width="50" height="30"/>`},
+  {cat:'Fires',subcat:'Other Fires',id:'anti_tank_missiles',label:'Anti-Tank Missiles',icon:c=>`<image href="assets/icons/types/artillery/anti-tank_missiles.svg" x="0" y="0" width="50" height="30"/>`},
+  {cat:'Fires',subcat:'Other Fires',id:'armoured_anti_tank',label:'Armoured Anti-Tank',icon:c=>`<image href="assets/icons/types/artillery/armoured_anti-tank.svg" x="0" y="0" width="50" height="30"/>`},
+  {cat:'Fires',subcat:'Other Fires',id:'motorised_anti_tank',label:'Motorised Anti-Tank',icon:c=>`<image href="assets/icons/types/artillery/motorised_anti-tank.svg" x="0" y="0" width="50" height="30"/>`},
   {cat:'Fires',subcat:'Other Fires',id:'ew',label:'Electronic Warfare',icon:c=>`<image href="assets/icons/types/support/electronic_warfare.svg" x="0" y="0" width="50" height="30"/>`},
   {cat:'Fires',subcat:'Other Fires',id:'cyber',label:'Cyber',icon:c=>`<text x="25" y="20" text-anchor="middle" font-size="10" font-weight="bold" fill="${c.stroke}">CY</text>`},
   // SUPPORT - ENGINEERS
@@ -64,22 +73,25 @@ const UT=[
   {cat:'Support',subcat:'Engineers',id:'bridging',label:'Bridging Engineer',icon:c=>`<image href="assets/icons/types/engineers/bridging_engineers.svg" x="0" y="0" width="50" height="30"/>`},
   {cat:'Support',subcat:'Engineers',id:'eod',label:'EOD/Ammunition Engineer',icon:c=>`<image href="assets/icons/types/engineers/eod_engineers.svg" x="0" y="0" width="50" height="30"/>`},
   // SUPPORT - OTHER
-  {cat:'Support',subcat:'Other Support',id:'signals',label:'Signals',icon:c=>`<image href="assets/icons/types/support/signals.svg" x="0" y="0" width="50" height="30"/>`},
-  {cat:'Support',subcat:'Other Support',id:'intel',label:'Intelligence',icon:c=>`<text x="25" y="20" text-anchor="middle" font-size="16" font-weight="bold" fill="${c.stroke}">I</text>`},
-  {cat:'Support',subcat:'Other Support',id:'log',label:'Logistics',icon:c=>`<rect x="12" y="8" width="26" height="16" rx="2" fill="none" stroke="${c.stroke}" stroke-width="2"/><line x1="12" y1="16" x2="38" y2="16" stroke="${c.stroke}" stroke-width="1.5"/>`},
-  {cat:'Support',subcat:'Other Support',id:'medical',label:'Medical',icon:_=>`<line x1="25" y1="6" x2="25" y2="22" stroke="#cc0000" stroke-width="3"/><line x1="17" y1="14" x2="33" y2="14" stroke="#cc0000" stroke-width="3"/>`},
-  {cat:'Support',subcat:'Other Support',id:'maintenance',label:'Maintenance',icon:c=>`<path d="M16,20 L20,10 L25,16 L30,10 L34,20 Z" fill="none" stroke="${c.stroke}" stroke-width="2"/>`},
-  {cat:'Support',subcat:'Other Support',id:'mp',label:'Military Police',icon:c=>`<image href="assets/icons/types/support/military_police.svg" x="0" y="0" width="50" height="30"/>`},
-  {cat:'Support',subcat:'Other Support',id:'cbrn',label:'CBRN',icon:c=>`<image href="assets/icons/types/support/cbrn.svg" x="0" y="0" width="50" height="30"/>`},
-  {cat:'Support',subcat:'Other Support',id:'combat_support',label:'Combat Support',icon:c=>`<image href="assets/icons/types/support/combat_support.svg" x="0" y="0" width="50" height="30"/>`},
-  {cat:'Support',subcat:'Other Support',id:'radar',label:'Radar',icon:c=>`<image href="assets/icons/types/support/radar.svg" x="0" y="0" width="50" height="30"/>`},
+  {cat:'Support',subcat:'Communications',id:'signals',label:'Signals',icon:c=>`<image href="assets/icons/types/support/signals.svg" x="0" y="0" width="50" height="30"/>`},
+  {cat:'Support',subcat:'Intelligence',id:'intel',label:'Intelligence',icon:c=>`<text x="25" y="20" text-anchor="middle" font-size="16" font-weight="bold" fill="${c.stroke}">I</text>`},
+  {cat:'Support',subcat:'Logistics',id:'supply_transport',label:'Supply & Transport',icon:c=>`<image href="assets/icons/types/service_support/supply_transport.svg" x="0" y="0" width="50" height="30"/>`},
+  {cat:'Support',subcat:'Logistics',id:'supply',label:'Supply',icon:c=>`<image href="assets/icons/types/service_support/supply.svg" x="0" y="0" width="50" height="30"/>`},
+  {cat:'Support',subcat:'Logistics',id:'transport',label:'Transport',icon:c=>`<image href="assets/icons/types/service_support/transport.svg" x="0" y="0" width="50" height="30"/>`},
+  {cat:'Support',subcat:'Medical',id:'medical',label:'Medical',icon:c=>`<image href="assets/icons/types/service_support/medical.svg" x="0" y="0" width="50" height="30"/>`},
+  {cat:'Support',subcat:'Medical',id:'hospital',label:'Hospital',icon:c=>`<image href="assets/icons/types/service_support/hospital.svg" x="0" y="0" width="50" height="30"/>`},
+  {cat:'Support',subcat:'Maintenance',id:'maintenance',label:'Maintenance',icon:c=>`<image href="assets/icons/types/service_support/maintenance.svg" x="0" y="0" width="50" height="30"/>`},
+  {cat:'Support',subcat:'Military Police',id:'mp',label:'Military Police',icon:c=>`<image href="assets/icons/types/support/military_police.svg" x="0" y="0" width="50" height="30"/>`},
+  {cat:'Support',subcat:'CBRN',id:'cbrn',label:'CBRN',icon:c=>`<image href="assets/icons/types/support/cbrn.svg" x="0" y="0" width="50" height="30"/>`},
+  {cat:'Support',subcat:'Combat Support',id:'combat_support',label:'Combat Support',icon:c=>`<image href="assets/icons/types/support/combat_support.svg" x="0" y="0" width="50" height="30"/>`},
+  {cat:'Support',subcat:'Radar',id:'radar',label:'Radar',icon:c=>`<image href="assets/icons/types/support/radar.svg" x="0" y="0" width="50" height="30"/>`},
   {cat:'Support',subcat:'Other Support',id:'psyops',label:'PSYOPS',icon:c=>`<text x="25" y="20" text-anchor="middle" font-size="9" font-weight="bold" fill="${c.stroke}">PO</text>`},
   {cat:'Support',subcat:'Other Support',id:'cimic',label:'CIMIC',icon:c=>`<text x="25" y="20" text-anchor="middle" font-size="9" font-weight="bold" fill="${c.stroke}">CI</text>`},
   // AVIATION
   {cat:'Aviation',subcat:'Aviation',id:'aviation',label:'Aviation',icon:c=>`<path d="M5,14 Q15,6 25,14 Q35,22 45,14" fill="none" stroke="${c.stroke}" stroke-width="2.5"/>`},
   {cat:'Aviation',subcat:'Aviation',id:'attack_helo',label:'Attack Helicopter',icon:c=>`<path d="M5,14 Q15,6 25,14 Q35,22 45,14" fill="none" stroke="${c.stroke}" stroke-width="2.5"/><circle cx="25" cy="21" r="4" fill="${c.stroke}"/>`},
   {cat:'Aviation',subcat:'Aviation',id:'fixed_wing',label:'Fixed Wing Aircraft',icon:c=>`<path d="M25,5 L25,23 M10,13 L40,13" stroke="${c.stroke}" stroke-width="2.5"/>`},
-  {cat:'Aviation',subcat:'Aviation',id:'uav',label:'Unmanned Aerial Vehicle',icon:c=>`<image href="assets/icons/types/support/unmanned_aerial_systems.svg" x="0" y="0" width="50" height="30"/>`},
+  {cat:'Aviation',subcat:'Aviation',id:'uav',label:'Unmanned Aerial Systems',icon:c=>`<image href="assets/icons/types/support/unmanned_aerial_systems.svg" x="0" y="0" width="50" height="30"/>`},
   {cat:'Aviation',subcat:'Aviation',id:'istar',label:'ISR/Surveillance',icon:c=>`<image href="assets/icons/types/support/unmanned_aerial_systems.svg" x="0" y="0" width="50" height="30"/>`},
   // COMMAND
   {cat:'Command',subcat:'Command',id:'hq',label:'Headquarters',icon:c=>`<line x1="5" y1="4" x2="45" y2="24" stroke="${c.stroke}" stroke-width="2"/><line x1="45" y1="4" x2="5" y2="24" stroke="${c.stroke}" stroke-width="2"/><line x1="5" y1="14" x2="45" y2="14" stroke="${c.stroke}" stroke-width="2"/>`},
@@ -1155,7 +1167,7 @@ const TEMPLATES=[
     ['1 BN','2 BN','3 BN'].forEach((nm,i)=>createNode({typeId:'infantry',name:nm,designation:nm,echelon:'battalion',parentId:hq,x:100+i*160,y:220}));
     createNode({typeId:'artillery',name:'1 FA BN',designation:'1 FA',echelon:'battalion',parentId:hq,x:580,y:220});
     createNode({typeId:'engineer',name:'1 EN BN',designation:'1 EN',echelon:'battalion',parentId:hq,x:740,y:220});
-    createNode({typeId:'log',name:'BSB',designation:'BSB',echelon:'battalion',parentId:hq,x:460,y:220});
+    createNode({typeId:'supply',name:'BSB',designation:'BSB',echelon:'battalion',parentId:hq,x:460,y:220});
     autoLayout();
   }},
   {name:'Division',desc:'HQ + 3 brigades + div troops',fn:()=>{
@@ -1170,13 +1182,13 @@ const TEMPLATES=[
     createNode({typeId:'infantry',name:'Land Component',echelon:'division',parentId:hq,x:100,y:220});
     createNode({typeId:'naval_surface',name:'Maritime Component',echelon:'division',parentId:hq,x:360,y:220});
     createNode({typeId:'fixed_wing',name:'Air Component',echelon:'division',parentId:hq,x:620,y:220});
-    createNode({typeId:'log',name:'Joint Log Cmd',echelon:'brigade',parentId:hq,x:880,y:220,reltype:'support'});
+    createNode({typeId:'supply',name:'Joint Log Cmd',echelon:'brigade',parentId:hq,x:880,y:220,reltype:'support'});
     autoLayout();
   }},
   {name:'Infantry Battalion',desc:'HQ + 4 rifle coys + spt coy',fn:()=>{
     const hq=createNode({typeId:'hq',name:'1 INF BN',designation:'1 INF',echelon:'battalion',x:340,y:60});
     ['A COY','B COY','C COY','D COY'].forEach((nm,i)=>createNode({typeId:'infantry',name:nm,echelon:'company',parentId:hq,x:60+i*160,y:220}));
-    createNode({typeId:'log',name:'SPT COY',echelon:'company',parentId:hq,x:700,y:220});
+    createNode({typeId:'supply',name:'SPT COY',echelon:'company',parentId:hq,x:700,y:220});
     autoLayout();
   }},
   {name:'Blue vs Red',desc:'Friendly + hostile forces facing off',fn:()=>{
