@@ -56,15 +56,25 @@
   }
 
   const iconTypes = {
-    infantry:'infantry', armour:'armour', armoured_inf:'infantry', mech_inf:'armd_recon', motorised:'armour', armd_recon:'armd_recon',
-    armoured_recon:'armd_recon', recon:'recon', airborne:'infantry', air_assault:'aviation', special_ops:'infantry', ranger:'rangers', special_forces:'special_forces',
+    infantry:'infantry', armour:'armour', armoured_inf:'armoured_inf', mech_inf:'mech_inf', motorised:'motorised', armd_recon:'armd_recon',
+    armoured_recon:'armoured_recon', recon:'recon', reconnaissance:'recon', airborne:'airborne', air_assault:'air_assault', airmobile_inf:'airmobile_inf', amphibious:'amphibious', mountain:'mountain', special_ops:'special_forces', ranger:'rangers', special_forces:'special_forces',
     aviation_special_forces:'aviation_special_forces', naval_special_forces:'naval_special_forces', special_forces_cbrn:'special_forces_cbrn',
     special_forces_engineers:'special_forces_engineers', special_forces_recon:'special_forces_recon',
 
     artillery:'artillery', rockets:'rockets', mortar:'mortar', air_defense:'air_defense', air_defence_artillery:'air_defence_artillery', air_defense_guns:'air_defense_guns', air_defense_missiles:'air_defense_missiles', anti_tank:'anti_tank', anti_tank_artillery:'anti_tank_artillery', anti_tank_missiles:'anti_tank_missiles', armoured_anti_tank:'armoured_anti_tank', motorised_anti_tank:'motorised_anti_tank', ew:'ew', cyber:'ew', aviation:'aviation', attack_helo:'attack_helo', fixed_wing:'fixed_wing',
-    psyops:'ew', cimic:'intel', combat_support:'combat_support', radar:'radar', hq:'hq', joint_hq:'hq'
+    psyops:'ew', cimic:'intel', combat_support:'combat_support', radar:'radar', engineer:'engineer', signals:'signals', supply:'supply', supply_transport:'supply_transport', transport:'transport', medical:'medical', maintenance:'maintenance', hospital:'hospital', hq:'hq', joint_hq:'hq'
   };
   Object.assign(SYMBOL_PACK, {
+    infantry: 'assets/icons/types/infantry/infantry.svg',
+    armour: 'assets/icons/types/armour/armour.svg',
+    armoured_inf: 'assets/icons/types/infantry/armoured_infantry.svg',
+    mech_inf: 'assets/icons/types/infantry/mechanised_infantry.svg',
+    motorised: 'assets/icons/types/infantry/motorised_infantry.svg',
+    airborne: 'assets/icons/types/infantry/airborne_infantry.svg',
+    air_assault: 'assets/icons/types/infantry/air_assault_infantry.svg',
+    airmobile_inf: 'assets/icons/types/infantry/airmobile_infantry.svg',
+    amphibious: 'assets/icons/types/infantry/amphibious_infantry.svg',
+    mountain: 'assets/icons/types/infantry/mountain_infantry.svg',
     light_infantry: 'assets/icons/types/infantry/light_infantry.svg',
     mounted_infantry: 'assets/icons/types/infantry/mounted_infantry.svg',
     amphibious_mechanised_infantry: 'assets/icons/types/infantry/amphibious_mechanised_infantry.svg',
@@ -75,6 +85,9 @@
     special_forces_cbrn: 'assets/icons/types/special_forces/special_forces_cbrn.svg',
     special_forces_engineers: 'assets/icons/types/special_forces/special_forces_engineers.svg',
     special_forces_recon: 'assets/icons/types/special_forces/special_forces_reconnaissance.svg',
+    armd_recon: 'assets/icons/types/armour/armoured_reconnaissance.svg',
+    armoured_recon: 'assets/icons/types/armour/armoured_reconnaissance.svg',
+    recon: 'assets/icons/types/armour/reconnaissance.svg',
     air_defense: 'assets/icons/types/artillery/air_defence.svg',
     air_defence_artillery: 'assets/icons/types/artillery/air_defence_artillery.svg',
     air_defense_guns: 'assets/icons/types/artillery/air_defence_guns.svg',
@@ -90,6 +103,8 @@
     chem: 'assets/icons/types/support/cbrn.svg',
     combat_support: 'assets/icons/types/support/combat_support.svg',
     radar: 'assets/icons/types/support/radar.svg',
+    engineer: 'assets/icons/types/engineers/engineers.svg',
+    supply: 'assets/icons/types/service_support/supply.svg',
     hospital: 'assets/icons/types/service_support/hospital.svg',
     medical: 'assets/icons/types/service_support/medical.svg',
     supply_transport: 'assets/icons/types/service_support/supply_transport.svg',
