@@ -52,7 +52,14 @@
   function setViews(v){ try{ localStorage.setItem(LS_VIEWS, JSON.stringify(v)); }catch(e){ console.warn('Failed to save views:', e); } }
   function getSnaps(){ try{return JSON.parse(localStorage.getItem(LS_SNAPS)||'[]')}catch(e){return []} }
   function setSnaps(v){ try{ localStorage.setItem(LS_SNAPS, JSON.stringify(v.slice(0,40))); }catch(e){ console.warn('Failed to save snapshots:', e); } }
-  function currentTransform(){ return {scale:window.zoom||(typeof zoom!=='undefined'?zoom:1), panX:window.panX||(typeof panX!=='undefined'?panX:0), panY:window.panY||(typeof panY!=='undefined'?panY:0), selected:window.selectedId||(typeof selectedId!=='undefined'?selectedId:null), multi:[...(window.multiSel||(typeof multiSel!=='undefined'?multiSel:[]))], mode:orbatMode}; }
+  function currentTransform(){
+    const scaleVal = Number.isFinite(window.zoom) ? window.zoom : (typeof zoom!=='undefined' && Number.isFinite(zoom) ? zoom : 1);
+    const panXVal = Number.isFinite(window.panX) ? window.panX : (typeof panX!=='undefined' && Number.isFinite(panX) ? panX : 0);
+    const panYVal = Number.isFinite(window.panY) ? window.panY : (typeof panY!=='undefined' && Number.isFinite(panY) ? panY : 0);
+    const selectedVal = window.selectedId ?? (typeof selectedId!=='undefined' ? selectedId : null);
+    const multiVal = window.multiSel ?? (typeof multiSel!=='undefined' ? multiSel : []);
+    return {scale:scaleVal, panX:panXVal, panY:panYVal, selected:selectedVal, multi:[...multiVal], mode:orbatMode};
+  }
   function applyTransformState(v){
     if(!v) return;
     // Write to the actual closure vars used by applyTransform
@@ -205,7 +212,7 @@
 
   function markTabDirty(tabId = currentTabId){
     if(!tabId) return;
-    if(tabDirtyStates[tabId] === false) {
+    if(tabDirtyStates[tabId] !== true) {
       tabDirtyStates[tabId] = true;
       renderTabs();
     }
@@ -263,6 +270,7 @@
     // Load new tab state
     const tab = tabs.find(t=>t.id===id);
     if(tab){
+      currentTabId = id;
       if(tab.doc){
         applyDocumentState(tab.doc,{trackHistory:false,preserveView:true});
         window.multiSel = new Set(tab.multiSel || []);
@@ -286,7 +294,7 @@
         if(typeof syncRelLabelBtn==='function') syncRelLabelBtn();
         if(typeof syncIconModeBtn==='function') syncIconModeBtn();
       }
-      currentTabId = id;
+      clearTabDirty(id);
       renderTabs();
       saveTabs();
     }
