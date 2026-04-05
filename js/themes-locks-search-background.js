@@ -8,11 +8,11 @@
   body.theme-briefing #canvas-wrap.snap-on{background-image:radial-gradient(circle,rgba(100,116,139,.28) 1px,transparent 1px)}
   body.theme-light #canvas-wrap.snap-on{background-image:radial-gradient(circle,rgba(100,116,139,.22) 1px,transparent 1px)}
   .hint-kbd{margin-left:4px;color:var(--text2);font-size:9px;opacity:.8;font-family:'Share Tech Mono',monospace}
-  #legend-overlay{position:absolute;top:8px;right:8px;z-index:70;background:rgba(13,17,23,.92);border:1px solid var(--border);border-radius:8px;padding:8px 10px;min-width:170px;display:none}
+  #legend-overlay{position:absolute;top:8px;right:8px;z-index:70;background:rgba(13,17,23,.92);border:1px solid rgba(148,163,184,.18);border-radius:14px;padding:10px 12px;min-width:190px;display:none;box-shadow:0 20px 44px rgba(0,0,0,.34);backdrop-filter:blur(12px)}
   body.theme-light #legend-overlay, body.theme-briefing #legend-overlay{background:rgba(248,250,252,.97);border-color:var(--border);color:var(--text)}
   #legend-overlay.open{display:block}
-  #legend-overlay h4{font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:1px;margin-bottom:6px;color:var(--text)}
-  #legend-overlay .lg-row{display:flex;align-items:center;gap:8px;font-size:10px;color:var(--text);margin:4px 0}
+  #legend-overlay h4{font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:1.2px;margin-bottom:8px;color:var(--text)}
+  #legend-overlay .lg-row{display:flex;align-items:center;gap:8px;font-size:10px;color:var(--text);margin:6px 0}
   #legend-overlay .lg-line{width:28px;height:0;border-top:2px solid var(--accent);display:inline-block}
   #legend-overlay .lg-dot{width:12px;height:12px;border-radius:3px;display:inline-block;border:1px solid var(--border);background:var(--surface3)}
   .palette-drag-ghost{position:fixed;top:-9999px;left:-9999px;pointer-events:none;z-index:99999;background:var(--surface2);border:1px solid var(--accent);border-radius:6px;padding:6px;display:flex;flex-direction:column;align-items:center;gap:3px;box-shadow:0 8px 24px rgba(0,0,0,.35)}
@@ -25,10 +25,11 @@
   .orbat-node.locked .node-lock-btn,.orbat-node.faded .node-fade-btn{opacity:1;background:var(--accent)}
   .orbat-node.faded{opacity:.42}
   body.theme-briefing .orbat-node.faded, body.theme-light .orbat-node.faded{opacity:.5}
-  #search-meta{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--text2);min-width:56px;text-align:center}
+  #search-meta{display:inline-flex;align-items:center;justify-content:center;min-height:28px;padding:0 10px;border-radius:999px;border:1px solid rgba(148,163,184,.16);background:rgba(255,255,255,.03);font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--text2);min-width:56px;text-align:center}
   #bg-modal .modal-box{min-width:360px}
   #bg-preview{width:100%;max-height:180px;object-fit:contain;border:1px solid var(--border);border-radius:6px;background:var(--surface2);display:none}
   .sticky-empty{font-size:11px;color:var(--text2);padding:8px 0}
+  body.readonly-mode #topbar::before{content:'READ ONLY';display:inline-flex;align-items:center;justify-content:center;position:absolute;top:10px;right:12px;min-width:88px;height:28px;padding:0 10px;border-radius:999px;border:1px solid rgba(245,158,11,.4);background:rgba(245,158,11,.12);color:var(--accent2);font:700 10px/1 "Barlow Condensed",sans-serif;letter-spacing:1.1px;pointer-events:none}
   `
   head.appendChild(style)
 

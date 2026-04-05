@@ -5,7 +5,7 @@
   let lastAutoDiffBase='';
 
   // Tabs for multiple canvases
-  let tabs = (()=>{try{return JSON.parse(localStorage.getItem('orbat_tabs_v1')||'[{"id":"default","name":"Main","nodes":{},"selectedId":null}]')}catch(e){return [{"id":"default","name":"Main","nodes":{},"selectedId":null}]}}());
+  let tabs = (()=>{try{return JSON.parse(localStorage.getItem('orbat_tabs_v1')||'[{"id":"default","name":"Main","nodes":{},"selectedId":null}]')}catch(e){return [{"id":"default","name":"Main","nodes":{},"selectedId":null}]}})();
   let currentTabId = 'default';
 
   function saveTabs(){ try{ localStorage.setItem('orbat_tabs_v1', JSON.stringify(tabs)); }catch(e){ console.warn('Failed to save tabs:', e); } }
@@ -152,6 +152,16 @@
     tb.innerHTML += '<style>.tab {padding:4px 8px; border:1px solid #ccc; cursor:pointer; background:#fff; position:relative;} .tab.active {background:#e0e0e0; border-color:#666;} .tab:hover {background:#f0f0f0;} .tab[title] {font-weight:600;}</style>';
   }
   
+  renderTabs = function(){
+    const tb = q('tab-bar'); if(!tb) return;
+    tb.innerHTML = tabs.map(t => {
+      const isDirty = tabDirtyStates[t.id] || false;
+      const dirtyMark = isDirty ? '<span class="tab-dirty" aria-hidden="true">●</span>' : '';
+      const closeBtn = t.id === 'default' ? '' : `<button class="tab-close" type="button" onclick="event.stopPropagation(); window.__closeTab('${t.id}')" aria-label="Close ${esc(t.name)}">×</button>`;
+      return `<div class="tab ${t.id === currentTabId ? 'active' : ''}" onclick="window.__switchTab('${t.id}')" title="${isDirty ? 'Unsaved changes' : ''}">${dirtyMark}<span class="tab-label">${esc(t.name)}</span>${closeBtn}</div>`;
+    }).join('') + '<button class="tab-add" type="button" onclick="window.__newTab()" title="New tab" aria-label="New tab">+</button>';
+  };
+
   function markTabDirty(tabId = currentTabId){
     if(!tabId) return;
     if(tabDirtyStates[tabId] === false) {
@@ -225,7 +235,8 @@
         if(typeof customTypes !== 'undefined' && Array.isArray(tab.customTypes)) customTypes = JSON.parse(JSON.stringify(tab.customTypes));
         showRelLabels = tab.showRelLabels !== false;
         useSymbolPackImages = tab.useSymbolPackImages !== false;
-        document.getElementById('op-name-input')?.value = tab.opName || 'OPERATION';
+        const opNameInput = document.getElementById('op-name-input');
+        if(opNameInput) opNameInput.value = tab.opName || 'OPERATION';
         if(typeof buildPalette==='function') buildPalette();
         if(typeof buildTypeSelect==='function') buildTypeSelect();
         if(typeof clearCanvas === 'function') clearCanvas();

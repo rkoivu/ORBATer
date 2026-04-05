@@ -10,6 +10,16 @@ All notable changes to the ORBATer project are documented here. The format follo
   - Preserves existing DOM ids and inline handlers so the current no-build architecture continues to work
   - Makes the HTML entrypoint easier to scan and maintain
 
+- **Workspace UI Polish Pass** — Added a broader visual refinement layer across the active shell
+  - Styled tab bar with pill tabs, dirty markers, and a dedicated add-tab control
+  - Refined toolbar surfaces, menu panels, modals, minimap framing, and status bar readability
+  - Improved empty-state onboarding, keyboard focus visibility, and scrollbars across the app
+
+- **Canvas Background & Aesthetic Controls** — Extended the briefing-style presentation tools
+  - Background image overlay now works as a dedicated canvas layer
+  - Search result counter is presented as a toolbar pill
+  - Read-only mode now shows a visible badge in the top bar
+
 - **Multiple Canvases/Tabs System** — Work on multiple independent diagram versions with persistent per-tab state
   - New tab bar below toolbar with active tab highlighting
   - Automatic state preservation when switching tabs (`nodes`, `selectedId`, `multiSel`, `nodeIdC`)
@@ -50,6 +60,15 @@ All notable changes to the ORBATer project are documented here. The format follo
   - Loads stylesheets, external libraries, `js/ui-shell.js`, and the ordered runtime module chain
   - Reduces the maintenance burden of the monolithic HTML file
 
+- **UI Layout Refinement** — The main shell now presents a more cohesive visual system
+  - Toolbar and tab strip use shared gradients, depth, and clearer grouping
+  - Toolbar menus now render as larger glass-like flyouts instead of bare utility popups
+  - Sidebar, properties panel, legend overlay, and empty-state card are visually aligned with the newer shell
+
+- **Documentation Refresh**
+  - README now documents the updated side-panel scrolling, multi-canvas tabs, canvas backgrounds, and recent UI evolution
+  - Changelog now records the recent shell split, scrolling/minimap stabilization, and the two polish passes
+
 - **Improved Error Handling** — Robust null-check and exception handling throughout
   - Added try-catch to `restoreState()` JSON.parse to prevent crash on corrupted history
   - Tab switching now uses proper `window.__` scope to avoid reference errors
@@ -70,6 +89,11 @@ All notable changes to the ORBATer project are documented here. The format follo
   - Fixed localStorage quota handling for all persistence functions
 
 ### Fixed
+- **Workspace Stability: Sidebar Scrolling & Minimap Placement**
+  - Re-established the flex height chain after the UI shell split
+  - Forced palette and properties panels into reliable scroll regions
+  - Anchored the minimap and its toggle consistently at the bottom-right corner
+
 - **Critical: Undo/Redo History Corruption** — JSON.parse errors no longer crash app
   - Previously: Corrupted history entry could crash during undo/redo
   - Now: Wrapped in try-catch with user feedback toast

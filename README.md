@@ -43,12 +43,16 @@ A modern, browser-based tool for creating and managing orders of battle (ORBATs)
 - **Smart Alignment Tools** — Align, distribute, and organize selected nodes
 - **Minimap & Zoom** — Navigation mini-overview, zoom buttons, and fit-to-screen
 - **Connector Visualization** — Visual lines showing parent-child relationships with relationship type indicators
+- **Multi-Canvas Tabs** — Keep multiple ORBAT workspaces open with per-tab persistence and dirty-state indicators
+- **Scrollable Side Panels** — Palette and properties panels scroll independently for large libraries and long forms
 
 ### 🎨 Customization
 - **Custom Icons** — Upload and embed custom SVG/image icons for unit types
 - **Tint Coloring** — Apply custom background tints to individual units
 - **Affiliation Colors** — Auto-colored by friendly (blue), hostile (red), neutral (green), unknown (purple)
 - **Theme Controls** — Toggle light/dark themes and legend display
+- **Canvas Backgrounds** — Apply a background image with adjustable opacity for briefing-map style layouts
+- **Aesthetic UI Polish** — Styled tab bar, glassy menus, refined overlays, improved empty-state guidance, and stronger focus states
 
 ### 🏷️ Unit Metadata
 - **Rich Entity Data** — Name, designation, commander, strength, readiness, task, equipment, notes
@@ -87,6 +91,8 @@ A modern, browser-based tool for creating and managing orders of battle (ORBATs)
 - `Ctrl/Cmd+V` — Paste units
 - `Ctrl/Cmd+K` — Open command palette
 - `Delete` — Remove selected unit(s)
+- `Esc` (in search fields) — Clear search or tag filter
+- `Double-click canvas` — Create a root unit from empty space
 
 ---
 
@@ -244,6 +250,11 @@ Perfect for stakeholder review.
 4. Feature modules loaded after `symbols-data.js` progressively extend or wrap the base behavior
 
 This means script order matters: later modules patch or augment functions defined earlier.
+
+### Recent UI Evolution
+1. The runtime shell is split between a thin `index.html`, generated UI markup in `js/ui-shell.js`, base layout in `css/base.css`, and late-stage enhancement modules that progressively refine menus, tabs, overlays, and interaction affordances.
+2. Sidebar scrolling and minimap placement are enforced both structurally and at the final QOL layer so later feature modules do not break the workspace layout.
+3. Current UI polish is concentrated in `css/base.css`, `css/toolbar-menus-import.css`, `js/themes-locks-search-background.js`, and `js/qol-keyboard-feedback.js`.
 
 ### Data Model
 ```javascript
