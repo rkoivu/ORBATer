@@ -13,6 +13,7 @@ A modern, browser-based tool for creating and managing orders of battle (ORBATs)
 - [User Guide](#user-guide)
 - [Advanced Features](#advanced-features)
 - [Architecture](#architecture)
+- [Roadmap](#roadmap)
 - [Troubleshooting](#troubleshooting)
 - [Contributing](#contributing)
 
@@ -334,6 +335,12 @@ snapshot = {
 - All tab state auto-saves; tab data is NOT lost when switching
 - If issue persists, check localStorage isn't full
 - Restore from snapshot (🗂 **Snaps** → **Restore**)
+
+---
+
+## Roadmap
+
+The working backlog for future features, UI/UX polish, QOL improvements, and bug-fix targets lives in [TODO.md](TODO.md).
 
 ---
 

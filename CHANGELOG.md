@@ -5,6 +5,10 @@ All notable changes to the ORBATer project are documented here. The format follo
 ## [Unreleased]
 
 ### Added
+- **Project Backlog Document** — Added `TODO.md` as a repo-level backlog for future work
+  - Groups candidate features, UI/UX improvements, quality-of-life ideas, bug-fix targets, and technical cleanup items
+  - Gives future work a maintained home inside the repository instead of leaving it implicit across commits
+
 - **UI Shell Module** — Extracted the static page chrome out of `index.html` into `js/ui-shell.js`
   - Toolbar, workspace shell, panels, overlays, modals, and file inputs now come from a dedicated runtime UI module
   - Preserves existing DOM ids and inline handlers so the current no-build architecture continues to work
@@ -56,6 +60,10 @@ All notable changes to the ORBATer project are documented here. The format follo
   - Affects rendering of new units; existing diagrams unaffected until re-rendered
 
 ### Changed
+- **Documentation Refresh**
+  - README now links to the new backlog in `TODO.md`
+  - The repository now keeps planned features and cleanup work alongside the main docs
+
 - **Entry Point Simplification** — `index.html` now acts as a thin loader instead of containing the full application markup
   - Loads stylesheets, external libraries, `js/ui-shell.js`, and the ordered runtime module chain
   - Reduces the maintenance burden of the monolithic HTML file
