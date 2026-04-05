@@ -56,7 +56,8 @@ button{background:transparent;border:none}
 .orbat-node.sz-expanded .node-card{min-width:140px;padding:7px 12px 10px}
 .orbat-node.sz-expanded .node-symbol svg,.orbat-node.sz-expanded .node-custom-img{width:60px!important;height:46px!important}
 .node-symbol{display:flex;align-items:center;justify-content:center}
-.node-symbol svg{width:50px;height:38px}
+.node-symbol svg{width:50px;height:38px;background:rgba(255,255,255,.92);border-radius:8px}
+.node-symbol img{background:rgba(255,255,255,.92);border-radius:8px}
 .node-custom-img{width:50px;height:38px;object-fit:contain;border-radius:3px}
 .node-designation{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--accent2);letter-spacing:1px;text-align:center;white-space:nowrap}
 .node-name{font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:600;color:var(--text);text-align:center;white-space:nowrap;max-width:130px;overflow:hidden;text-overflow:ellipsis}

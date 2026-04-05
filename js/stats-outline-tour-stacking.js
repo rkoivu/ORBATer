@@ -25,6 +25,11 @@
       #subtree-stats-box .row b{color:var(--text)}
       .stack-badge{position:absolute;top:-8px;left:-8px;min-width:18px;height:18px;padding:0 5px;border-radius:999px;background:rgba(59,130,246,.95);color:#fff;font:700 10px/18px 'Share Tech Mono',monospace;text-align:center;border:2px solid var(--bg)}
       #outline-modal textarea{width:100%;min-height:260px;background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:6px;padding:10px;font-family:'Share Tech Mono',monospace;font-size:12px}
+      .node-symbol.stacked{position:relative;overflow:visible}
+      .node-symbol.stacked::before,.node-symbol.stacked::after{content:'';position:absolute;top:0;left:0;width:100%;height:100%;border-radius:8px;background:rgba(255,255,255,.92);border:1px solid rgba(0,0,0,.12);pointer-events:none}
+      .node-symbol.stacked::before{transform:translate(-8px,8px)}
+      .node-symbol.stacked::after{transform:translate(-4px,4px)}
+      .node-symbol.stacked .node-symbol-inner{position:relative;z-index:1}
       #tour-ov{position:fixed;inset:0;background:rgba(0,0,0,.52);z-index:12000;display:none}
       #tour-ov.open{display:block}
       #tour-box{position:fixed;max-width:320px;background:var(--surface);border:1px solid var(--accent);border-radius:10px;padding:14px;z-index:12001;display:none;box-shadow:0 10px 30px rgba(0,0,0,.45)}
