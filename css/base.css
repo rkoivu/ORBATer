@@ -44,10 +44,10 @@ button{background:transparent;border:none}
 .palette-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;padding:6px 8px 8px}
 .palette-grid.hidden{display:none}
 .palette-subcat-title{grid-column:1/-1;padding:8px 12px 4px;font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:1px;color:var(--accent);text-transform:uppercase;margin-top:8px;margin-bottom:4px;border-left:3px solid var(--accent);text-align:left}
-.pal-item{display:flex;flex-direction:column;align-items:center;gap:3px;padding:7px 3px;background:linear-gradient(180deg,rgba(34,44,58,.92),rgba(28,35,48,.92));border:1px solid var(--border);border-radius:7px;cursor:grab;transition:background .15s,border-color .15s,transform .15s,box-shadow .15s}
+.pal-item{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:4px;min-height:78px;padding:8px 4px 7px;background:linear-gradient(180deg,rgba(34,44,58,.92),rgba(28,35,48,.92));border:1px solid var(--border);border-radius:7px;cursor:grab;transition:background .15s,border-color .15s,transform .15s,box-shadow .15s}
 .pal-item:hover{border-color:var(--accent);background:rgba(59,130,246,.08);transform:translateY(-1px);box-shadow:0 6px 18px rgba(0,0,0,.18)}
 .pal-item svg{width:34px;height:26px}
-.pal-item span{font-family:'Barlow Condensed',sans-serif;font-size:8px;font-weight:600;letter-spacing:.4px;color:var(--text2);text-align:center;text-transform:uppercase}
+.pal-item span{display:-webkit-box;overflow:hidden;max-width:56px;min-height:20px;font-family:'Barlow Condensed',sans-serif;font-size:8px;font-weight:600;letter-spacing:.4px;line-height:1.2;color:var(--text2);text-align:center;text-transform:uppercase;word-break:break-word;-webkit-box-orient:vertical;-webkit-line-clamp:2}
 .pal-custom-icon{width:34px;height:26px;object-fit:contain;border-radius:3px}
 /* CANVAS */
 #canvas-wrap{flex:1;position:relative;overflow:hidden;background:var(--bg)}
@@ -86,9 +86,9 @@ button{background:transparent;border:none}
 .node-status-badge.not-operational{background:#ef4444}
 .node-status-badge.unknown-status{background:#6b7280}
 .node-add-btn{position:absolute;bottom:-13px;left:50%;transform:translateX(-50%);width:18px;height:18px;border-radius:50%;background:var(--accent);border:2px solid var(--bg);color:#fff;font-size:12px;line-height:14px;text-align:center;cursor:pointer;opacity:0;transition:opacity .15s;z-index:5}
-.orbat-node:hover .node-add-btn{opacity:1}
+.orbat-node:hover .node-add-btn,.orbat-node.selected .node-add-btn,.orbat-node.multi-selected .node-add-btn{opacity:1}
 .node-link-btn{position:absolute;top:-12px;right:50%;transform:translateX(50%);width:18px;height:18px;border-radius:50%;background:#4b5563;border:2px solid var(--bg);color:#fff;font-size:9px;line-height:14px;text-align:center;cursor:crosshair;opacity:0;transition:opacity .15s;z-index:5}
-.orbat-node:hover .node-link-btn{opacity:1}
+.orbat-node:hover .node-link-btn,.orbat-node.selected .node-link-btn,.orbat-node.multi-selected .node-link-btn{opacity:1}
 /* EDIT PANEL */
 #edit-panel{width:var(--panel-w);background:linear-gradient(180deg,rgba(28,35,48,.9),rgba(22,27,34,.98));border-left:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;overflow:hidden;transition:width .2s;min-height:0;height:100%}
 #edit-panel.hidden,#edit-panel.hid{width:0;overflow:hidden}
@@ -133,7 +133,7 @@ button{background:transparent;border:none}
 /* MINIMAP */
 #minimap{position:absolute;bottom:8px;right:8px;width:158px;height:98px;background:rgba(13,17,23,.88);border:1px solid var(--border);border-radius:8px;overflow:hidden;z-index:50;pointer-events:none;display:block;box-shadow:var(--shadow-lg);backdrop-filter:blur(6px)}
 #minimap canvas{width:100%;height:100%}
-.mm-label{position:absolute;bottom:2px;left:4px;font-family:'Share Tech Mono',monospace;font-size:8px;color:var(--text2)}
+.mm-label{position:absolute;bottom:6px;left:6px;padding:2px 6px;border:1px solid rgba(139,148,158,.22);border-radius:999px;background:rgba(13,17,23,.72);font-family:'Share Tech Mono',monospace;font-size:8px;letter-spacing:.4px;color:#c9d4df}
 #mm-toggle{position:absolute;bottom:112px;right:8px;z-index:51}
 /* CONTEXT MENU */
 #ctx{position:fixed;background:var(--surface2);border:1px solid var(--border);border-radius:7px;padding:4px 0;z-index:9999;display:none;min-width:155px;box-shadow:0 8px 24px rgba(0,0,0,.55)}
@@ -145,7 +145,7 @@ button{background:transparent;border:none}
 body.link-mode .orbat-node{cursor:crosshair!important}
 /* STATUS BAR */
 #statusbar{min-height:25px;background:linear-gradient(180deg,rgba(22,27,34,.98),rgba(13,17,23,.98));border-top:1px solid var(--border);display:flex;align-items:center;flex-wrap:wrap;padding:4px 12px;gap:6px 14px;font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--text2);flex-shrink:0}
-#statusbar > span{display:inline-flex;align-items:center;min-height:16px}
+#statusbar > span{display:inline-flex;align-items:center;min-height:16px;padding:2px 7px;border:1px solid rgba(139,148,158,.14);border-radius:999px;background:rgba(255,255,255,.025)}
 #statusbar b{color:var(--accent)}
 #statusbar .hint{margin-left:auto;font-size:9px;color:#5f6b7d;max-width:min(720px,55vw);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 /* UNDO FLASH */
@@ -172,7 +172,7 @@ body.link-mode .orbat-node{cursor:crosshair!important}
 
 /* COLLAPSE/EXPAND */
 .collapse-btn{position:absolute;top:-11px;right:4px;width:16px;height:16px;border-radius:50%;background:#374151;border:2px solid var(--bg);color:#fff;font-size:8px;line-height:12px;text-align:center;cursor:pointer;opacity:0;transition:opacity .12s;z-index:5}
-.orbat-node:hover .collapse-btn{opacity:1}
+.orbat-node:hover .collapse-btn,.orbat-node.selected .collapse-btn,.orbat-node.multi-selected .collapse-btn{opacity:1}
 .node-collapsed-badge{position:absolute;bottom:-14px;left:50%;transform:translateX(-50%);background:var(--surface2);border:1px solid var(--border);border-radius:3px;padding:1px 5px;font-family:'Share Tech Mono',monospace;font-size:8px;color:var(--text2);white-space:nowrap;cursor:pointer;z-index:5}
 
 /* HOVER CHAIN HIGHLIGHT */
