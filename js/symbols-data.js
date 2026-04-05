@@ -11,7 +11,7 @@ const EM={team:'·',squad:'··',platoon:'···',company:'|',battalion:'||',reg
 
 const UT=[
   // COMBAT
-  {cat:'Combat',id:'infantry',label:'Infantry',icon:c=>`<image href="assets/icons/types/infantry/infantry.svg" x="0" y="0" width="0" height="0"/>`},
+  {cat:'Combat',id:'infantry',label:'Infantry',icon:c=>`<image href="assets/icons/types/infantry/infantry.svg" x="0" y="0" width="50" height="30"/>`},
   {cat:'Combat',id:'armour',label:'Armour',icon:c=>`<image href="assets/icons/types/armour/armour.svg" x="0" y="0" width="50" height="30"/>`},
   {cat:'Combat',id:'mech_inf',label:'Mechanised Infantry',icon:c=>`<image href="assets/icons/types/infantry/mechanised_infantry.svg" x="0" y="0" width="50" height="30"/>`},
   {cat:'Combat',id:'motorised',label:'Motorised',icon:c=>`<image href="assets/icons/types/infantry/motorised_infantry.svg" x="0" y="0" width="50" height="30"/>`},
@@ -75,7 +75,7 @@ function getSym(typeId,affil,echelon,planned=false){
   const def=UT.find(u=>u.id===typeId)||UT[0];const inner=def.icon(c);
   if(affil==='hostile')return`<svg viewBox="0 0 52 42" xmlns="http://www.w3.org/2000/svg">${echSvg}<polygon points="26,8 51,22 26,36 1,22" fill="${c.fill}" stroke="${c.stroke}" stroke-width="2" ${dash}/><g transform="translate(1,8)">${inner}</g></svg>`;
   if(affil==='neutral'||affil==='unknown')return`<svg viewBox="0 0 52 42" xmlns="http://www.w3.org/2000/svg">${echSvg}<ellipse cx="26" cy="22" rx="23" ry="13" fill="${c.fill}" stroke="${c.stroke}" stroke-width="2" ${dash}/><g transform="translate(1,8)">${inner}</g></svg>`;
-  return`<svg viewBox="0 0 52 42" xmlns="http://www.w3.org/2000/svg">${echSvg}<rect x="1" y="8" width="50" height="28" fill="${c.fill}" stroke="${c.stroke}" stroke-width="2" ${dash}/><g transform="translate(1,8)">${inner}</g></svg>`;
+  return`<svg viewBox="0 0 52 42" xmlns="http://www.w3.org/2000/svg">${echSvg}<g transform="translate(1,8)">${inner}</g></svg>`;
 }
 
 /* ══════════════════════════════════════
