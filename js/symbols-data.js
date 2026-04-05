@@ -353,7 +353,9 @@ function renderNode(id){
   const stBadge=n.status?`<div class="node-status-badge ${n.status}" title="${n.status}"></div>`:'';
   const modMap={reinforced:'+',reduced:'−',hq:'⊕'};
   const modBadge=n.mod&&n.mod!=='none'?`<div class="node-mod-badge" title="${n.mod}">${modMap[n.mod]||''}</div>`:'';
-  const iconHtml=n.customIcon?`<div class="node-symbol"><img class="node-custom-img" src="${n.customIcon}"></div>`:`<div class="node-symbol">${(window.getSym||getSym)(n.typeId,n.affil,n.echelon,n.frameStatus==='planned')}</div>`;
+  const stackedLead = n._stackCount>1 && n._stackLead;
+  const iconInner = n.customIcon ? `<img class="node-custom-img" src="${n.customIcon}">` : (window.getSym||getSym)(n.typeId,n.affil,n.echelon,n.frameStatus==='planned');
+  const iconHtml=`<div class="node-symbol${stackedLead?' stacked':''}"><div class="node-symbol-inner">${iconInner}</div></div>`;
   const childCount=Object.values(nodes).filter(c=>c.parentId===id).length;
   const colBtnHtml=childCount>0?`<div class="collapse-btn" onclick="toggleCollapse(event,'${id}')" title="${n.collapsed?'Expand subtree':'Collapse subtree'}">${n.collapsed?'▸':'▾'}</div>`:'';
   const colBadge=n.collapsed&&childCount>0?`<div class="node-collapsed-badge" onclick="toggleCollapse(event,'${id}')">▸ ${childCount} hidden</div>`:'';
@@ -688,7 +690,8 @@ function startLink(e,id){
 ══════════════════════════════════════ */
 let dragId=null,dragNS={x:0,y:0},dragMS={x:0,y:0},mDragStarts={},dragMoved=false;
 function onNMD(e){
-  if(['node-add-btn','node-link-btn','collapse-btn','node-collapsed-badge','node-reltype-strip'].some(c=>e.target.classList.contains(c)))return;
+  const targetElement = e.target instanceof Element ? e.target : e.target.parentElement;
+  if(targetElement && ['node-add-btn','node-link-btn','collapse-btn','node-collapsed-badge','node-reltype-strip'].some(c=>targetElement.closest(`.${c}`))) return;
   if(e.button!==0)return;e.stopPropagation();
   dragId=e.currentTarget.id.replace('el-','');
   const n=nodes[dragId];dragNS={x:n.x,y:n.y};dragMS={x:e.clientX,y:e.clientY};
