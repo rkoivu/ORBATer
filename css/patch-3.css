@@ -1,0 +1,8 @@
+.orbat-node.anim-layout{transition:left .28s ease, top .28s ease, transform .18s ease, opacity .18s ease}
+#view-modal .view-row,#snapshot-modal .snap-row,#cmdk-list .cmdk-row{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:6px 8px;border:1px solid var(--border);border-radius:6px;background:var(--surface2);margin-bottom:6px}
+#view-modal .view-row button,#snapshot-modal .snap-row button,#cmdk-list .cmdk-row button{width:auto;margin:0;padding:4px 8px}
+#cmdk-modal .modal-box{min-width:520px;max-width:680px}
+#cmdk-input{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;margin-bottom:10px}
+.cmdk-hint{font-size:10px;color:var(--text2);margin-top:6px}
+.tb-btn.org-mode-on{background:rgba(249,115,22,.16);border-color:var(--orange);color:var(--orange)}
+.diff-pill{display:inline-flex;align-items:center;gap:4px;font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--text2)}
