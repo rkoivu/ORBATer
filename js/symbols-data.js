@@ -12,7 +12,7 @@ const EM={team:'·',squad:'··',platoon:'···',company:'|',battalion:'||',reg
 const UT=[
   // COMBAT
   {cat:'Combat',id:'infantry',label:'Infantry',tip:'Standard infantry',icon:c=>`<image href="assets/icons/types/infantry/infantry.svg" x="0" y="0" width="50" height="30"/>`},
-  {cat:'Combat',id:'armor',label:'Armour',tip:'Oval — armoured / tank unit',icon:c=>`<ellipse cx="25" cy="14" rx="14" ry="7" fill="none" stroke="${c.stroke}" stroke-width="2"/>`},
+  {cat:'Combat',id:'armor',label:'Armour',tip:'Oval — armoured / tank unit',icon:c=>`<image href="assets/icons/types/armor/armor.svg" x="0" y="0" width="50" height="30"/>`},
   {cat:'Combat',id:'mech_inf',label:'Mech Inf',tip:'Saltire + oval — mechanised infantry',icon:c=>`<line x1="5" y1="4" x2="45" y2="24" stroke="${c.stroke}" stroke-width="2"/><line x1="45" y1="4" x2="5" y2="24" stroke="${c.stroke}" stroke-width="2"/><ellipse cx="25" cy="14" rx="14" ry="7" fill="${c.fill}" stroke="${c.stroke}" stroke-width="1.5"/>`},
   {cat:'Combat',id:'motorised',label:'Motorised',tip:'Saltire + wheels — motorised infantry',icon:c=>`<line x1="5" y1="4" x2="45" y2="24" stroke="${c.stroke}" stroke-width="2"/><line x1="45" y1="4" x2="5" y2="24" stroke="${c.stroke}" stroke-width="2"/><circle cx="18" cy="23" r="3" fill="none" stroke="${c.stroke}" stroke-width="1.5"/><circle cx="32" cy="23" r="3" fill="none" stroke="${c.stroke}" stroke-width="1.5"/>`},
   {cat:'Combat',id:'armd_recon',label:'Armd Recon',tip:'Oval + antenna — armoured reconnaissance',icon:c=>`<ellipse cx="25" cy="14" rx="14" ry="7" fill="none" stroke="${c.stroke}" stroke-width="2"/><line x1="25" y1="5" x2="36" y2="2" stroke="${c.stroke}" stroke-width="2"/>`},
@@ -25,7 +25,7 @@ const UT=[
   {cat:'Combat',id:'mountain',label:'Mountain',tip:'Saltire + peak — mountain infantry',icon:c=>`<line x1="5" y1="4" x2="45" y2="24" stroke="${c.stroke}" stroke-width="2"/><line x1="45" y1="4" x2="5" y2="24" stroke="${c.stroke}" stroke-width="2"/><path d="M20,5 L25,1 L30,5" fill="none" stroke="${c.stroke}" stroke-width="1.5"/>`},
   {cat:'Combat',id:'arctic',label:'Arctic',tip:'Saltire + snowflake — arctic/winter infantry',icon:c=>`<line x1="5" y1="4" x2="45" y2="24" stroke="${c.stroke}" stroke-width="2"/><line x1="45" y1="4" x2="5" y2="24" stroke="${c.stroke}" stroke-width="2"/><line x1="25" y1="2" x2="25" y2="26" stroke="${c.stroke}" stroke-width="1.5"/>`},
   // FIRES
-  {cat:'Fires',id:'artillery',label:'Artillery',tip:'Filled circle — field artillery',icon:c=>`<circle cx="25" cy="14" r="6" fill="${c.stroke}"/>`},
+  {cat:'Fires',id:'artillery',label:'Artillery',tip:'Filled circle — field artillery',icon:c=>`<image href="assets/icons/types/artillery/artillery.svg" x="0" y="0" width="50" height="30"/>`},
   {cat:'Fires',id:'rockets',label:'Rockets/MLRS',tip:'Circle + launcher — rocket artillery',icon:c=>`<circle cx="25" cy="14" r="6" fill="${c.stroke}"/><line x1="25" y1="8" x2="25" y2="2" stroke="${c.stroke}" stroke-width="2"/><line x1="21" y1="5" x2="29" y2="5" stroke="${c.stroke}" stroke-width="1.5"/>`},
   {cat:'Fires',id:'mortar',label:'Mortar',tip:'Circle + tube — mortar unit',icon:c=>`<circle cx="25" cy="17" r="5" fill="${c.stroke}"/><line x1="25" y1="12" x2="25" y2="5" stroke="${c.stroke}" stroke-width="2"/>`},
   {cat:'Fires',id:'air_defense',label:'Air Defence',tip:'Circle + antennas — air defence/SAM',icon:c=>`<circle cx="25" cy="14" r="6" fill="${c.stroke}"/><line x1="25" y1="8" x2="20" y2="2" stroke="${c.stroke}" stroke-width="1.5"/><line x1="25" y1="8" x2="30" y2="2" stroke="${c.stroke}" stroke-width="1.5"/>`},
