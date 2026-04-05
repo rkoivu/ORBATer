@@ -144,5 +144,74 @@
   
   // Wait for page to load then enhance imports
   setTimeout(enhanceImports, 200);
+
+  // Final layout enforcement after all other modules have patched the page.
+  function enforceLayoutFixes() {
+    const topbar = document.getElementById('topbar');
+    const statusbar = document.getElementById('statusbar');
+    const main = document.getElementById('main');
+    const sidebar = document.getElementById('sidebar');
+    const sidebarHeader = document.getElementById('sidebar-header');
+    const sidebarScroll = document.getElementById('sidebar-scroll');
+    const editPanel = document.getElementById('edit-panel');
+    const epInner = document.getElementById('ep-inner');
+    const mpInner = document.getElementById('mp-inner');
+    const minimap = document.getElementById('minimap');
+    const mmToggle = document.getElementById('mm-toggle');
+
+    const topbarH = topbar ? topbar.offsetHeight : 50;
+    const statusbarH = statusbar ? statusbar.offsetHeight : 25;
+    const availableH = Math.max(240, window.innerHeight - topbarH - statusbarH);
+
+    if (main) {
+      main.style.minHeight = '0';
+      main.style.height = availableH + 'px';
+    }
+
+    if (sidebar) {
+      sidebar.style.minHeight = '0';
+      sidebar.style.height = availableH + 'px';
+    }
+
+    if (sidebarScroll) {
+      const sidebarHeaderH = sidebarHeader ? sidebarHeader.offsetHeight : 36;
+      sidebarScroll.style.overflowY = 'auto';
+      sidebarScroll.style.minHeight = '0';
+      sidebarScroll.style.height = Math.max(120, availableH - sidebarHeaderH) + 'px';
+    }
+
+    if (editPanel && !editPanel.classList.contains('hid') && !editPanel.classList.contains('hidden')) {
+      editPanel.style.minHeight = '0';
+      editPanel.style.height = availableH + 'px';
+    }
+
+    [epInner, mpInner].forEach(panel => {
+      if (!panel) return;
+      panel.style.overflowY = 'auto';
+      panel.style.minHeight = '0';
+      panel.style.maxHeight = Math.max(120, availableH - 8) + 'px';
+    });
+
+    if (minimap) {
+      minimap.style.position = 'fixed';
+      minimap.style.right = '8px';
+      minimap.style.bottom = '8px';
+      minimap.style.display = 'block';
+      minimap.style.zIndex = '7000';
+      minimap.style.pointerEvents = 'auto';
+    }
+
+    if (mmToggle) {
+      document.body.appendChild(mmToggle);
+      mmToggle.style.position = 'fixed';
+      mmToggle.style.right = '8px';
+      mmToggle.style.bottom = '112px';
+      mmToggle.style.zIndex = '7001';
+    }
+  }
+
+  setTimeout(enforceLayoutFixes, 400);
+  window.addEventListener('resize', enforceLayoutFixes);
+  document.addEventListener('click', () => setTimeout(enforceLayoutFixes, 0), true);
   
 })();
