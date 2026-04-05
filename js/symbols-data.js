@@ -11,79 +11,79 @@ const EM={team:'·',squad:'··',platoon:'···',company:'|',battalion:'||',reg
 
 const UT=[
   // COMBAT - INFANTRY
-  {cat:'Combat',id:'infantry',label:'Infantry',icon:c=>`<image href="assets/icons/types/infantry/infantry.svg" x="0" y="0" width="50" height="30"/>`},
-  {cat:'Combat',id:'mech_inf',label:'Mechanised Infantry',icon:c=>`<image href="assets/icons/types/infantry/mechanised_infantry.svg" x="0" y="0" width="50" height="30"/>`},
-  {cat:'Combat',id:'armoured_inf',label:'Armoured Infantry',icon:c=>`<image href="assets/icons/types/infantry/armoured_infantry.svg" x="0" y="0" width="50" height="30"/>`},
-  {cat:'Combat',id:'motorised',label:'Motorised Infantry',icon:c=>`<image href="assets/icons/types/infantry/motorised_infantry.svg" x="0" y="0" width="50" height="30"/>`},
-  {cat:'Combat',id:'airborne',label:'Airborne Infantry',icon:c=>`<image href="assets/icons/types/infantry/airborne_infantry.svg" x="0" y="0" width="50" height="30"/>`},
-  {cat:'Combat',id:'air_assault',label:'Air Assault Infantry',icon:c=>`<image href="assets/icons/types/infantry/air_assault_infantry.svg" x="0" y="0" width="50" height="30"/>`},
-  {cat:'Combat',id:'airmobile_inf',label:'Airmobile Infantry',icon:c=>`<image href="assets/icons/types/infantry/airmobile_infantry.svg" x="0" y="0" width="50" height="30"/>`},
-  {cat:'Combat',id:'amphibious',label:'Amphibious Infantry',icon:c=>`<image href="assets/icons/types/infantry/amphibious_infantry.svg" x="0" y="0" width="50" height="30"/>`},
-  {cat:'Combat',id:'mountain',label:'Mountain Infantry',icon:c=>`<image href="assets/icons/types/infantry/mountain_infantry.svg" x="0" y="0" width="50" height="30"/>`},
-  {cat:'Combat',id:'ranger',label:'Ranger',icon:c=>`<image href="assets/icons/types/infantry/rangers.svg" x="0" y="0" width="50" height="30"/>`},
-  {cat:'Combat',id:'snipers',label:'Snipers',icon:c=>`<image href="assets/icons/types/infantry/snipers.svg" x="0" y="0" width="50" height="30"/>`},
-  {cat:'Combat',id:'special_forces',label:'Special Forces',icon:c=>`<image href="assets/icons/types/infantry/special_forces.svg" x="0" y="0" width="50" height="30"/>`},
+  {cat:'Combat',subcat:'Infantry',id:'infantry',label:'Infantry',icon:c=>`<image href="assets/icons/types/infantry/infantry.svg" x="0" y="0" width="50" height="30"/>`},
+  {cat:'Combat',subcat:'Infantry',id:'mech_inf',label:'Mechanised Infantry',icon:c=>`<image href="assets/icons/types/infantry/mechanised_infantry.svg" x="0" y="0" width="50" height="30"/>`},
+  {cat:'Combat',subcat:'Infantry',id:'armoured_inf',label:'Armoured Infantry',icon:c=>`<image href="assets/icons/types/infantry/armoured_infantry.svg" x="0" y="0" width="50" height="30"/>`},
+  {cat:'Combat',subcat:'Infantry',id:'motorised',label:'Motorised Infantry',icon:c=>`<image href="assets/icons/types/infantry/motorised_infantry.svg" x="0" y="0" width="50" height="30"/>`},
+  {cat:'Combat',subcat:'Infantry',id:'airborne',label:'Airborne Infantry',icon:c=>`<image href="assets/icons/types/infantry/airborne_infantry.svg" x="0" y="0" width="50" height="30"/>`},
+  {cat:'Combat',subcat:'Infantry',id:'air_assault',label:'Air Assault Infantry',icon:c=>`<image href="assets/icons/types/infantry/air_assault_infantry.svg" x="0" y="0" width="50" height="30"/>`},
+  {cat:'Combat',subcat:'Infantry',id:'airmobile_inf',label:'Airmobile Infantry',icon:c=>`<image href="assets/icons/types/infantry/airmobile_infantry.svg" x="0" y="0" width="50" height="30"/>`},
+  {cat:'Combat',subcat:'Infantry',id:'amphibious',label:'Amphibious Infantry',icon:c=>`<image href="assets/icons/types/infantry/amphibious_infantry.svg" x="0" y="0" width="50" height="30"/>`},
+  {cat:'Combat',subcat:'Infantry',id:'mountain',label:'Mountain Infantry',icon:c=>`<image href="assets/icons/types/infantry/mountain_infantry.svg" x="0" y="0" width="50" height="30"/>`},
+  {cat:'Combat',subcat:'Infantry',id:'ranger',label:'Ranger',icon:c=>`<image href="assets/icons/types/infantry/rangers.svg" x="0" y="0" width="50" height="30"/>`},
+  {cat:'Combat',subcat:'Infantry',id:'snipers',label:'Snipers',icon:c=>`<image href="assets/icons/types/infantry/snipers.svg" x="0" y="0" width="50" height="30"/>`},
+  {cat:'Combat',subcat:'Infantry',id:'special_forces',label:'Special Forces',icon:c=>`<image href="assets/icons/types/infantry/special_forces.svg" x="0" y="0" width="50" height="30"/>`},
   // COMBAT - ARMOUR
-  {cat:'Combat',id:'armour',label:'Armour',icon:c=>`<image href="assets/icons/types/armour/armour.svg" x="0" y="0" width="50" height="30"/>`},
-  {cat:'Combat',id:'armoured_recon',label:'Armoured Reconnaissance',icon:c=>`<image href="assets/icons/types/armour/armoured_reconnaissance.svg" x="0" y="0" width="50" height="30"/>`},
-  {cat:'Combat',id:'reconnaissance',label:'Reconnaissance',icon:c=>`<image href="assets/icons/types/armour/reconnaissance.svg" x="0" y="0" width="50" height="30"/>`},
-  {cat:'Combat',id:'motorised_recon',label:'Motorised Reconnaissance',icon:c=>`<image href="assets/icons/types/armour/motorised_reconnaissance.svg" x="0" y="0" width="50" height="30"/>`},
-  {cat:'Combat',id:'airborne_recon',label:'Airborne Reconnaissance',icon:c=>`<image href="assets/icons/types/armour/airborne_reconnaissance.svg" x="0" y="0" width="50" height="30"/>`},
-  {cat:'Combat',id:'air_assault_recon',label:'Air Assault Reconnaissance',icon:c=>`<image href="assets/icons/types/armour/air_assault_reconnaissance.svg" x="0" y="0" width="50" height="30"/>`},
-  {cat:'Combat',id:'airmobile_recon',label:'Airmobile Reconnaissance',icon:c=>`<image href="assets/icons/types/armour/airmobile_reconnaissance.svg" x="0" y="0" width="50" height="30"/>`},
-  {cat:'Combat',id:'amphibious_armour',label:'Amphibious Armour',icon:c=>`<image href="assets/icons/types/armour/amphibious_armour.svg" x="0" y="0" width="50" height="30"/>`},
-  {cat:'Combat',id:'amphibious_recon',label:'Amphibious Reconnaissance',icon:c=>`<image href="assets/icons/types/armour/amphibious_reconnaissance.svg" x="0" y="0" width="50" height="30"/>`},
+  {cat:'Combat',subcat:'Armour',id:'armour',label:'Armour',icon:c=>`<image href="assets/icons/types/armour/armour.svg" x="0" y="0" width="50" height="30"/>`},
+  {cat:'Combat',subcat:'Armour',id:'armoured_recon',label:'Armoured Reconnaissance',icon:c=>`<image href="assets/icons/types/armour/armoured_reconnaissance.svg" x="0" y="0" width="50" height="30"/>`},
+  {cat:'Combat',subcat:'Armour',id:'reconnaissance',label:'Reconnaissance',icon:c=>`<image href="assets/icons/types/armour/reconnaissance.svg" x="0" y="0" width="50" height="30"/>`},
+  {cat:'Combat',subcat:'Armour',id:'motorised_recon',label:'Motorised Reconnaissance',icon:c=>`<image href="assets/icons/types/armour/motorised_reconnaissance.svg" x="0" y="0" width="50" height="30"/>`},
+  {cat:'Combat',subcat:'Armour',id:'airborne_recon',label:'Airborne Reconnaissance',icon:c=>`<image href="assets/icons/types/armour/airborne_reconnaissance.svg" x="0" y="0" width="50" height="30"/>`},
+  {cat:'Combat',subcat:'Armour',id:'air_assault_recon',label:'Air Assault Reconnaissance',icon:c=>`<image href="assets/icons/types/armour/air_assault_reconnaissance.svg" x="0" y="0" width="50" height="30"/>`},
+  {cat:'Combat',subcat:'Armour',id:'airmobile_recon',label:'Airmobile Reconnaissance',icon:c=>`<image href="assets/icons/types/armour/airmobile_reconnaissance.svg" x="0" y="0" width="50" height="30"/>`},
+  {cat:'Combat',subcat:'Armour',id:'amphibious_armour',label:'Amphibious Armour',icon:c=>`<image href="assets/icons/types/armour/amphibious_armour.svg" x="0" y="0" width="50" height="30"/>`},
+  {cat:'Combat',subcat:'Armour',id:'amphibious_recon',label:'Amphibious Reconnaissance',icon:c=>`<image href="assets/icons/types/armour/amphibious_reconnaissance.svg" x="0" y="0" width="50" height="30"/>`},
   // FIRES - ARTILLERY
-  {cat:'Fires',id:'artillery',label:'Artillery',icon:c=>`<image href="assets/icons/types/artillery/artillery.svg" x="0" y="0" width="50" height="30"/>`},
-  {cat:'Fires',id:'mortar',label:'Mortar',icon:c=>`<image href="assets/icons/types/artillery/mortars.svg" x="0" y="0" width="50" height="30"/>`},
-  {cat:'Fires',id:'rockets',label:'Rocket Artillery',icon:c=>`<image href="assets/icons/types/artillery/rocket_artillery.svg" x="0" y="0" width="50" height="30"/>`},
-  {cat:'Fires',id:'mechanised_arty',label:'Mechanised Artillery',icon:c=>`<image href="assets/icons/types/artillery/mechanised_artillery.svg" x="0" y="0" width="50" height="30"/>`},
-  {cat:'Fires',id:'mountain_arty',label:'Mountain Artillery',icon:c=>`<image href="assets/icons/types/artillery/mountain_artillery.svg" x="0" y="0" width="50" height="30"/>`},
-  {cat:'Fires',id:'armoured_rocket_arty',label:'Armoured Rocket Artillery',icon:c=>`<image href="assets/icons/types/artillery/armoured_rocket_artillery.svg" x="0" y="0" width="50" height="30"/>`},
-  {cat:'Fires',id:'wheeled_rocket_arty',label:'Wheeled Rocket Artillery',icon:c=>`<image href="assets/icons/types/artillery/wheeled_rocket_artillery.svg" x="0" y="0" width="50" height="30"/>`},
-  {cat:'Fires',id:'air_assault_mortars',label:'Air Assault Mortars',icon:c=>`<image href="assets/icons/types/artillery/air_assault_mortars.svg" x="0" y="0" width="50" height="30"/>`},
-  {cat:'Fires',id:'artillery_recon',label:'Artillery Reconnaissance',icon:c=>`<image href="assets/icons/types/artillery/artillery_reconnaissance.svg" x="0" y="0" width="50" height="30"/>`},
-  {cat:'Fires',id:'ssm',label:'Surface-to-Surface Missiles',icon:c=>`<image href="assets/icons/types/artillery/surface-to-surface_missiles.svg" x="0" y="0" width="50" height="30"/>`},
-  {cat:'Fires',id:'air_defense',label:'Air Defence',icon:c=>`<ellipse cx="25" cy="14" rx="14" ry="7" fill="none" stroke="${c.stroke}" stroke-width="2"/><line x1="25" y1="5" x2="36" y2="2" stroke="${c.stroke}" stroke-width="2"/>`},
-  {cat:'Fires',id:'ew',label:'Electronic Warfare',icon:c=>`<text x="25" y="20" text-anchor="middle" font-size="10" font-weight="bold" fill="${c.stroke}">EW</text>`},
-  {cat:'Fires',id:'cyber',label:'Cyber',icon:c=>`<text x="25" y="20" text-anchor="middle" font-size="10" font-weight="bold" fill="${c.stroke}">CY</text>`},
+  {cat:'Fires',subcat:'Artillery',id:'artillery',label:'Artillery',icon:c=>`<image href="assets/icons/types/artillery/artillery.svg" x="0" y="0" width="50" height="30"/>`},
+  {cat:'Fires',subcat:'Artillery',id:'mortar',label:'Mortar',icon:c=>`<image href="assets/icons/types/artillery/mortars.svg" x="0" y="0" width="50" height="30"/>`},
+  {cat:'Fires',subcat:'Artillery',id:'rockets',label:'Rocket Artillery',icon:c=>`<image href="assets/icons/types/artillery/rocket_artillery.svg" x="0" y="0" width="50" height="30"/>`},
+  {cat:'Fires',subcat:'Artillery',id:'mechanised_arty',label:'Mechanised Artillery',icon:c=>`<image href="assets/icons/types/artillery/mechanised_artillery.svg" x="0" y="0" width="50" height="30"/>`},
+  {cat:'Fires',subcat:'Artillery',id:'mountain_arty',label:'Mountain Artillery',icon:c=>`<image href="assets/icons/types/artillery/mountain_artillery.svg" x="0" y="0" width="50" height="30"/>`},
+  {cat:'Fires',subcat:'Artillery',id:'armoured_rocket_arty',label:'Armoured Rocket Artillery',icon:c=>`<image href="assets/icons/types/artillery/armoured_rocket_artillery.svg" x="0" y="0" width="50" height="30"/>`},
+  {cat:'Fires',subcat:'Artillery',id:'wheeled_rocket_arty',label:'Wheeled Rocket Artillery',icon:c=>`<image href="assets/icons/types/artillery/wheeled_rocket_artillery.svg" x="0" y="0" width="50" height="30"/>`},
+  {cat:'Fires',subcat:'Artillery',id:'air_assault_mortars',label:'Air Assault Mortars',icon:c=>`<image href="assets/icons/types/artillery/air_assault_mortars.svg" x="0" y="0" width="50" height="30"/>`},
+  {cat:'Fires',subcat:'Artillery',id:'artillery_recon',label:'Artillery Reconnaissance',icon:c=>`<image href="assets/icons/types/artillery/artillery_reconnaissance.svg" x="0" y="0" width="50" height="30"/>`},
+  {cat:'Fires',subcat:'Artillery',id:'ssm',label:'Surface-to-Surface Missiles',icon:c=>`<image href="assets/icons/types/artillery/surface-to-surface_missiles.svg" x="0" y="0" width="50" height="30"/>`},
+  {cat:'Fires',subcat:'Other Fires',id:'air_defense',label:'Air Defence',icon:c=>`<ellipse cx="25" cy="14" rx="14" ry="7" fill="none" stroke="${c.stroke}" stroke-width="2"/><line x1="25" y1="5" x2="36" y2="2" stroke="${c.stroke}" stroke-width="2"/>`},
+  {cat:'Fires',subcat:'Other Fires',id:'ew',label:'Electronic Warfare',icon:c=>`<text x="25" y="20" text-anchor="middle" font-size="10" font-weight="bold" fill="${c.stroke}">EW</text>`},
+  {cat:'Fires',subcat:'Other Fires',id:'cyber',label:'Cyber',icon:c=>`<text x="25" y="20" text-anchor="middle" font-size="10" font-weight="bold" fill="${c.stroke}">CY</text>`},
   // SUPPORT - ENGINEERS
-  {cat:'Support',id:'engineer',label:'Combat Engineer',icon:c=>`<image href="assets/icons/types/engineers/engineers.svg" x="0" y="0" width="50" height="30"/>`},
-  {cat:'Support',id:'armoured_eng',label:'Armoured Engineer',icon:c=>`<image href="assets/icons/types/engineers/armoured_engineers.svg" x="0" y="0" width="50" height="30"/>`},
-  {cat:'Support',id:'airborne_eng',label:'Airborne Engineer',icon:c=>`<image href="assets/icons/types/engineers/airborne_engineers.svg" x="0" y="0" width="50" height="30"/>`},
-  {cat:'Support',id:'motorised_eng',label:'Motorised Engineer',icon:c=>`<image href="assets/icons/types/engineers/motorised_engineers.svg" x="0" y="0" width="50" height="30"/>`},
-  {cat:'Support',id:'recon_eng',label:'Reconnaissance Engineer',icon:c=>`<image href="assets/icons/types/engineers/reconnaissance_engineers.svg" x="0" y="0" width="50" height="30"/>`},
-  {cat:'Support',id:'bridging',label:'Bridging Engineer',icon:c=>`<image href="assets/icons/types/engineers/bridging_engineers.svg" x="0" y="0" width="50" height="30"/>`},
-  {cat:'Support',id:'eod',label:'EOD/Ammunition Engineer',icon:c=>`<image href="assets/icons/types/engineers/eod_engineers.svg" x="0" y="0" width="50" height="30"/>`},
+  {cat:'Support',subcat:'Engineers',id:'engineer',label:'Combat Engineer',icon:c=>`<image href="assets/icons/types/engineers/engineers.svg" x="0" y="0" width="50" height="30"/>`},
+  {cat:'Support',subcat:'Engineers',id:'armoured_eng',label:'Armoured Engineer',icon:c=>`<image href="assets/icons/types/engineers/armoured_engineers.svg" x="0" y="0" width="50" height="30"/>`},
+  {cat:'Support',subcat:'Engineers',id:'airborne_eng',label:'Airborne Engineer',icon:c=>`<image href="assets/icons/types/engineers/airborne_engineers.svg" x="0" y="0" width="50" height="30"/>`},
+  {cat:'Support',subcat:'Engineers',id:'motorised_eng',label:'Motorised Engineer',icon:c=>`<image href="assets/icons/types/engineers/motorised_engineers.svg" x="0" y="0" width="50" height="30"/>`},
+  {cat:'Support',subcat:'Engineers',id:'recon_eng',label:'Reconnaissance Engineer',icon:c=>`<image href="assets/icons/types/engineers/reconnaissance_engineers.svg" x="0" y="0" width="50" height="30"/>`},
+  {cat:'Support',subcat:'Engineers',id:'bridging',label:'Bridging Engineer',icon:c=>`<image href="assets/icons/types/engineers/bridging_engineers.svg" x="0" y="0" width="50" height="30"/>`},
+  {cat:'Support',subcat:'Engineers',id:'eod',label:'EOD/Ammunition Engineer',icon:c=>`<image href="assets/icons/types/engineers/eod_engineers.svg" x="0" y="0" width="50" height="30"/>`},
   // SUPPORT - OTHER
-  {cat:'Support',id:'signals',label:'Signals',icon:c=>`<path d="M10,14 Q17,4 25,14 Q33,24 40,14" fill="none" stroke="${c.stroke}" stroke-width="2"/><circle cx="25" cy="14" r="3" fill="${c.stroke}"/>`},
-  {cat:'Support',id:'intel',label:'Intelligence',icon:c=>`<text x="25" y="20" text-anchor="middle" font-size="16" font-weight="bold" fill="${c.stroke}">I</text>`},
-  {cat:'Support',id:'log',label:'Logistics',icon:c=>`<rect x="12" y="8" width="26" height="16" rx="2" fill="none" stroke="${c.stroke}" stroke-width="2"/><line x1="12" y1="16" x2="38" y2="16" stroke="${c.stroke}" stroke-width="1.5"/>`},
-  {cat:'Support',id:'medical',label:'Medical',icon:_=>`<line x1="25" y1="6" x2="25" y2="22" stroke="#cc0000" stroke-width="3"/><line x1="17" y1="14" x2="33" y2="14" stroke="#cc0000" stroke-width="3"/>`},
-  {cat:'Support',id:'maintenance',label:'Maintenance',icon:c=>`<path d="M16,20 L20,10 L25,16 L30,10 L34,20 Z" fill="none" stroke="${c.stroke}" stroke-width="2"/>`},
-  {cat:'Support',id:'mp',label:'Military Police',icon:c=>`<text x="25" y="20" text-anchor="middle" font-size="11" font-weight="bold" fill="${c.stroke}">MP</text>`},
-  {cat:'Support',id:'cbrn',label:'CBRN',icon:c=>`<circle cx="25" cy="14" r="9" fill="none" stroke="${c.stroke}" stroke-width="2"/><line x1="25" y1="5" x2="25" y2="23" stroke="${c.stroke}" stroke-width="1.5"/><line x1="16" y1="14" x2="34" y2="14" stroke="${c.stroke}" stroke-width="1.5"/>`},
-  {cat:'Support',id:'psyops',label:'PSYOPS',icon:c=>`<text x="25" y="20" text-anchor="middle" font-size="9" font-weight="bold" fill="${c.stroke}">PO</text>`},
-  {cat:'Support',id:'cimic',label:'CIMIC',icon:c=>`<text x="25" y="20" text-anchor="middle" font-size="9" font-weight="bold" fill="${c.stroke}">CI</text>`},
+  {cat:'Support',subcat:'Other Support',id:'signals',label:'Signals',icon:c=>`<path d="M10,14 Q17,4 25,14 Q33,24 40,14" fill="none" stroke="${c.stroke}" stroke-width="2"/><circle cx="25" cy="14" r="3" fill="${c.stroke}"/>`},
+  {cat:'Support',subcat:'Other Support',id:'intel',label:'Intelligence',icon:c=>`<text x="25" y="20" text-anchor="middle" font-size="16" font-weight="bold" fill="${c.stroke}">I</text>`},
+  {cat:'Support',subcat:'Other Support',id:'log',label:'Logistics',icon:c=>`<rect x="12" y="8" width="26" height="16" rx="2" fill="none" stroke="${c.stroke}" stroke-width="2"/><line x1="12" y1="16" x2="38" y2="16" stroke="${c.stroke}" stroke-width="1.5"/>`},
+  {cat:'Support',subcat:'Other Support',id:'medical',label:'Medical',icon:_=>`<line x1="25" y1="6" x2="25" y2="22" stroke="#cc0000" stroke-width="3"/><line x1="17" y1="14" x2="33" y2="14" stroke="#cc0000" stroke-width="3"/>`},
+  {cat:'Support',subcat:'Other Support',id:'maintenance',label:'Maintenance',icon:c=>`<path d="M16,20 L20,10 L25,16 L30,10 L34,20 Z" fill="none" stroke="${c.stroke}" stroke-width="2"/>`},
+  {cat:'Support',subcat:'Other Support',id:'mp',label:'Military Police',icon:c=>`<text x="25" y="20" text-anchor="middle" font-size="11" font-weight="bold" fill="${c.stroke}">MP</text>`},
+  {cat:'Support',subcat:'Other Support',id:'cbrn',label:'CBRN',icon:c=>`<circle cx="25" cy="14" r="9" fill="none" stroke="${c.stroke}" stroke-width="2"/><line x1="25" y1="5" x2="25" y2="23" stroke="${c.stroke}" stroke-width="1.5"/><line x1="16" y1="14" x2="34" y2="14" stroke="${c.stroke}" stroke-width="1.5"/>`},
+  {cat:'Support',subcat:'Other Support',id:'psyops',label:'PSYOPS',icon:c=>`<text x="25" y="20" text-anchor="middle" font-size="9" font-weight="bold" fill="${c.stroke}">PO</text>`},
+  {cat:'Support',subcat:'Other Support',id:'cimic',label:'CIMIC',icon:c=>`<text x="25" y="20" text-anchor="middle" font-size="9" font-weight="bold" fill="${c.stroke}">CI</text>`},
   // AVIATION
-  {cat:'Aviation',id:'aviation',label:'Aviation',icon:c=>`<path d="M5,14 Q15,6 25,14 Q35,22 45,14" fill="none" stroke="${c.stroke}" stroke-width="2.5"/>`},
-  {cat:'Aviation',id:'attack_helo',label:'Attack Helicopter',icon:c=>`<path d="M5,14 Q15,6 25,14 Q35,22 45,14" fill="none" stroke="${c.stroke}" stroke-width="2.5"/><circle cx="25" cy="21" r="4" fill="${c.stroke}"/>`},
-  {cat:'Aviation',id:'fixed_wing',label:'Fixed Wing Aircraft',icon:c=>`<path d="M25,5 L25,23 M10,13 L40,13" stroke="${c.stroke}" stroke-width="2.5"/>`},
-  {cat:'Aviation',id:'uav',label:'Unmanned Aerial Vehicle',icon:c=>`<path d="M25,5 L25,23 M10,13 L40,13" stroke="${c.stroke}" stroke-width="2"/><circle cx="25" cy="13" r="4" fill="${c.stroke}"/>`},
-  {cat:'Aviation',id:'istar',label:'ISR/Surveillance',icon:c=>`<path d="M5,14 Q15,6 25,14 Q35,22 45,14" fill="none" stroke="${c.stroke}" stroke-width="2"/><text x="25" y="24" text-anchor="middle" font-size="7" font-weight="bold" fill="${c.stroke}">ISR</text>`},
+  {cat:'Aviation',subcat:'Aviation',id:'aviation',label:'Aviation',icon:c=>`<path d="M5,14 Q15,6 25,14 Q35,22 45,14" fill="none" stroke="${c.stroke}" stroke-width="2.5"/>`},
+  {cat:'Aviation',subcat:'Aviation',id:'attack_helo',label:'Attack Helicopter',icon:c=>`<path d="M5,14 Q15,6 25,14 Q35,22 45,14" fill="none" stroke="${c.stroke}" stroke-width="2.5"/><circle cx="25" cy="21" r="4" fill="${c.stroke}"/>`},
+  {cat:'Aviation',subcat:'Aviation',id:'fixed_wing',label:'Fixed Wing Aircraft',icon:c=>`<path d="M25,5 L25,23 M10,13 L40,13" stroke="${c.stroke}" stroke-width="2.5"/>`},
+  {cat:'Aviation',subcat:'Aviation',id:'uav',label:'Unmanned Aerial Vehicle',icon:c=>`<path d="M25,5 L25,23 M10,13 L40,13" stroke="${c.stroke}" stroke-width="2"/><circle cx="25" cy="13" r="4" fill="${c.stroke}"/>`},
+  {cat:'Aviation',subcat:'Aviation',id:'istar',label:'ISR/Surveillance',icon:c=>`<path d="M5,14 Q15,6 25,14 Q35,22 45,14" fill="none" stroke="${c.stroke}" stroke-width="2"/><text x="25" y="24" text-anchor="middle" font-size="7" font-weight="bold" fill="${c.stroke}">ISR</text>`},
   // COMMAND
-  {cat:'Command',id:'hq',label:'Headquarters',icon:c=>`<line x1="5" y1="4" x2="45" y2="24" stroke="${c.stroke}" stroke-width="2"/><line x1="45" y1="4" x2="5" y2="24" stroke="${c.stroke}" stroke-width="2"/><line x1="5" y1="14" x2="45" y2="14" stroke="${c.stroke}" stroke-width="2"/>`},
-  {cat:'Command',id:'joint_hq',label:'Joint Headquarters',icon:c=>`<text x="25" y="20" text-anchor="middle" font-size="10" font-weight="bold" fill="${c.stroke}">J</text><line x1="5" y1="14" x2="45" y2="14" stroke="${c.stroke}" stroke-width="1.5"/>`},
-  {cat:'Command',id:'tac_cp',label:'Tactical CP',icon:c=>`<text x="25" y="20" text-anchor="middle" font-size="9" font-weight="bold" fill="${c.stroke}">TAC</text>`},
-  {cat:'Command',id:'fire_coord',label:'Fire Coordination',icon:c=>`<text x="25" y="20" text-anchor="middle" font-size="9" font-weight="bold" fill="${c.stroke}">FC</text>`},
+  {cat:'Command',subcat:'Command',id:'hq',label:'Headquarters',icon:c=>`<line x1="5" y1="4" x2="45" y2="24" stroke="${c.stroke}" stroke-width="2"/><line x1="45" y1="4" x2="5" y2="24" stroke="${c.stroke}" stroke-width="2"/><line x1="5" y1="14" x2="45" y2="14" stroke="${c.stroke}" stroke-width="2"/>`},
+  {cat:'Command',subcat:'Command',id:'joint_hq',label:'Joint Headquarters',icon:c=>`<text x="25" y="20" text-anchor="middle" font-size="10" font-weight="bold" fill="${c.stroke}">J</text><line x1="5" y1="14" x2="45" y2="14" stroke="${c.stroke}" stroke-width="1.5"/>`},
+  {cat:'Command',subcat:'Command',id:'tac_cp',label:'Tactical CP',icon:c=>`<text x="25" y="20" text-anchor="middle" font-size="9" font-weight="bold" fill="${c.stroke}">TAC</text>`},
+  {cat:'Command',subcat:'Command',id:'fire_coord',label:'Fire Coordination',icon:c=>`<text x="25" y="20" text-anchor="middle" font-size="9" font-weight="bold" fill="${c.stroke}">FC</text>`},
   // NAVAL
-  {cat:'Naval',id:'naval_surface',label:'Naval Surface',icon:c=>`<path d="M8,20 L20,8 L32,8 L44,20 Z" fill="none" stroke="${c.stroke}" stroke-width="2"/>`},
-  {cat:'Naval',id:'submarine',label:'Submarine',icon:c=>`<path d="M8,14 Q18,6 25,14 Q32,22 42,14" fill="none" stroke="${c.stroke}" stroke-width="2.5"/><line x1="25" y1="8" x2="25" y2="2" stroke="${c.stroke}" stroke-width="1.5"/>`},
-  {cat:'Naval',id:'maritime_patrol',label:'Maritime Patrol',icon:c=>`<path d="M25,5 L25,23 M10,13 L40,13" stroke="${c.stroke}" stroke-width="2"/><path d="M8,22 Q16,18 24,22" fill="none" stroke="${c.stroke}" stroke-width="1.5"/>`},
+  {cat:'Naval',subcat:'Naval',id:'naval_surface',label:'Naval Surface',icon:c=>`<path d="M8,20 L20,8 L32,8 L44,20 Z" fill="none" stroke="${c.stroke}" stroke-width="2"/>`},
+  {cat:'Naval',subcat:'Naval',id:'submarine',label:'Submarine',icon:c=>`<path d="M8,14 Q18,6 25,14 Q32,22 42,14" fill="none" stroke="${c.stroke}" stroke-width="2.5"/><line x1="25" y1="8" x2="25" y2="2" stroke="${c.stroke}" stroke-width="1.5"/>`},
+  {cat:'Naval',subcat:'Naval',id:'maritime_patrol',label:'Maritime Patrol',icon:c=>`<path d="M25,5 L25,23 M10,13 L40,13" stroke="${c.stroke}" stroke-width="2"/><path d="M8,22 Q16,18 24,22" fill="none" stroke="${c.stroke}" stroke-width="1.5"/>`},
   // OTHER
-  {cat:'Other',id:'space',label:'Space/Cyber',icon:c=>`<path d="M10,20 L26,5 L42,20" fill="none" stroke="${c.stroke}" stroke-width="2"/>`},
-  {cat:'Other',id:'sigint',label:'SIGINT',icon:c=>`<text x="25" y="20" text-anchor="middle" font-size="8" font-weight="bold" fill="${c.stroke}">SIGINT</text>`},
-  {cat:'Other',id:'port',label:'Port / Logistics Base',icon:c=>`<rect x="10" y="8" width="30" height="16" rx="2" fill="none" stroke="${c.stroke}" stroke-width="2"/><line x1="25" y1="8" x2="25" y2="24" stroke="${c.stroke}" stroke-width="1.5"/>`},
+  {cat:'Other',subcat:'Other',id:'space',label:'Space/Cyber',icon:c=>`<path d="M10,20 L26,5 L42,20" fill="none" stroke="${c.stroke}" stroke-width="2"/>`},
+  {cat:'Other',subcat:'Other',id:'sigint',label:'SIGINT',icon:c=>`<text x="25" y="20" text-anchor="middle" font-size="8" font-weight="bold" fill="${c.stroke}">SIGINT</text>`},
+  {cat:'Other',subcat:'Other',id:'port',label:'Port / Logistics Base',icon:c=>`<rect x="10" y="8" width="30" height="16" rx="2" fill="none" stroke="${c.stroke}" stroke-width="2"/><line x1="25" y1="8" x2="25" y2="24" stroke="${c.stroke}" stroke-width="1.5"/>`},
 ];
 let customTypes=[];
 
@@ -257,11 +257,33 @@ function buildPalette(){
     title.innerHTML=`${cat} <span class="caret">▾</span>`;
     const grid=document.createElement('div');grid.className='palette-grid';
     title.onclick=()=>{title.classList.toggle('collapsed');grid.classList.toggle('hidden')};
-    all.filter(u=>u.cat===cat).forEach(ut=>{
-      const item=document.createElement('div');item.className='pal-item';item.draggable=true;item.dataset.typeId=ut.id;
-      if(ut.tip)item.setAttribute('data-tip',ut.tip);
-      item.innerHTML=ut.dataUrl?`<img class="pal-custom-icon" src="${ut.dataUrl}"><span>${ut.label}</span>`:`${(window.getSym||getSym)(ut.id,'friendly','battalion')}<span>${ut.label}</span>`;
-      item.addEventListener('dragstart',onPalDrag);grid.appendChild(item);
+    
+    // Group by subcategory
+    const subcats=[...new Set(all.filter(u=>u.cat===cat).map(u=>u.subcat||u.cat))];
+    subcats.forEach(subcat=>{
+      const subItems=all.filter(u=>u.cat===cat&&(u.subcat||u.cat)===subcat);
+      if(subcats.length>1){
+        const subtitle=document.createElement('div');subtitle.className='palette-subcat-title';
+        subtitle.textContent=subcat;grid.appendChild(subtitle);
+      }
+      subItems.forEach(ut=>{
+        const item=document.createElement('div');item.className='pal-item';item.draggable=true;item.dataset.typeId=ut.id;
+        if(ut.tip)item.setAttribute('data-tip',ut.tip);
+        try{
+          if(ut.dataUrl){
+            const img=document.createElement('img');img.className='pal-custom-icon';img.src=ut.dataUrl;
+            img.onerror=()=>{img.style.display='none'};item.appendChild(img);
+          } else {
+            const fullSym=(window.getSym||getSym)(ut.id,'friendly','battalion');
+            item.innerHTML=fullSym;
+          }
+          const span=document.createElement('span');span.textContent=ut.label;item.appendChild(span);
+        }catch(e){
+          console.warn(`Failed to render palette item for ${ut.id}:`,e);
+          item.innerHTML=`<div style="padding:8px;text-align:center;color:#999"><small>${ut.label}</small></div>`;
+        }
+        item.addEventListener('dragstart',onPalDrag);grid.appendChild(item);
+      });
     });
     sec.appendChild(title);sec.appendChild(grid);scroll.appendChild(sec);
   });
