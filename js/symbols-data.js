@@ -90,7 +90,7 @@ let customTypes=[];
 function getSym(typeId,affil,echelon,planned=false){
   const c=AC[affil]||AC.friendly;const ech=EM[echelon]||'';
   const custom=customTypes.find(u=>u.id===typeId);
-  const echSvg=ech?`<text x="26" y="5" text-anchor="middle" font-size="7" font-family="monospace" fill="${c.stroke}">${ech}</text>`:'';
+  const echSvg=ech?`<text x="26" y="6" text-anchor="middle" font-size="10" font-family="monospace" fill="${c.stroke}">${ech}</text>`:'';
   const dash=planned?'stroke-dasharray="4,2"':'';
   if(custom)return`<svg viewBox="0 0 52 42" xmlns="http://www.w3.org/2000/svg">${echSvg}<image x="8" y="9" width="36" height="26" href="${custom.dataUrl}" preserveAspectRatio="xMidYMid meet"/></svg>`;
   const def=UT.find(u=>u.id===typeId)||UT[0];const inner=def.icon(c);

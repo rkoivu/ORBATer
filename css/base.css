@@ -1,6 +1,10 @@
 :root{--bg:#0d1117;--surface:#161b22;--surface2:#1c2330;--surface3:#222c3a;--border:#30363d;--accent:#3b82f6;--accent2:#f59e0b;--text:#e6edf3;--text2:#8b949e;--red:#ef4444;--green:#22c55e;--orange:#f97316;--friendly:#3b82f6;--hostile:#ef4444;--neutral:#f59e0b;--unknown:#a855f7;--sidebar-w:272px;--panel-w:294px}
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Barlow',sans-serif;background:var(--bg);color:var(--text);height:100vh;display:flex;flex-direction:column;overflow:hidden;user-select:none}
+button,select,input,textarea{font-family:'Barlow',sans-serif;letter-spacing:.2px;color:var(--text)}
+button,select{cursor:pointer}
+select{background:var(--surface2);border:1px solid var(--border);border-radius:5px;color:var(--text);padding:4px 7px;outline:none}
+button{background:transparent;border:none}
 #topbar{display:flex;align-items:center;gap:7px;padding:0 10px;height:50px;background:var(--surface);border-bottom:1px solid var(--border);flex-shrink:0;z-index:300;overflow-x:auto;overflow-y:visible;position:relative}
 .logo{font-family:'Share Tech Mono',monospace;font-size:13px;color:var(--accent);letter-spacing:2px;white-space:nowrap;margin-right:4px;flex-shrink:0}
 .tb-sep{width:1px;height:26px;background:var(--border);margin:0 2px;flex-shrink:0}
@@ -18,12 +22,13 @@ body{font-family:'Barlow',sans-serif;background:var(--bg);color:var(--text);heig
 #sidebar-header{padding:9px 12px 7px;font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:2px;color:var(--text2);border-bottom:1px solid var(--border);text-transform:uppercase;display:flex;justify-content:space-between;align-items:center}
 #sidebar-scroll{overflow-y:auto;flex:1}
 .palette-section{border-bottom:1px solid var(--border)}
-.palette-section-title{padding:6px 12px;font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:1.5px;color:var(--text2);text-transform:uppercase;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+.palette-section-title{padding:6px 12px;font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:1.5px;color:var(--text2);text-transform:uppercase;cursor:pointer;display:flex;justify-content:space-between;align-items:center;text-align:left}
 .palette-section-title:hover{color:var(--text)}
 .palette-section-title .caret{transition:transform .2s}
 .palette-section-title.collapsed .caret{transform:rotate(-90deg)}
 .palette-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;padding:6px 8px 8px}
 .palette-grid.hidden{display:none}
+.palette-subcat-title{grid-column:1/-1;padding:8px 12px 4px;font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:1px;color:var(--accent);text-transform:uppercase;margin-top:8px;margin-bottom:4px;border-left:3px solid var(--accent);text-align:left}
 .pal-item{display:flex;flex-direction:column;align-items:center;gap:3px;padding:7px 3px;background:var(--surface2);border:1px solid var(--border);border-radius:5px;cursor:grab;transition:all .15s}
 .pal-item:hover{border-color:var(--accent);background:rgba(59,130,246,.08)}
 .pal-item svg{width:34px;height:26px}

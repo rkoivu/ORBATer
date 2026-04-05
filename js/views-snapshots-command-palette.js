@@ -79,9 +79,9 @@
   }
   function snapshotNow(reason='Manual snapshot'){
     if(typeof window.serializeDocument!=='function') return;
-    const state=window.serializeDocument();
+    const state = JSON.stringify(window.serializeDocument());
     // Guard: skip snapshot if state is too large (base64 images etc) to avoid localStorage overflow
-    if(state && state.length > 150000 && reason !== 'Manual snapshot'){
+    if(state.length > 150000 && reason !== 'Manual snapshot'){
       console.warn('Snapshot skipped: state too large ('+Math.round(state.length/1024)+'KB)');
       return;
     }
@@ -168,11 +168,18 @@
     }
   }
   
-  // Hook into existing saveState to clear tab dirty flag
+  // Hook into existing saveState to clear tab dirty flag and persist current tab data
   const prevSaveState = (typeof window.saveState === 'function') ? window.saveState : null;
   if(prevSaveState) {
     window.saveState = function(){
       const result = prevSaveState.apply(this, arguments);
+      const currTab = tabs.find(t=>t.id===currentTabId);
+      if(currTab && typeof window.serializeDocument==='function'){
+        currTab.doc = JSON.parse(JSON.stringify(window.serializeDocument()));
+        currTab.selectedId = window.selectedId || null;
+        currTab.multiSel = [...(window.multiSel || [])];
+        saveTabs();
+      }
       clearTabDirty(currentTabId);
       return result;
     };
@@ -196,25 +203,40 @@
     if(id === currentTabId) return;
     // Save current state to current tab
     const currTab = tabs.find(t=>t.id===currentTabId);
-    if(currTab && window.nodes){
-      currTab.nodes = JSON.parse(JSON.stringify(window.nodes));
+    if(currTab && typeof window.serializeDocument==='function'){
+      currTab.doc = JSON.parse(JSON.stringify(window.serializeDocument()));
       currTab.selectedId = window.selectedId || null;
       currTab.multiSel = [...(window.multiSel || [])];
-      currTab.nodeIdC = window.nodeIdC || 1;
+      saveTabs();
     }
     // Load new tab state
     const tab = tabs.find(t=>t.id===id);
     if(tab){
-      window.nodes = JSON.parse(JSON.stringify(tab.nodes || {}));
-      window.selectedId = tab.selectedId || null;
-      window.multiSel = new Set(tab.multiSel || []);
-      window.nodeIdC = tab.nodeIdC || 1;
+      if(tab.doc){
+        applyDocumentState(tab.doc,{trackHistory:false,preserveView:true});
+        window.multiSel = new Set(tab.multiSel || []);
+        window.selectedId = tab.selectedId || null;
+        if(window.selectedId && typeof window.selectNode==='function') window.selectNode(window.selectedId);
+      } else {
+        window.nodes = JSON.parse(JSON.stringify(tab.nodes || {}));
+        window.selectedId = tab.selectedId || null;
+        window.multiSel = new Set(tab.multiSel || []);
+        window.nodeIdC = tab.nodeIdC || 1;
+        if(typeof customTypes !== 'undefined' && Array.isArray(tab.customTypes)) customTypes = JSON.parse(JSON.stringify(tab.customTypes));
+        showRelLabels = tab.showRelLabels !== false;
+        useSymbolPackImages = tab.useSymbolPackImages !== false;
+        document.getElementById('op-name-input')?.value = tab.opName || 'OPERATION';
+        if(typeof buildPalette==='function') buildPalette();
+        if(typeof buildTypeSelect==='function') buildTypeSelect();
+        if(typeof clearCanvas === 'function') clearCanvas();
+        Object.keys(window.nodes||{}).forEach(nid=> { if(typeof renderNode === 'function') renderNode(nid); });
+        if(typeof updSB === 'function') updSB();
+        if(typeof syncRelLabelBtn==='function') syncRelLabelBtn();
+        if(typeof syncIconModeBtn==='function') syncIconModeBtn();
+      }
       currentTabId = id;
-      // Redraw
-      if(typeof clearCanvas === 'function') clearCanvas();
-      Object.keys(window.nodes||{}).forEach(nid=> { if(typeof renderNode === 'function') renderNode(nid); });
-      if(typeof updSB === 'function') updSB();
       renderTabs();
+      saveTabs();
     }
   };
   window.__closeTab = function(id){
@@ -373,11 +395,10 @@ ${xrefPos}
     ensureViewsUI(); 
     enhanceHistory(); 
     // Initialize default tab with current state
-    if(tabs.length === 1 && tabs[0].id === 'default' && window.nodes){
-      tabs[0].nodes = JSON.parse(JSON.stringify(window.nodes));
+    if(tabs.length === 1 && tabs[0].id === 'default' && typeof window.serializeDocument==='function'){
+      tabs[0].doc = JSON.parse(JSON.stringify(window.serializeDocument()));
       tabs[0].selectedId = window.selectedId || null;
       tabs[0].multiSel = [...(window.multiSel || [])];
-      tabs[0].nodeIdC = window.nodeIdC || 1;
       saveTabs();
     }
     renderTabs();
