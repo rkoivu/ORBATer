@@ -1,6 +1,6 @@
 # ORBATer — NATO APP-6 ORBAT Diagram Builder
 
-A modern, browser-based tool for creating and managing organizational charts (OrbBats) using NATO APP-6 military symbols. ORBATer combines visual diagram editing with powerful state management, collaboration features, and temporal navigation.
+A modern, browser-based tool for creating and managing orders of battle (ORBATs) using NATO APP-6 military symbols. ORBATer combines visual diagram editing with powerful state management, collaboration features, and temporal navigation.
 
 **Live Demo:** https://rkoivu.github.io/ORBATer/
 
