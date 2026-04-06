@@ -581,6 +581,11 @@ const REL_STYLES={
 };
 function getConnPath(x1,y1,x2,y2){
   const style=document.getElementById('conn-style-sel').value;
+  if((window.layoutMode||'tree')==='indented'){
+    const spineX=snapV(Math.min(x1, x2-28));
+    const branchY=snapV(y2);
+    return`M${x1},${y1} L${spineX},${y1} L${spineX},${branchY} L${x2},${branchY}`;
+  }
   const my=y1+(y2-y1)/2;
   if(style==='straight')return`M${x1},${y1} L${x2},${y2}`;
   if(style==='elbow')return`M${x1},${y1} L${x1},${my} L${x2},${my} L${x2},${y2}`;
@@ -596,8 +601,11 @@ function drawConnectors(){
     const cEl=document.getElementById('el-'+n.id);
     if(!pEl||!cEl||pEl.style.display==='none'||cEl.style.display==='none')return;
     const parent=nodes[n.parentId];
-    const x1=parent.x+pEl.offsetWidth/2,y1=parent.y+pEl.offsetHeight;
-    const x2=n.x+cEl.offsetWidth/2,y2=n.y;
+    const isIndented=(window.layoutMode||'tree')==='indented';
+    const x1=isIndented?parent.x+Math.min(18,pEl.offsetWidth*.2):parent.x+pEl.offsetWidth/2;
+    const y1=parent.y+pEl.offsetHeight;
+    const x2=isIndented?n.x:n.x+cEl.offsetWidth/2;
+    const y2=isIndented?n.y+cEl.offsetHeight/2:n.y;
     const rel=REL_STYLES[n.reltype]||REL_STYLES.command;
     const color=rel.color==='inherit'?AFcolors[n.affil]||'#3b82f6':rel.color;
     const pathDef=getConnPath(x1,y1,x2,y2);
@@ -615,7 +623,8 @@ function drawConnectors(){
       text.setAttribute('fill',color);
       let lx=(x1+x2)/2,ly=(y1+y2)/2-8;
       const style=document.getElementById('conn-style-sel').value;
-      if(style==='elbow'){ly=y1+(y2-y1)/2-6;}
+      if(isIndented){lx=(x1+x2)/2+12;ly=y2-6;}
+      else if(style==='elbow'){ly=y1+(y2-y1)/2-6;}
       else if(style==='straight'){ly=Math.min(y1,y2)-8;}
       else if(style==='bezier'){ly=y1+(y2-y1)*0.45-6;}
       text.setAttribute('x',lx);
@@ -885,6 +894,7 @@ canvasWrap.addEventListener('drop',e=>{
 ══════════════════════════════════════ */
 function autoLayout(onlyIds=null){
   const mode = window.layoutMode || 'tree';
+  if(mode === 'indented') return autoLayoutIndented(onlyIds);
   if(mode === 'radial') return autoLayoutRadial(onlyIds);
   if(mode === 'force') return autoLayoutForce(onlyIds);
   // default tree
@@ -929,6 +939,37 @@ function autoLayout(onlyIds=null){
   let ox=60;roots.forEach(r=>{const w=meas(r.id);place(r.id,ox,60);ox+=w+ROOT_PAD;});
   pool.forEach(n=>{const el=document.getElementById('el-'+n.id);if(el){el.style.left=n.x+'px';el.style.top=n.y+'px';}});
   drawConnectors();saveState();showToast(onlyIds?'Selection layout applied':'Layout applied');
+}
+
+function autoLayoutIndented(onlyIds=null){
+  const INDENT_X=164,ROW_GAP=18,CHILD_GAP=18,ROOT_PAD=48,START_X=56,START_Y=56;
+  const pool=onlyIds?Object.values(nodes).filter(n=>onlyIds.has(n.id)):Object.values(nodes);
+  if(!pool.length)return;
+  const poolMap=Object.fromEntries(pool.map(n=>[n.id,n]));
+  const roots=pool.filter(n=>!n.parentId||!poolMap[n.parentId]);
+  if(!roots.length)return;
+  const childMap={};pool.forEach(n=>{(childMap[n.parentId||'root']||(childMap[n.parentId||'root']=[])).push(n)});
+  function placeNode(id,left,top){
+    const n=poolMap[id];
+    if(!n) return top;
+    const size=getNodeCardSize(n);
+    if(!n.locked){n.x=snapV(left);n.y=snapV(top);}
+    let cursor=(n.locked?n.y:top)+size.h+CHILD_GAP;
+    const visibleKids=(childMap[id]||[]).filter(ch=>!ch.locked);
+    if(!visibleKids.length||n.collapsed) return cursor;
+    visibleKids.forEach(ch=>{
+      cursor=placeNode(ch.id,left+INDENT_X,cursor);
+      cursor+=ROW_GAP;
+    });
+    return cursor-ROW_GAP;
+  }
+  let yCursor=START_Y;
+  roots.forEach(root=>{
+    yCursor=placeNode(root.id,START_X,yCursor);
+    yCursor+=ROOT_PAD;
+  });
+  pool.forEach(n=>{const el=document.getElementById('el-'+n.id);if(el){el.style.left=n.x+'px';el.style.top=n.y+'px';}});
+  drawConnectors();saveState();showToast(onlyIds?'Selection indented layout applied':'Indented list layout applied');
 }
 
 function autoLayoutRadial(onlyIds=null){
