@@ -1,8 +1,9 @@
 .orbat-node.anim-layout{transition:left .28s ease, top .28s ease, transform .18s ease, opacity .18s ease}
-#view-modal .view-row,#snapshot-modal .snap-row,#cmdk-list .cmdk-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;border:1px solid var(--control-border);border-radius:14px;background:linear-gradient(180deg,rgba(29,37,50,.9),rgba(20,26,36,.92));margin-bottom:8px;box-shadow:inset 0 1px 0 rgba(255,255,255,.03)}
-#view-modal .view-row:hover,#snapshot-modal .snap-row:hover,#cmdk-list .cmdk-row:hover{border-color:var(--control-border-strong);background:linear-gradient(180deg,rgba(37,47,62,.92),rgba(24,31,42,.94))}
+#view-modal .view-row,#snapshot-modal .snap-row,#cmdk-list .cmdk-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 13px;border:1px solid rgba(148,163,184,.14);border-radius:16px;background:linear-gradient(180deg,rgba(31,40,54,.92),rgba(18,24,34,.96));margin-bottom:9px;box-shadow:inset 0 1px 0 rgba(255,255,255,.03),0 14px 28px rgba(2,6,23,.14)}
+#view-modal .view-row:hover,#snapshot-modal .snap-row:hover,#cmdk-list .cmdk-row:hover{border-color:rgba(96,165,250,.28);background:linear-gradient(180deg,rgba(39,50,66,.94),rgba(23,30,42,.98));transform:translateY(-1px)}
 #view-modal .view-row button,#snapshot-modal .snap-row button,#cmdk-list .cmdk-row button{width:auto;margin:0;padding:7px 10px;min-height:32px}
 #cmdk-modal .modal-box{min-width:520px;max-width:680px}
+#view-modal .modal-box,#snapshot-modal .modal-box,#cmdk-modal .modal-box{box-shadow:0 28px 64px rgba(2,6,23,.42)}
 #cmdk-input{width:100%;background:var(--control-bg-soft);border:1px solid var(--control-border);border-radius:12px;color:var(--text);padding:10px 12px;font-size:13px;margin-bottom:10px;box-shadow:inset 0 1px 0 rgba(255,255,255,.03)}
 #cmdk-input:focus{border-color:var(--accent);box-shadow:var(--control-ring)}
 .cmdk-hint{font-size:10px;color:var(--text2);margin-top:8px;text-transform:uppercase;letter-spacing:.75px;font-family:'Barlow Condensed',sans-serif}
