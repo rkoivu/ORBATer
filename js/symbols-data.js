@@ -1252,10 +1252,10 @@ const TEMPLATES=[
   {name:'Special Operations TG',desc:'SOF HQ + SF, ranger, SOAR, ISR',fn:()=>{
     const hq=createNode({typeId:'hq',name:'TG ALPHA',designation:'TGA',echelon:'regiment',x:340,y:60});
     createNode({typeId:'special_ops',name:'SFG ALPHA',echelon:'company',parentId:hq,x:80,y:220});
-    createNode({typeId:'ranger',name:'RANGER PLT',echelon:'platoon',parentId:hq,x:260,y:220});
+    createNode({typeId:'ranger',name:'RANGER COY',echelon:'company',parentId:hq,x:260,y:220});
     createNode({typeId:'attack_helo',name:'SOAR DET',echelon:'company',parentId:hq,x:440,y:220});
-    createNode({typeId:'istar',name:'ISR DET',echelon:'platoon',parentId:hq,x:620,y:220,reltype:'support'});
-    createNode({typeId:'signals',name:'SIGINT',echelon:'platoon',parentId:hq,x:800,y:220,reltype:'support'});
+    createNode({typeId:'istar',name:'ISR COY',echelon:'company',parentId:hq,x:620,y:220,reltype:'support'});
+    createNode({typeId:'signals',name:'SIGINT COY',echelon:'company',parentId:hq,x:800,y:220,reltype:'support'});
     autoLayout();
   }},
 ];
