@@ -72,7 +72,7 @@
     const spacer=topbar.querySelector('.tb-spacer');
     [insertMenu,viewMenu,toolsMenu,searchMenu,fileMenu].forEach(m=> topbar.insertBefore(m, spacer || dangerBtn || topbar.lastElementChild));
     moveToMenu(insertMenu,['#btn-random-orbat','button[onclick="openTplModal()"]','#btn-outline-import','#btn-auto-organise']);
-    moveToMenu(viewMenu,['#btn-zoom-out-2','#btn-zoom-in-2','#btn-fit-plus','#btn-focus','#btn-toggle-statusbar','#mm-toggle','#btn-tag-highlight','#btn-rel-labels']);
+    moveToMenu(viewMenu,['#btn-zoom-out-2','#btn-zoom-in-2','#btn-fit-plus','#btn-focus','#btn-toggle-statusbar','#btn-tag-highlight','#btn-rel-labels']);
     moveToMenu(toolsMenu,['#btn-stack-same','#btn-conflicts','#btn-tour','button[onclick="openScModal()"]']);
     moveToMenu(searchMenu,['#unit-search-input','#tag-filter-input']);
     moveToMenu(fileMenu,['button[onclick="exportJSON()"]','button[onclick="importJSON()"]','button[onclick="exportSVG()"]','button[onclick="exportPNG()"]','button[onclick="window.print()"]']);
