@@ -10,6 +10,7 @@
   <button class="tb-btn" onclick="autoLayout()">&#8862; Layout</button>
   <select id="layout-mode-sel" onchange="setLayoutMode(this.value)" title="Layout mode" style="margin-left:4px">
     <option value="tree">Tree</option>
+    <option value="indented">Indented List</option>
     <option value="radial">Radial</option>
     <option value="force">Force</option>
   </select>
