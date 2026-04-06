@@ -141,17 +141,17 @@
     // "Consistent" means: inferred type === assigned type, OR the inferred
     // type is in the same conceptual family (e.g. mech_inf ~ infantry).
     const FAMILY = {
-      infantry:  ['infantry','mech_inf','motorised','airborne','air_assault',
+      infantry:  ['infantry','mech_inf','glider_infantry','bicycle_infantry','machine_gun','mech_inf_tracked_ifv','mech_inf_wheeled_ifv','wheeled_mech_inf','motorised','airborne','air_assault',
                   'amphibious','mountain','arctic','special_ops','ranger'],
-      armour:     ['armour','armd_recon'],
-      fires:     ['artillery','rockets','mortar'],
+      armour:     ['armour','light_armour','tank_destroyers','armoured_car','armd_recon','armoured_recon','cavalry_recon','recce_motorcycle','wheeled_armoured_recon','half_tracks'],
+      fires:     ['artillery','field_artillery','heavy_artillery','super_heavy_artillery','railway_artillery','rocket_mortar','anti_aircraft_artillery','coastal_artillery','rockets','mortar','self_propelled_aaa','wheeled_anti_tank','infantry_assault_guns'],
       aviation:  ['aviation','attack_helo','fixed_wing','uav','istar'],
-      engineer:  ['engineer','bridging'],
+      engineer:  ['engineer','pioneers','bridging','construction_engineers','railway_troops'],
       support:   ['log','supply','supply_transport','transport','ammunition','fuel',
-                  'rations','motorised_support','mechanised_support','medical',
+                  'rations','ordnance','motorised_support','mechanised_support','medical','field_hospital','meteorological',
                   'signals','intel','maintenance','mp','chem','eod','psyops','cimic'],
       command:   ['hq','joint_hq','tac_cp','fire_coord'],
-      naval:     ['naval_surface','submarine','maritime_patrol'],
+      naval:     ['naval_surface','submarine','maritime_patrol','riverine','landing_craft'],
       other:     ['ew','cyber','recon','space','sigint','port','air_defense'],
     };
     // Build a reverse map: typeId → familyKey
@@ -320,7 +320,7 @@
           if(raw.length<4) return;
           const inf=inferTypeAndEchelon(raw);
           if(inf.typeId!==n.typeId){
-            const FAMILY2={infantry:['infantry','mech_inf','motorised','airborne','air_assault','amphibious','mountain','arctic','special_ops','ranger'],armour:['armour','armd_recon'],fires:['artillery','rockets','mortar'],aviation:['aviation','attack_helo','fixed_wing','uav','istar'],engineer:['engineer','bridging'],support:['log','supply','supply_transport','transport','ammunition','fuel','rations','motorised_support','mechanised_support','medical','signals','intel','maintenance','mp','chem','eod','psyops','cimic'],command:['hq','joint_hq','tac_cp','fire_coord'],naval:['naval_surface','submarine','maritime_patrol'],other:['ew','cyber','recon','space','sigint','port','air_defense']};
+            const FAMILY2={infantry:['infantry','mech_inf','glider_infantry','bicycle_infantry','machine_gun','mech_inf_tracked_ifv','mech_inf_wheeled_ifv','wheeled_mech_inf','motorised','airborne','air_assault','amphibious','mountain','arctic','special_ops','ranger'],armour:['armour','light_armour','tank_destroyers','armoured_car','armd_recon','armoured_recon','cavalry_recon','recce_motorcycle','wheeled_armoured_recon','half_tracks'],fires:['artillery','field_artillery','heavy_artillery','super_heavy_artillery','railway_artillery','rocket_mortar','anti_aircraft_artillery','coastal_artillery','rockets','mortar','self_propelled_aaa','wheeled_anti_tank','infantry_assault_guns'],aviation:['aviation','attack_helo','fixed_wing','uav','istar'],engineer:['engineer','pioneers','bridging','construction_engineers','railway_troops'],support:['log','supply','supply_transport','transport','ammunition','fuel','rations','ordnance','motorised_support','mechanised_support','medical','field_hospital','meteorological','signals','intel','maintenance','mp','chem','eod','psyops','cimic'],command:['hq','joint_hq','tac_cp','fire_coord'],naval:['naval_surface','submarine','maritime_patrol','riverine','landing_craft'],other:['ew','cyber','recon','space','sigint','port','air_defense']};
             const tf2={};Object.entries(FAMILY2).forEach(([fm,ids])=>ids.forEach(id=>tf2[id]=fm));
             if(!(tf2[n.typeId]&&tf2[n.typeId]===tf2[inf.typeId])){
               n.typeId=inf.typeId; (window.renderNode||renderNode)(n.id); fixed++;
@@ -348,6 +348,17 @@
     { type:'tac_cp',       rx:/tac.*cp|cp.*tac|tactical\s*command\s*post|tac cp/ },
     { type:'fire_coord',   rx:/fire\s*coord|fce|fires?\s*coord/ },
     // ── Fires ────────────────────────────────────────────────────
+    { type:'railway_artillery', rx:/railway\s*artillery|rail\s*gun/ },
+    { type:'super_heavy_artillery', rx:/super[\s-]*heavy\s*artillery|siege\s*artillery/ },
+    { type:'heavy_artillery', rx:/heavy\s*artillery|corps\s*artillery|army\s*artillery/ },
+    { type:'field_artillery', rx:/field\s*artillery|towed\s*(gun|howitzer|artillery)/ },
+    { type:'self_propelled_aaa', rx:/self[\s-]*propelled\s*anti[\s-]*air|self[\s-]*propelled\s*anti[\s-]*aircraft|spaa|spaag|zsu[\s-]?\d*|shilka|gepard/ },
+    { type:'anti_aircraft_artillery', rx:/anti[\s-]*aircraft\s*artillery|anti[\s-]*aircraft|aa\s*artillery|flak/ },
+    { type:'coastal_artillery', rx:/coastal\s*artillery|coast\s*artillery|shore\s*battery/ },
+    { type:'wheeled_anti_tank', rx:/wheeled\s*anti[\s-]*tank|anti[\s-]*tank.*wheeled/ },
+    { type:'tank_destroyers', rx:/tank\s*destroyers?|td\b|jagdpanzer|self[\s-]*propelled\s*anti[\s-]*tank/ },
+    { type:'infantry_assault_guns', rx:/infantry\s*guns?|assault\s*guns?/ },
+    { type:'rocket_mortar', rx:/rocket\s*mortar|nebelwerfer|katyusha/ },
     { type:'rockets',      rx:/rocket|mlrs|himars|multiple\s*launch/ },
     { type:'mortar',       rx:/mortar/ },
     { type:'air_defense',  rx:/air\s*def(en[cs]e)?|ada|sam|shorad|patriot|hawk|manpad/ },
@@ -363,6 +374,8 @@
     // ── Naval ────────────────────────────────────────────────────
     { type:'submarine',    rx:/submarine|ssn|ssbn/ },
     { type:'maritime_patrol', rx:/maritime\s*patrol|mpa/ },
+    { type:'riverine',     rx:/riverine|patrol\s*boat|gunboat/ },
+    { type:'landing_craft', rx:/landing\s*craft|landing\s*ship|amphibious\s*craft/ },
     { type:'naval_surface',rx:/naval|frigate|destroyer|corvette|warship/ },
     // ── Other ────────────────────────────────────────────────────
     { type:'space',        rx:/space|satellite|orbital/ },
@@ -373,28 +386,46 @@
     { type:'ranger',       rx:/ranger/ },
     { type:'airborne',     rx:/airborne|para(troop)?|abb|parachute/ },
     { type:'air_assault',  rx:/air\s*assault|aaslt|airmobile/ },
+    { type:'glider_infantry', rx:/glider|air[\s-]*landing|airlanding/ },
+    { type:'bicycle_infantry', rx:/bicycle\s*inf|cyclist|bicycle\s*troops?/ },
+    { type:'machine_gun',  rx:/machine[\s-]*gun|mg\s*(battalion|company|bn|coy)/ },
     { type:'amphibious',   rx:/amphib|rmb?|marine\s*inf|landing\s*force/ },
     { type:'arctic',       rx:/arctic|winter|cold\s*weather|mountain\s*arctic/ },
     { type:'mountain',     rx:/mountain|alpine|highland/ },
+    { type:'mech_inf_tracked_ifv', rx:/tracked\s*ifv|ifv.*tracked|mechani[sz](ed|e?d)?\s*inf.*tracked|tracked.*mechani[sz](ed|e?d)?\s*inf/ },
+    { type:'mech_inf_wheeled_ifv', rx:/wheeled\s*ifv|ifv.*wheeled|mechani[sz](ed|e?d)?\s*inf.*wheeled\s*ifv|wheeled\s*ifv.*mechani[sz](ed|e?d)?\s*inf/ },
+    { type:'wheeled_mech_inf', rx:/wheeled\s*mechani[sz](ed|e?d)?\s*inf|mechani[sz](ed|e?d)?\s*inf.*wheeled|stryker/ },
     { type:'mech_inf',     rx:/mech(anize[d]?|anise[d]?|anised)?\s*inf|mechanize[d]?\s*inf|m(ech)?\s*inf|ifv|bradley|warrior|puma|cv90/ },
     { type:'motorised',    rx:/motori[sz]ed\s*inf|motori[sz]ed|mot\s*inf|wheeled\s*inf/ },
+    { type:'cavalry_recon', rx:/cavalry\s*recon|horse\s*recon|mounted\s*recon/ },
     { type:'recon',        rx:/recon|cav(alry)?|scout|household\s*cavalry|light\s*dragoon|hussars?|lancers?/ },
+    { type:'armoured_car', rx:/armou?red\s*car/ },
+    { type:'recce_motorcycle', rx:/recce\s*motorcycle|motorcycle\s*recon|motorcycle\s*dispatch/ },
+    { type:'wheeled_armoured_recon', rx:/wheeled\s*armou?red\s*recon|armou?red\s*recon.*wheeled|wheeled\s*armou?red\s*cav/ },
     { type:'armd_recon',   rx:/armou?red\s*recon|armou?red\s*cav/ },
+    { type:'half_tracks',  rx:/half[\s-]*tracks?/ },
     // ── Armour (before generic infantry) ─────────────────────────
+    { type:'light_armour',  rx:/light\s*armou?r|light\s*tank|tankette/ },
     { type:'armour',        rx:/armou?r(ed)?|tank\b|tanks\b|cavalry\s*tank|\brtrs?\b|dragoons?\s*(regiment)?|royal\s*tank|hussars?\s*regiment/ },
     // ── Support ──────────────────────────────────────────────────
+    { type:'railway_troops', rx:/railway\s*troops|railway\s*engineers?|rail\s*troops/ },
+    { type:'construction_engineers', rx:/construction\s*engineers?|works?\s*engineers?/ },
+    { type:'pioneers',     rx:/pioneers?\b|assault\s*pioneers?/ },
     { type:'bridging',     rx:/bridg(e|ing)|assault\s*crossing|close\s*support\s*eng/ },
     { type:'engineer',     rx:/engineer|engr?|sapper|combat\s*support\s*eng|royal\s*eng/ },
     { type:'signals',      rx:/signal|comms?|communication|r\s*?signals|signa?l/ },
+    { type:'field_hospital', rx:/field\s*hosp|field\s*hospital|casualty\s*clearing/ },
     { type:'medical',      rx:/medical|medic|field\s*hosp|ambulance|casualty|rdmc/ },
     { type:'intel',        rx:/intellig(ence)?|int(?!\s*arty)|mi\s*(battalion|company|corps)/ },
+    { type:'ordnance',     rx:/ordnance/ },
     { type:'ammunition',   rx:/ammunition|ammo|ordnance\s*supply|munitions?/ },
     { type:'fuel',         rx:/fuel|petrol|diesel|pol|farp/ },
     { type:'rations',      rx:/rations?|food\s*services?|subsistence|field\s*feeding|catering/ },
     { type:'motorised_support', rx:/motori[sz]ed\s*support|motori[sz]ed\s*log|wheeled\s*support/ },
     { type:'mechanised_support', rx:/mechani[sz](ed|e?d)?\s*support|mechani[sz](ed|e?d)?\s*log|tracked\s*support/ },
     { type:'log',          rx:/logistic|supply|sustainment|service\s*support|admin\s*log|cssg|dssg|lsp|movement\s*con/ },
-    { type:'maintenance',  rx:/maintenance|recovery|repair|reme|ordnance/ },
+    { type:'maintenance',  rx:/maintenance|recovery|repair|reme/ },
+    { type:'meteorological', rx:/meteorolog|weather|met\s*(section|det|team|unit)/ },
     { type:'mp',           rx:/military\s*police|mp(?!s)|rmp|provost/ },
     { type:'chem',         rx:/cbrn|nbc|chemical|biological|radiological|nuclear\s*def/ },
     { type:'eod',          rx:/eod|explosive\s*ordnance|bomb\s*disposal/ },
