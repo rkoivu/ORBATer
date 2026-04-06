@@ -123,6 +123,8 @@
   function applyTheme(){ document.body.classList.remove('theme-dark','theme-light','theme-briefing'); document.body.classList.add('theme-'+currentTheme); const b=document.getElementById('btn-theme'); if(b) b.textContent=currentTheme==='dark'?'◐ Dark':currentTheme==='light'?'◑ Light':'▣ Brief'; }
   window.cycleTheme=function(){ currentTheme=currentTheme==='dark'?'light':currentTheme==='light'?'briefing':'dark'; applyTheme(); saveState(); showToast('Theme: '+currentTheme); };
   applyTheme();
+  // Presentation mode changes visible chrome, so a layout refresh keeps canvas,
+  // minimap, and status calculations aligned with the new shell dimensions.
   function refreshPresentationLayout(){
     if(typeof window.applyTransform === 'function') window.applyTransform();
     if(typeof window.updateMinimap === 'function') window.updateMinimap();

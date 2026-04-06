@@ -40,7 +40,7 @@ A modern, browser-based tool for creating and managing orders of battle (ORBATs)
 - **Layout Persistence** — Retained UI state, zoom levels, and view preferences
 
 ### 📐 Layout & Visualization
-- **Three Layout Modes** — Tree (vertical hierarchy), Radial (circular root distribution), Force (physics-based)
+- **Four Layout Modes** — Tree (vertical hierarchy), Indented List (left spine with right-branching stubs), Radial (circular root distribution), Force (physics-based root spacing)
 - **Smart Alignment Tools** — Align, distribute, and organize selected nodes
 - **Minimap & Zoom** — Navigation mini-overview, zoom buttons, and fit-to-screen
 - **Connector Visualization** — Visual lines showing parent-child relationships with relationship type indicators
@@ -52,6 +52,7 @@ A modern, browser-based tool for creating and managing orders of battle (ORBATs)
 - **Tint Coloring** — Apply custom background tints to individual units
 - **Affiliation Colors** — Auto-colored by friendly (blue), hostile (red), neutral (green), unknown (purple)
 - **Theme Controls** — Toggle light/dark themes and legend display
+- **Readability Modes** — Presentation mode, Clarity mode, and connector emphasis for dense briefing views
 - **Canvas Backgrounds** — Apply a background image with adjustable opacity for briefing-map style layouts
 - **Aesthetic UI Polish** — Styled tab bar, glassy menus, refined overlays, improved empty-state guidance, stronger focus states, clearer minimap chrome, and pill-based status readouts
 
@@ -91,8 +92,12 @@ A modern, browser-based tool for creating and managing orders of battle (ORBATs)
 - `Ctrl/Cmd+C` — Copy selected units
 - `Ctrl/Cmd+V` — Paste units
 - `Ctrl/Cmd+K` — Open command palette
+- `Ctrl/Cmd+W` — Close current tab
+- `Ctrl/Cmd+Shift+D` — Duplicate current tab
+- `F2` — Rename current tab
 - `Delete` — Remove selected unit(s)
 - `Esc` (in search fields) — Clear search or tag filter
+- `Shift+N` — Create a new root unit at the canvas center
 - `Double-click canvas` — Create a root unit from empty space
 
 ---
@@ -147,7 +152,7 @@ Unit operational conditions:
 ### Organizing Units
 - **Drag to reposition** — Click and drag units across canvas
 - **Drag link button** (⤢) to **reassign parent** — Restructure hierarchy
-- **Auto-Layout** — Press ⊞ **Layout** or select layout mode (Tree/Radial/Force)
+- **Auto-Layout** — Press ⊞ **Layout** or select layout mode (Tree/Indented List/Radial/Force)
 - **Align Selected** — Select multiple, use alignment buttons
 
 ### Saving & Sharing
@@ -164,6 +169,7 @@ Unit operational conditions:
 - **Switch Tab** — Click tab name to load workspace
 - **Close Tab** — Click ✕ on tab (Main/default cannot be closed)
 - **Rename Tab** — Double-click a tab name to rename it inline
+- **Tab Context Menu** — Right-click a tab for rename, duplicate, and close actions
 - **Dirty Indicators** — Tabs show when a workspace has unsaved changes and now clear correctly after tab restores and saves
 
 ### Snapshots & Timeline
@@ -201,6 +207,12 @@ Unit operational conditions:
 - **Task** — Reorganizes by task type and task order
 - Toggle with **≋ ORBAT** button
 
+### Readability Toggles
+- **Presentation** — Hides side panels and the status bar to maximize the canvas area
+- **Clarity** — Increases text contrast and card readability for dense diagrams
+- **Links** — Emphasizes connectors and relationship labels so branch structure reads faster
+- These toggles persist with document state, so snapshots and restores keep the same viewing mode
+
 ### Read-Only Sharing
 Shared links have `?readonly=1` which disables:
 - Edit operations and drag-drop
@@ -233,6 +245,7 @@ Perfect for stakeholder review.
 
 #### JavaScript Modules (by responsibility)
 - **`symbols-data.js`** — APP-6 symbol definitions (60+ unit types), rendering engine, core node/state/history management
+- **`symbols-data.js` layout helpers** — `autoLayoutTree()`, `autoLayoutIndented()`, `autoLayoutRadial()`, and `autoLayoutForce()` are the primary built-in layout entry points
 - **`ui-shell.js`** — Static DOM shell assembly for the app UI
 - **`views-snapshots-command-palette.js`** — Saved views, snapshots, tabs, timeline slider, command palette, layout modes
 - **`identity-search-insignia.js`** — Tags, insignia, labels, search state
@@ -254,12 +267,15 @@ Perfect for stakeholder review.
 
 This means script order matters: later modules patch or augment functions defined earlier.
 
+When debugging, assume late-loaded files may intentionally wrap earlier globals such as `renderTabs`, `selectNode`, `updSelUI`, or `applyDocumentState` rather than replacing them from scratch.
+
 ### Recent UI Evolution
 1. The runtime shell is split between a thin `index.html`, generated UI markup in `js/ui-shell.js`, base layout in `css/base.css`, and late-stage enhancement modules that progressively refine menus, tabs, overlays, and interaction affordances.
 2. Sidebar scrolling and minimap placement are enforced both structurally and at the final QOL layer so later feature modules do not break the workspace layout.
 3. Current UI polish is concentrated in `css/base.css`, `css/toolbar-menus-import.css`, `js/themes-locks-search-background.js`, and `js/qol-keyboard-feedback.js`.
 4. Recent polish work improved palette label readability, selected-node action discoverability, minimap labeling, and status-bar scanability without changing the no-build architecture.
-5. Recent bug-fix work in the tab/view layer hardened dirty-state tracking and preserved valid zero-value pan coordinates in saved views.
+5. Recent bug-fix work in the tab/view layer hardened dirty-state tracking, preserved valid zero-value pan coordinates in saved views, and restored multi-select state correctly across tab switches.
+6. Recent layout work added the indented-list ORBAT view and a safer tree fallback path for force layout when the document has too few roots.
 
 ### Data Model
 ```javascript

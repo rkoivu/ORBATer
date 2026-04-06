@@ -900,6 +900,8 @@ function autoLayout(onlyIds=null){
   return autoLayoutTree(onlyIds);
 }
 
+// Tree remains the canonical fallback because other layout modes delegate to it
+// when their preconditions are not met.
 function autoLayoutTree(onlyIds=null){
   const HG=26,VG=72,ROOT_PAD=90,COLLAPSED_STACK=18;
   const pool=onlyIds?Object.values(nodes).filter(n=>onlyIds.has(n.id)):Object.values(nodes);
@@ -1019,7 +1021,8 @@ function autoLayoutRadial(onlyIds=null){
 }
 
 function autoLayoutForce(onlyIds=null){
-  // Simple force-directed for roots only
+  // This mode only spreads roots. Descendants still hang beneath the root so the
+  // document keeps an ORBAT-like reading order instead of a full graph layout.
   const pool=onlyIds?Object.values(nodes).filter(n=>onlyIds.has(n.id)):Object.values(nodes);
   if(!pool.length)return;
   const poolMap=Object.fromEntries(pool.map(n=>[n.id,n]));
