@@ -7,7 +7,7 @@
   // Auto organise button
   if(!document.getElementById('btn-auto-organise')){
     const b=document.createElement('button');
-    b.className='tb-btn'; b.id='btn-auto-organise'; b.textContent='🧭 Organise';
+    b.className='tb-btn'; b.id='btn-auto-organise'; b.textContent='Organise';
     b.title='Auto organise current ORBAT';
     b.onclick=()=>{
       try{
@@ -24,7 +24,7 @@
   // Bottom bar toggle
   if(!document.getElementById('btn-toggle-statusbar')){
     const b=document.createElement('button');
-    b.className='tb-btn'; b.id='btn-toggle-statusbar'; b.textContent='▤ Bar';
+    b.className='tb-btn'; b.id='btn-toggle-statusbar'; b.textContent='Bar';
     b.title='Toggle bottom status bar';
     b.onclick=()=>{
       statusbar.classList.toggle('hidden-bar');
@@ -33,6 +33,15 @@
     };
     topbar.insertBefore(b, dangerBtn || topbar.lastElementChild);
     try{ if(localStorage.getItem('orbat_statusbar_hidden')==='1') statusbar.classList.add('hidden-bar'); }catch(e){}
+  }
+
+  // Stable chrome minimap toggle in addition to the floating canvas button.
+  if(!document.getElementById('btn-toggle-minimap')){
+    const b=document.createElement('button');
+    b.className='tb-btn'; b.id='btn-toggle-minimap'; b.textContent='Map';
+    b.title='Toggle minimap';
+    b.onclick=()=>{ if(window.toggleMinimap) window.toggleMinimap(); };
+    topbar.insertBefore(b, dangerBtn || topbar.lastElementChild);
   }
 
   // Group buttons into menus for easier navigation
@@ -68,11 +77,10 @@
     const toolsMenu=makeMenu('menu-tools','Tools');
     const fileMenu=makeMenu('menu-file','File');
     const searchMenu=makeMenu('menu-search','Search');
-    // place before spacer if present
     const spacer=topbar.querySelector('.tb-spacer');
     [insertMenu,viewMenu,toolsMenu,searchMenu,fileMenu].forEach(m=> topbar.insertBefore(m, spacer || dangerBtn || topbar.lastElementChild));
     moveToMenu(insertMenu,['#btn-random-orbat','button[onclick="openTplModal()"]','#btn-outline-import','#btn-auto-organise']);
-    moveToMenu(viewMenu,['#btn-zoom-out-2','#btn-zoom-in-2','#btn-fit-plus','#btn-focus','#btn-toggle-statusbar','#btn-tag-highlight','#btn-rel-labels']);
+    moveToMenu(viewMenu,['#btn-zoom-out-2','#btn-zoom-in-2','#btn-fit-plus','#btn-focus','#btn-toggle-statusbar','#btn-toggle-minimap','#btn-tag-highlight','#btn-rel-labels']);
     moveToMenu(toolsMenu,['#btn-stack-same','#btn-conflicts','#btn-tour','button[onclick="openScModal()"]']);
     moveToMenu(searchMenu,['#unit-search-input','#tag-filter-input']);
     moveToMenu(fileMenu,['button[onclick="exportJSON()"]','button[onclick="importJSON()"]','button[onclick="exportSVG()"]','button[onclick="exportPNG()"]','button[onclick="window.print()"]']);
@@ -174,7 +182,7 @@
       const cleaned=[];
       for(const line of lines){
         if(/^(create|build|generate|make)\b/i.test(line)) continue;
-        const m=line.match(/^[-*•]\s*(.+)$/); cleaned.push(m?m[1]:line);
+        const m=line.match(/^[-*â€¢]\s*(.+)$/); cleaned.push(m?m[1]:line);
       }
       return window.parseOutline ? window.parseOutline(cleaned.join('\n')) : [];
     };

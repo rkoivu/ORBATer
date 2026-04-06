@@ -397,12 +397,12 @@
 
     if (main) {
       main.style.minHeight = '0';
-      main.style.height = availableH + 'px';
+      main.style.height = '';
     }
 
     if (sidebar) {
       sidebar.style.minHeight = '0';
-      sidebar.style.height = availableH + 'px';
+      sidebar.style.height = '';
     }
 
     if (sidebarScroll) {
@@ -414,7 +414,7 @@
 
     if (editPanel && !editPanel.classList.contains('hid') && !editPanel.classList.contains('hidden')) {
       editPanel.style.minHeight = '0';
-      editPanel.style.height = availableH + 'px';
+      editPanel.style.height = '';
     }
 
     [epInner, mpInner].forEach(panel => {
