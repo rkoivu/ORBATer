@@ -123,6 +123,12 @@
   function applyTheme(){ document.body.classList.remove('theme-dark','theme-light','theme-briefing'); document.body.classList.add('theme-'+currentTheme); const b=document.getElementById('btn-theme'); if(b) b.textContent=currentTheme==='dark'?'◐ Dark':currentTheme==='light'?'◑ Light':'▣ Brief'; }
   window.cycleTheme=function(){ currentTheme=currentTheme==='dark'?'light':currentTheme==='light'?'briefing':'dark'; applyTheme(); saveState(); showToast('Theme: '+currentTheme); };
   applyTheme();
+  function refreshPresentationLayout(){
+    if(typeof window.applyTransform === 'function') window.applyTransform();
+    if(typeof window.updateMinimap === 'function') window.updateMinimap();
+    if(typeof window.updSB === 'function') window.updSB();
+    window.dispatchEvent(new Event('resize'));
+  }
   function syncReadabilityBtns(){
     document.body.classList.toggle('presentation-mode', presentationMode);
     document.body.classList.toggle('clarity-mode', clarityMode);
@@ -130,6 +136,7 @@
     document.getElementById('btn-present')?.classList.toggle('active', presentationMode);
     document.getElementById('btn-clarity')?.classList.toggle('active', clarityMode);
     document.getElementById('btn-connector-focus')?.classList.toggle('active', connectorFocusMode);
+    refreshPresentationLayout();
   }
   window.togglePresentationMode=function(){ presentationMode=!presentationMode; syncReadabilityBtns(); saveState(); showToast(presentationMode?'Presentation mode on':'Presentation mode off'); };
   window.toggleClarityMode=function(){ clarityMode=!clarityMode; syncReadabilityBtns(); saveState(); showToast(clarityMode?'Clarity mode on':'Clarity mode off'); };

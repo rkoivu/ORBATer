@@ -897,7 +897,10 @@ function autoLayout(onlyIds=null){
   if(mode === 'indented') return autoLayoutIndented(onlyIds);
   if(mode === 'radial') return autoLayoutRadial(onlyIds);
   if(mode === 'force') return autoLayoutForce(onlyIds);
-  // default tree
+  return autoLayoutTree(onlyIds);
+}
+
+function autoLayoutTree(onlyIds=null){
   const HG=26,VG=72,ROOT_PAD=90,COLLAPSED_STACK=18;
   const pool=onlyIds?Object.values(nodes).filter(n=>onlyIds.has(n.id)):Object.values(nodes);
   if(!pool.length)return;
@@ -1021,7 +1024,7 @@ function autoLayoutForce(onlyIds=null){
   if(!pool.length)return;
   const poolMap=Object.fromEntries(pool.map(n=>[n.id,n]));
   const roots=pool.filter(n=>!n.parentId||!poolMap[n.parentId]);
-  if(roots.length < 2) return autoLayout(onlyIds); // fallback to tree
+  if(roots.length < 2) return autoLayoutTree(onlyIds); // fallback to tree
   // Simple repulsion
   const iterations = 50, k = 100;
   roots.forEach(r => { if(!r.x) r.x = Math.random()*800; if(!r.y) r.y = Math.random()*600; });
