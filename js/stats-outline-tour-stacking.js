@@ -390,7 +390,7 @@
     { type:'intel',        rx:/intellig(ence)?|int(?!\s*arty)|mi\s*(battalion|company|corps)/ },
     { type:'ammunition',   rx:/ammunition|ammo|ordnance\s*supply|munitions?/ },
     { type:'fuel',         rx:/fuel|petrol|diesel|pol|farp/ },
-    { type:'rations',      rx:/rations?|subsistence|field\s*feeding|catering/ },
+    { type:'rations',      rx:/rations?|food\s*services?|subsistence|field\s*feeding|catering/ },
     { type:'motorised_support', rx:/motori[sz]ed\s*support|motori[sz]ed\s*log|wheeled\s*support/ },
     { type:'mechanised_support', rx:/mechani[sz](ed|e?d)?\s*support|mechani[sz](ed|e?d)?\s*log|tracked\s*support/ },
     { type:'log',          rx:/logistic|supply|sustainment|service\s*support|admin\s*log|cssg|dssg|lsp|movement\s*con/ },
