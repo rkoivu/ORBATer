@@ -164,7 +164,7 @@ function normalizeNode(id,raw={}){const fallbackX=200+Object.keys(nodes).length*
     taskOrder:raw.taskOrder??null,adminOrder:raw.adminOrder??null,
     relLabel:raw.relLabel||''
   }}
-function serializeDocument(){return{schemaVersion:APP_SCHEMA_VERSION,opName:document.getElementById('op-name-input').value,nodeIdC,nodes,customTypes,showRelLabels,useSymbolPackImages}}
+function serializeDocument(){return{schemaVersion:APP_SCHEMA_VERSION,opName:document.getElementById('op-name-input').value,nodeIdC,nodes,customTypes,showRelLabels,useSymbolPackImages,minimapVisible:mmVisible}}
 function validateOrbatData(d){
   if(!d||typeof d!=='object')throw new Error('Invalid ORBAT file');
   if(!d.nodes||typeof d.nodes!=='object')throw new Error('Invalid ORBAT file — missing nodes');
@@ -189,8 +189,10 @@ function applyDocumentState(doc,{trackHistory=true,preserveView=true}={}){
   nodeIdC=valid.nodeIdC;customTypes=valid.customTypes;nodes=valid.nodes;
   showRelLabels=doc.showRelLabels!==false;
   useSymbolPackImages=doc.useSymbolPackImages!==false;
+  mmVisible=doc.minimapVisible!==false;
   syncRelLabelBtn();
   syncIconModeBtn();
+  syncMinimapVisibility();
   buildPalette();buildTypeSelect();Object.keys(nodes).forEach(id=>renderNode(id));
   drawConnectors();updSB();updEmpty();deselectAll();
   if(preserveView){zoom=view.zoom;panX=view.panX;panY=view.panY;applyTransform();}
@@ -844,7 +846,18 @@ function fitScreen(){
    MINIMAP
 ══════════════════════════════════════ */
 let mmVisible=true;
-function toggleMinimap(){mmVisible=!mmVisible;document.getElementById('minimap').style.display=mmVisible?'block':'none';if(mmVisible)updateMinimap();}
+function syncMinimapVisibility(){
+  const minimap=document.getElementById('minimap');
+  const toggle=document.getElementById('mm-toggle');
+  if(minimap) minimap.style.display=mmVisible?'block':'none';
+  if(toggle){
+    toggle.classList.toggle('active',mmVisible);
+    toggle.setAttribute('aria-pressed',mmVisible?'true':'false');
+    toggle.title=mmVisible?'Hide minimap':'Show minimap';
+  }
+  if(mmVisible) updateMinimap();
+}
+function toggleMinimap(){mmVisible=!mmVisible;syncMinimapVisibility();saveState();showToast(mmVisible?'Minimap on':'Minimap off');}
 function updateMinimap(){
   if(!mmVisible)return;
   const canvas=document.getElementById('mm-canvas');const ctx=canvas.getContext('2d');ctx.clearRect(0,0,154,96);
@@ -1429,8 +1442,7 @@ updEmpty();updSB();syncRelLabelBtn();
 // Init grid
 canvasWrap.className='snap-on';document.getElementById('btn-snap').textContent='⌗ Dot Grid';
 
-document.getElementById('minimap').style.display='block';
-updateMinimap();
+syncMinimapVisibility();
 
 // Restore autosave or seed starter
 setTimeout(()=>{
