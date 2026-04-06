@@ -99,7 +99,7 @@ const UT=[
   {cat:'Aviation',subcat:'Aviation',id:'uav',label:'Unmanned Aerial Systems',icon:c=>`<image href="assets/icons/types/support/unmanned_aerial_systems.svg" x="0" y="0" width="50" height="30"/>`},
   {cat:'Aviation',subcat:'Aviation',id:'istar',label:'ISR/Surveillance',icon:c=>`<image href="assets/icons/types/support/unmanned_aerial_systems.svg" x="0" y="0" width="50" height="30"/>`},
   // COMMAND
-  {cat:'Command',subcat:'Command',id:'hq',label:'Headquarters',icon:c=>`<line x1="5" y1="4" x2="45" y2="24" stroke="${c.stroke}" stroke-width="2"/><line x1="45" y1="4" x2="5" y2="24" stroke="${c.stroke}" stroke-width="2"/><line x1="5" y1="14" x2="45" y2="14" stroke="${c.stroke}" stroke-width="2"/>`},
+  {cat:'Command',subcat:'Command',id:'hq',label:'Headquarters',icon:c=>`<image href="assets/icons/types/headquarters/headquarters.svg" x="0" y="0" width="50" height="30"/>`},
   {cat:'Command',subcat:'Command',id:'joint_hq',label:'Joint Headquarters',icon:c=>`<text x="25" y="20" text-anchor="middle" font-size="10" font-weight="bold" fill="${c.stroke}">J</text><line x1="5" y1="14" x2="45" y2="14" stroke="${c.stroke}" stroke-width="1.5"/>`},
   {cat:'Command',subcat:'Command',id:'tac_cp',label:'Tactical CP',icon:c=>`<text x="25" y="20" text-anchor="middle" font-size="9" font-weight="bold" fill="${c.stroke}">TAC</text>`},
   {cat:'Command',subcat:'Command',id:'fire_coord',label:'Fire Coordination',icon:c=>`<text x="25" y="20" text-anchor="middle" font-size="9" font-weight="bold" fill="${c.stroke}">FC</text>`},
