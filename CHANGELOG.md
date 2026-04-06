@@ -5,6 +5,26 @@ All notable changes to the ORBATer project are documented here. The format follo
 ## [Unreleased]
 
 ### Added
+- **Indented List Layout Mode** — Added a fourth ORBAT layout style optimized for outline-style reading
+  - Parents anchor at the top-left of each branch
+  - A vertical spine runs down the left edge with horizontal stubs branching into children
+  - Gives dense hierarchies a cleaner top-down reading pattern
+
+- **Readability View Toggles** — Added presentation-focused controls for dense briefing diagrams
+  - **Presentation** hides side panels and status chrome to maximize canvas space
+  - **Clarity** increases node-card and label readability
+  - **Links** emphasizes connectors and relationship labels
+  - These modes persist with document state alongside theme/background preferences
+
+- **Tab Workflow QOL Controls** — Expanded tab management beyond simple add/close
+  - Right-click context menu with rename, duplicate, and close actions
+  - Keyboard shortcuts for rename (F2), duplicate (Ctrl/Cmd+Shift+D), and close (Ctrl/Cmd+W)
+  - Command palette actions for renaming and duplicating the current tab
+
+- **Root Unit Shortcut** — Added Shift+N to create a root unit directly from the canvas workflow
+  - Reduces toolbar travel during fast ORBAT editing
+  - Complements double-click-canvas root creation
+
 - **Project Backlog Document** — Added `TODO.md` as a repo-level backlog for future work
   - Groups candidate features, UI/UX improvements, quality-of-life ideas, bug-fix targets, and technical cleanup items
   - Gives future work a maintained home inside the repository instead of leaving it implicit across commits
@@ -60,6 +80,18 @@ All notable changes to the ORBATer project are documented here. The format follo
   - Affects rendering of new units; existing diagrams unaffected until re-rendered
 
 ### Changed
+- **README Refresh**
+  - Updated the top-level documentation for the current layout modes, readability toggles, tab workflow, and release-tracking links
+  - Added direct links to the roadmap and changelog from the main README
+
+- **Control System Visual Alignment**
+  - Buttons, dropdowns, inputs, menus, and supporting panels now share a more unified type, color, radius, and interaction system
+  - Reduces the visual mismatch between toolbar controls, flyouts, and view/history surfaces
+
+- **Sleeker Application Shell Pass**
+  - Refined the app background, top bar, tab strip, node cards, overlays, minimap, status surfaces, and panel treatments
+  - Pushes the interface toward a cleaner briefing-product feel without changing the no-build architecture
+
 - **Palette and Node Affordance Polish**
   - Palette tiles now keep a more consistent height and clamp longer labels cleanly across two lines
   - Selected and multi-selected nodes now expose add, link, and collapse controls without requiring hover
@@ -102,6 +134,18 @@ All notable changes to the ORBATer project are documented here. The format follo
   - Fixed localStorage quota handling for all persistence functions
 
 ### Fixed
+- **Bug: Force Layout Recursive Fallback**
+  - Force layout no longer routes back into itself when the document has fewer than two roots
+  - The fallback now goes through the tree layout path directly
+
+- **Bug: Tab Selection Restore Regression**
+  - Switching tabs now restores multi-select state correctly instead of collapsing the saved selection into a single selected node
+  - Keeps downstream selection wrappers synchronized through the normal selection UI path
+
+- **Bug: Presentation Mode Layout Refresh**
+  - Toggling presentation/readability modes now immediately refreshes transform, minimap, and status-bar sizing
+  - Prevents stale shell geometry after panels are hidden or restored
+
 - **Bug: Tab Dirty State and View Transform Drift**
   - Dirty markers now initialize and clear reliably for newly created and restored tabs
   - Tab switching now clears the correct tab after document restore instead of relying on the previous active id
