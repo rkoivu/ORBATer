@@ -108,6 +108,8 @@ const UT=[
   {cat:'Support',subcat:'Logistics',id:'fuel',label:'Fuel',icon:c=>`<image href="assets/icons/types/support/fuel.svg" x="0" y="0" width="50" height="30"/>`},
   {cat:'Support',subcat:'Logistics',id:'rations',label:'Food Services & Rations',icon:c=>`<image href="assets/icons/types/support/food_services_rations.svg" x="0" y="0" width="50" height="30"/>`},
   {cat:'Support',subcat:'Logistics',id:'ordnance',label:'Ordnance',icon:c=>`<circle cx="19" cy="18" r="5.5" fill="none" stroke="${c.stroke}" stroke-width="2"/><rect x="25" y="14" width="12" height="8" rx="1.5" fill="none" stroke="${c.stroke}" stroke-width="2"/><line x1="37" y1="18" x2="43" y2="18" stroke="${c.stroke}" stroke-width="2"/>`},
+  {cat:'Support',subcat:'Logistics',id:'administration_sustainment',label:'Administration & Sustainment',icon:c=>`<image href="assets/icons/types/service_support/administration_sustainment.svg" x="0" y="0" width="50" height="30"/>`},
+  {cat:'Support',subcat:'Logistics',id:'amphibious_transport',label:'Amphibious Transport',icon:c=>`<image href="assets/icons/types/support/amphibious_transport.svg" x="0" y="0" width="50" height="30"/>`},
   {cat:'Support',subcat:'Combat Support',id:'motorised_support',label:'Motorised Support',icon:c=>`<text x="25" y="20" text-anchor="middle" font-size="8" font-weight="bold" fill="${c.stroke}">MOT SPT</text>`},
   {cat:'Support',subcat:'Combat Support',id:'mechanised_support',label:'Mechanised Support',icon:c=>`<text x="25" y="20" text-anchor="middle" font-size="8" font-weight="bold" fill="${c.stroke}">MECH SPT</text>`},
   {cat:'Support',subcat:'Medical',id:'medical',label:'Medical',icon:c=>`<image href="assets/icons/types/service_support/medical.svg" x="0" y="0" width="50" height="30"/>`},
