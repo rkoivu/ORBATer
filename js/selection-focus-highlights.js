@@ -38,6 +38,19 @@
     panY=rect.height/2 - ((minY+maxY)/2)*zoom;
     applyTransform();
   };
+  window.centerOnRoot=function(){
+    const roots=Object.values(nodes||{}).filter(n=>!n.parentId);
+    if(!roots.length) return;
+    roots.sort((a,b)=>(a.y-b.y)||(a.x-b.x));
+    const root=roots[0];
+    const el=document.getElementById('el-'+root.id);
+    if(!el) return;
+    const rect=canvasWrap.getBoundingClientRect();
+    panX=rect.width/2 - (root.x + el.offsetWidth/2)*zoom;
+    panY=rect.height/2 - (root.y + el.offsetHeight/2)*zoom;
+    applyTransform();
+    showToast('Centered on root');
+  };
 
   const prevSerialize=serializeDocument;
   serializeDocument=function(){ const d=prevSerialize(); d.tagHighlightEnabled=tagHighlightEnabled; return d; };

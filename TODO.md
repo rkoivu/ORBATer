@@ -6,7 +6,7 @@ This backlog collects high-value ideas for future work across product features, 
 
 - Add connector labels that can be edited directly on-canvas instead of only through panel state.
 - Add collapsible task groups or lane regions so users can organize branches by phase, mission, or functional area.
-- Add unit templates and reusable subtree presets for common formations.
+- Extend templates into reusable subtree presets that can be inserted under an existing parent, not only as full ORBAT starters.
 - Add multi-user import/merge tools so two JSON diagrams can be compared and selectively merged.
 - Add an assumptions / notes layer for briefing annotations, arrows, and map callouts.
 - Add optional background map georeferencing so units can be placed against a scaled operational map.
@@ -23,23 +23,21 @@ This backlog collects high-value ideas for future work across product features, 
 - Improve command palette ranking, keyboard navigation, and grouping.
 - Add empty states for more modals and panels so blank views explain what to do next.
 - Refine mobile and narrow-width handling for the toolbar, tab strip, and side panels.
-- Add resize handles for the sidebar and properties panel instead of fixed widths.
-- Add a clearer relationship legend tied to the currently selected connector style.
 - Improve tab overflow handling with scrolling cues or a tab list dropdown.
 - Add stronger visual distinction between selected, multi-selected, locked, and faded nodes.
+- Persist grid mode per document/tab instead of resetting to the default on reload.
+- Add a clearer readonly/share banner so exported readonly links are harder to mistake for editable views.
 
 ## Quality of Life
 
-- Add keyboard shortcuts for creating root units, toggling minimap, snapping, and focusing search.
 - Add recent files / recent diagrams support on top of current localStorage persistence.
 - Add quick duplicate-as-sibling and duplicate-as-child actions.
-- Add "zoom to selection" and "center on root" shortcuts.
 - Add a clipboard preview or paste target indicator before large paste operations.
 - Add inline validation hints for malformed imports and unsupported schemas before apply.
 - Add optional autosave status details showing last saved time and storage pressure.
 - Add a recovery modal when storage quota is close to being exceeded.
-- Add per-tab rename from a context menu in addition to double-click.
-- Add a lightweight first-run tour that can be reopened from Help.
+- Add a shortcut and toolbar action for centering on the first hostile or neutral root, not just the primary root.
+- Add minimap viewport framing so users can see the current camera bounds inside the overview.
 
 ## Bug Fixes
 
