@@ -426,7 +426,7 @@
       minimap.style.position = 'fixed';
       minimap.style.right = '8px';
       minimap.style.bottom = '8px';
-      minimap.style.display = 'block';
+      minimap.style.display = (typeof mmVisible === 'undefined' || mmVisible) ? 'block' : 'none';
       minimap.style.zIndex = '7000';
       minimap.style.pointerEvents = 'auto';
     }
