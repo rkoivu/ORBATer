@@ -1,13 +1,13 @@
-/* ══════════════════════════════════════
+/* ========================================
    NATO APP-6C SYMBOL ENGINE
-══════════════════════════════════════ */
+======================================== */
 const AC={
   friendly:{fill:'#c6d7f5',stroke:'#003399'},
   hostile:{fill:'#ffc0cb',stroke:'#aa0000'},
   neutral:{fill:'#aaffaa',stroke:'#006600'},
   unknown:{fill:'#e8d0ff',stroke:'#6600aa'}
 };
-const EM={team:'·',squad:'··',platoon:'···',company:'|',battalion:'||',regiment:'|||',brigade:'X',division:'XX',corps:'XXX',army:'XXXX',army_group:'XXXXX',region:'XXXXXX'};
+const EM={team:'.',squad:'..',platoon:'...',company:'|',battalion:'||',regiment:'|||',brigade:'X',division:'XX',corps:'XXX',army:'XXXX',army_group:'XXXXX',region:'XXXXXX'};
 
 const UT=[
   // COMBAT - INFANTRY
@@ -127,11 +127,12 @@ function getSym(typeId,affil,echelon,planned=false){
   return`<svg viewBox="0 0 52 42" xmlns="http://www.w3.org/2000/svg">${bg}${echSvg}<g transform="translate(1,8)">${inner}</g></svg>`;
 }
 
-/* ══════════════════════════════════════
+/* ========================================
    STATE & HISTORY
-══════════════════════════════════════ */
-const APP_SCHEMA_VERSION=2;
+======================================== */
+const APP_SCHEMA_VERSION=3;
 let nodes={},selectedId=null,multiSel=new Set(),nodeIdC=1;
+let textboxes={},selectedTextboxId=null,textboxIdC=1;
 let zoom=1,panX=0,panY=0,isPanning=false,panStart={x:0,y:0};
 let snapOn=true;const SNAP=24;
 let history=[],histIdx=-1;
@@ -140,6 +141,7 @@ let ctxTarget=null,ciDataUrl=null;
 let clipboard=[];
 let showRelLabels=true;
 let useSymbolPackImages=true;
+let textboxDragId=null,textboxDragStart={x:0,y:0},textboxMouseStart={x:0,y:0},textboxDragMoved=false,textboxSaveTimer=null;
 
 function snapV(v){return snapOn?Math.round(v/SNAP)*SNAP:v}
 function escXml(v){return String(v??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&apos;')}
@@ -148,6 +150,7 @@ function countSubtree(id,pool=null){let total=1;getChildren(id,pool).forEach(ch=
 function isDescendant(targetId,ancestorId,pool=null){const source=pool||nodes;let cur=source[targetId];const seen=new Set();while(cur&&cur.parentId&&!seen.has(cur.parentId)){if(cur.parentId===ancestorId)return true;seen.add(cur.parentId);cur=source[cur.parentId];}return false}
 function canSetParent(childId,parentId,pool=null){if(!childId)return false;if(parentId==null)return true;const source=pool||nodes;if(!source[childId]||!source[parentId])return false;if(childId===parentId)return false;if(isDescendant(parentId,childId,source))return false;return true}
 function getNodeCardSize(n){const el=document.getElementById('el-'+n.id);if(el)return{w:el.offsetWidth||130,h:el.offsetHeight||84};const size=n.size==='compact'?{w:92,h:64}:n.size==='expanded'?{w:156,h:104}:{w:118,h:84};return size}
+function getTextboxSize(tb){const el=document.getElementById('tb-'+tb.id);if(el)return{w:el.offsetWidth||188,h:el.offsetHeight||104};return{w:188,h:104}}
 function normalizeNode(id,raw={}){const fallbackX=200+Object.keys(nodes).length*16,fallbackY=100+Object.keys(nodes).length*12;return{
     id,
     name:raw.name||'New Unit',designation:raw.designation||'',commander:raw.commander||'',
@@ -164,36 +167,48 @@ function normalizeNode(id,raw={}){const fallbackX=200+Object.keys(nodes).length*
     taskOrder:raw.taskOrder??null,adminOrder:raw.adminOrder??null,
     relLabel:raw.relLabel||''
   }}
-function serializeDocument(){return{schemaVersion:APP_SCHEMA_VERSION,opName:document.getElementById('op-name-input').value,nodeIdC,nodes,customTypes,showRelLabels,useSymbolPackImages,minimapVisible:mmVisible}}
+function normalizeTextbox(id,raw={}){const fallbackX=120+Object.keys(textboxes).length*18,fallbackY=120+Object.keys(textboxes).length*18;return{
+    id,
+    text:raw.text||'',
+    x:Number.isFinite(+raw.x)?snapV(+raw.x):snapV(fallbackX),y:Number.isFinite(+raw.y)?snapV(+raw.y):snapV(fallbackY),
+    anchorId:raw.anchorId||null,side:raw.side||'right'
+  }}
+function serializeDocument(){return{schemaVersion:APP_SCHEMA_VERSION,opName:document.getElementById('op-name-input').value,nodeIdC,textboxIdC,nodes,textboxes,customTypes,showRelLabels,useSymbolPackImages,minimapVisible:mmVisible}}
 function validateOrbatData(d){
   if(!d||typeof d!=='object')throw new Error('Invalid ORBAT file');
-  if(!d.nodes||typeof d.nodes!=='object')throw new Error('Invalid ORBAT file — missing nodes');
+  if(!d.nodes||typeof d.nodes!=='object')throw new Error('Invalid ORBAT file - missing nodes');
   const normalized={};
   Object.entries(d.nodes).forEach(([id,raw])=>{normalized[id]=normalizeNode(id,raw||{});});
   Object.values(normalized).forEach(n=>{if(n.parentId&&!normalized[n.parentId])n.parentId=null;});
   Object.values(normalized).forEach(n=>{if(n.parentId&&!canSetParent(n.id,n.parentId,normalized))n.parentId=null;});
   const maxId=Math.max(0,...Object.keys(normalized).map(id=>parseInt(String(id).replace(/^n/,''),10)).filter(Number.isFinite));
+  const normalizedTextboxes={};
+  Object.entries(d.textboxes||{}).forEach(([id,raw])=>{normalizedTextboxes[id]=normalizeTextbox(id,raw||{});});
+  Object.values(normalizedTextboxes).forEach(tb=>{if(tb.anchorId&&!normalized[tb.anchorId])tb.anchorId=null;});
+  const maxTextboxId=Math.max(0,...Object.keys(normalizedTextboxes).map(id=>parseInt(String(id).replace(/^tb/,''),10)).filter(Number.isFinite));
   return{
     schemaVersion:d.schemaVersion||1,
     opName:d.opName||'OPERATION',
     nodeIdC:Math.max(d.nodeIdC||d.nIdC||1,maxId+1),
+    textboxIdC:Math.max(d.textboxIdC||1,maxTextboxId+1),
     customTypes:Array.isArray(d.customTypes)?d.customTypes:[],
-    nodes:normalized
+    nodes:normalized,
+    textboxes:normalizedTextboxes
   };
 }
 function applyDocumentState(doc,{trackHistory=true,preserveView=true}={}){
   const view={zoom,panX,panY};
-  clearCanvas();nodes={};selectedId=null;multiSel.clear();
+  clearCanvas();nodes={};textboxes={};selectedId=null;selectedTextboxId=null;multiSel.clear();
   const valid=validateOrbatData(doc);
   document.getElementById('op-name-input').value=valid.opName;
-  nodeIdC=valid.nodeIdC;customTypes=valid.customTypes;nodes=valid.nodes;
+  nodeIdC=valid.nodeIdC;textboxIdC=valid.textboxIdC;customTypes=valid.customTypes;nodes=valid.nodes;textboxes=valid.textboxes;
   showRelLabels=doc.showRelLabels!==false;
   useSymbolPackImages=doc.useSymbolPackImages!==false;
   mmVisible=doc.minimapVisible!==false;
   syncRelLabelBtn();
   syncIconModeBtn();
   syncMinimapVisibility();
-  buildPalette();buildTypeSelect();Object.keys(nodes).forEach(id=>renderNode(id));
+  buildPalette();buildTypeSelect();Object.keys(nodes).forEach(id=>renderNode(id));Object.keys(textboxes).forEach(id=>renderTextbox(id));
   drawConnectors();updSB();updEmpty();deselectAll();
   if(preserveView){zoom=view.zoom;panX=view.panX;panY=view.panY;applyTransform();}
   if(trackHistory)saveState();
@@ -219,6 +234,7 @@ function restoreState(s){
 }
 function clearCanvas(){
   Object.keys(nodes).forEach(id=>{const e=document.getElementById('el-'+id);if(e)e.remove()});
+  Object.keys(textboxes).forEach(id=>{const e=document.getElementById('tb-'+id);if(e)e.remove()});
   document.getElementById('connector-svg').innerHTML='';
   const hit=document.getElementById('connector-hit-svg'); if(hit) hit.innerHTML='';
 }
@@ -235,7 +251,7 @@ function scheduleAutosave(){
     try{
       localStorage.setItem('orbat_v3',JSON.stringify({...serializeDocument(),ts:Date.now()}));
       const el=document.getElementById('afsave');
-      if(el){el.textContent='✓ SAVED '+new Date().toLocaleTimeString();
+      if(el){el.textContent='OK SAVED '+new Date().toLocaleTimeString();
       el.classList.add('on');setTimeout(()=>el.classList.remove('on'),1800);}
     }catch(e){}
   },2500);
@@ -264,19 +280,19 @@ function toggleRelLabels(){
   showToast(showRelLabels?'Relationship labels ON':'Relationship labels OFF');
 }
 
-/* ══════════════════════════════════════
+/* ========================================
    SWATCHES
-══════════════════════════════════════ */
+======================================== */
 const SWATCHES=['#1a2332','#1a2a1a','#2a1a1a','#2a1a2a','#1a222a','#2a2010','#102a2a','#0f172a','#1e1b2e','#1a1a10'];
 function buildSwatches(containerId,cb){
   const row=document.getElementById(containerId);if(!row)return;row.innerHTML='';
-  const rst=document.createElement('div');rst.className='sw rst';rst.textContent='✕';rst.title='Default';rst.onclick=()=>cb(null);row.appendChild(rst);
+  const rst=document.createElement('div');rst.className='sw rst';rst.textContent='x';rst.title='Default';rst.onclick=()=>cb(null);row.appendChild(rst);
   SWATCHES.forEach(col=>{const s=document.createElement('div');s.className='sw';s.style.background=col;s.onclick=()=>cb(col);row.appendChild(s)});
 }
 
-/* ══════════════════════════════════════
+/* ========================================
    PALETTE
-══════════════════════════════════════ */
+======================================== */
 function buildPalette(){
   const scroll=document.getElementById('sidebar-scroll');scroll.innerHTML='';
   const all=[...UT,...customTypes];
@@ -284,7 +300,7 @@ function buildPalette(){
   cats.forEach(cat=>{
     const sec=document.createElement('div');sec.className='palette-section';
     const title=document.createElement('div');title.className='palette-section-title';
-    title.innerHTML=`${cat} <span class="caret">▾</span>`;
+    title.innerHTML=`${cat} <span class="caret">v</span>`;
     const grid=document.createElement('div');grid.className='palette-grid';
     title.onclick=()=>{title.classList.toggle('collapsed');grid.classList.toggle('hidden')};
     
@@ -328,9 +344,9 @@ function buildTypeSelect(){
   sel.onchange=applyEP;
 }
 
-/* ══════════════════════════════════════
+/* ========================================
    NODE MANAGEMENT
-══════════════════════════════════════ */
+======================================== */
 function createNode(d={}){
   const id='n'+(nodeIdC++);
   nodes[id]=normalizeNode(id,d);
@@ -358,14 +374,14 @@ function renderNode(id){
   const afC={friendly:'#3b82f6',hostile:'#ef4444',neutral:'#f59e0b',unknown:'#a855f7'};
   const bc=afC[n.affil]||'#3b82f6';const bg=n.tint||'#1a2332';
   const stBadge=n.status?`<div class="node-status-badge ${n.status}" title="${n.status}"></div>`:'';
-  const modMap={reinforced:'+',reduced:'−',hq:'⊕'};
+  const modMap={reinforced:'+',reduced:'-',hq:'HQ'};
   const modBadge=n.mod&&n.mod!=='none'?`<div class="node-mod-badge" title="${n.mod}">${modMap[n.mod]||''}</div>`:'';
   const stackedLead = n._stackCount>1 && n._stackLead;
   const iconInner = n.customIcon ? `<img class="node-custom-img" src="${n.customIcon}">` : (window.getSym||getSym)(n.typeId,n.affil,n.echelon,n.frameStatus==='planned');
   const iconHtml=`<div class="node-symbol${stackedLead?' stacked':''}"><div class="node-symbol-inner">${iconInner}</div></div>`;
   const childCount=Object.values(nodes).filter(c=>c.parentId===id).length;
-  const colBtnHtml=childCount>0?`<div class="collapse-btn" onclick="toggleCollapse(event,'${id}')" title="${n.collapsed?'Expand subtree':'Collapse subtree'}">${n.collapsed?'▸':'▾'}</div>`:'';
-  const colBadge=n.collapsed&&childCount>0?`<div class="node-collapsed-badge" onclick="toggleCollapse(event,'${id}')">▸ ${childCount} hidden</div>`:'';
+  const colBtnHtml=childCount>0?`<div class="collapse-btn" onclick="toggleCollapse(event,'${id}')" title="${n.collapsed?'Expand subtree':'Collapse subtree'}">${n.collapsed?'>':'v'}</div>`:'';
+  const colBadge=n.collapsed&&childCount>0?`<div class="node-collapsed-badge" onclick="toggleCollapse(event,'${id}')">> ${childCount} hidden</div>`:'';
 
   // Rel-type strip colour
   const relC={command:'transparent',support:'#f59e0b',opcon:'#3b82f6',tacon:'#f97316',coord:'#6b7280'};
@@ -378,14 +394,41 @@ function renderNode(id){
     ${n.showDesig&&n.designation?`<div class="node-designation">${n.designation}</div>`:''}
     <div class="node-name">${escXml(n.name)}</div>
     ${n.showCmd&&n.commander?`<div class="node-commander">${escXml(n.commander)}</div>`:''}
-    ${n.showStr&&n.strength?`<div class="node-strength-lbl">${escXml(n.strength)}${n.equipment?' · '+escXml(n.equipment):''}</div>`:''}
+    ${n.showStr&&n.strength?`<div class="node-strength-lbl">${escXml(n.strength)}${n.equipment?' . '+escXml(n.equipment):''}</div>`:''}
     ${n.showRdy&&n.readiness?`<div class="node-strength-lbl">Rdy: ${escXml(n.readiness)}%</div>`:''}
     ${n.showTask&&n.task?`<div class="node-task-lbl">${escXml(n.task)}</div>`:''}
-    <div class="node-link-btn" onmousedown="startLink(event,'${id}')" title="Drag to set parent">⤢</div>
+    <div class="node-link-btn" onmousedown="startLink(event,'${id}')" title="Drag to set parent">-></div>
     <div class="node-add-btn" onclick="addChildNode(event,'${id}')" title="Add subordinate">+</div>
     ${colBtnHtml}
     ${colBadge}
   </div>`;
+}
+
+function renderTextbox(id){
+  const tb=textboxes[id];if(!tb)return;const canvas=document.getElementById('canvas');
+  let el=document.getElementById('tb-'+id);
+  if(!el){
+    el=document.createElement('div');el.id='tb-'+id;canvas.appendChild(el);
+    el.addEventListener('mousedown',onTextboxMouseDown);
+    el.addEventListener('click',e=>{e.stopPropagation();selectTextbox(id);});
+    el.addEventListener('contextmenu',e=>{e.preventDefault();e.stopPropagation();selectTextbox(id);});
+  }
+  el.className='orbat-textbox'+(selectedTextboxId===id?' selected':'');
+  el.style.left=tb.x+'px';el.style.top=tb.y+'px';
+  el.innerHTML=`<div class="textbox-card">
+    <div class="textbox-handle">Text Box</div>
+    <textarea class="textbox-input" placeholder="Type note...">${escXml(tb.text)}</textarea>
+  </div>`;
+  const input=el.querySelector('.textbox-input');
+  if(input&&!input.dataset.bound){
+    input.dataset.bound='1';
+    input.addEventListener('mousedown',e=>e.stopPropagation());
+    input.addEventListener('click',e=>{e.stopPropagation();selectTextbox(id);});
+    input.addEventListener('input',e=>{
+      if(textboxes[id])textboxes[id].text=e.target.value;
+      scheduleTextboxSave();
+    });
+  }
 }
 
 function deleteNode(id){
@@ -394,6 +437,55 @@ function deleteNode(id){
   const el=document.getElementById('el-'+id);if(el)el.remove();
   delete nodes[id];if(selectedId===id)deselectAll();multiSel.delete(id);
   drawConnectors();updSB();updEmpty();
+}
+
+function scheduleTextboxSave(){
+  clearTimeout(textboxSaveTimer);
+  textboxSaveTimer=setTimeout(()=>saveState(),350);
+}
+function selectTextbox(id){
+  if(!textboxes[id])return;
+  document.querySelectorAll('.orbat-textbox').forEach(e=>e.classList.remove('selected'));
+  document.querySelectorAll('.orbat-node').forEach(e=>e.classList.remove('selected','multi-selected'));
+  selectedId=null;multiSel.clear();selectedTextboxId=id;
+  const el=document.getElementById('tb-'+id);if(el)el.classList.add('selected');
+  document.getElementById('edit-panel').classList.add('hid');
+  document.getElementById('align-bar').style.display='none';
+  updSB();
+}
+function deleteTextbox(id){
+  const el=document.getElementById('tb-'+id);if(el)el.remove();
+  delete textboxes[id];
+  if(selectedTextboxId===id)selectedTextboxId=null;
+  updSB();
+}
+function onTextboxMouseDown(e){
+  const target=e.target instanceof Element?e.target:null;
+  if(!target||!target.closest('.textbox-handle'))return;
+  if(e.button!==0)return;
+  e.stopPropagation();
+  textboxDragId=e.currentTarget.id.replace('tb-','');
+  const tb=textboxes[textboxDragId];if(!tb)return;
+  selectTextbox(textboxDragId);
+  textboxDragStart={x:tb.x,y:tb.y};textboxMouseStart={x:e.clientX,y:e.clientY};textboxDragMoved=false;
+  document.addEventListener('mousemove',onTextboxMouseMove);
+  document.addEventListener('mouseup',onTextboxMouseUp);
+}
+function onTextboxMouseMove(e){
+  if(!textboxDragId||!textboxes[textboxDragId])return;
+  const dx=(e.clientX-textboxMouseStart.x)/zoom,dy=(e.clientY-textboxMouseStart.y)/zoom;
+  textboxes[textboxDragId].x=snapV(textboxDragStart.x+dx);
+  textboxes[textboxDragId].y=snapV(textboxDragStart.y+dy);
+  const el=document.getElementById('tb-'+textboxDragId);
+  if(el){el.style.left=textboxes[textboxDragId].x+'px';el.style.top=textboxes[textboxDragId].y+'px';}
+  if(dx||dy)textboxDragMoved=true;
+}
+function onTextboxMouseUp(){
+  const moved=textboxDragMoved;
+  textboxDragId=null;textboxDragMoved=false;
+  document.removeEventListener('mousemove',onTextboxMouseMove);
+  document.removeEventListener('mouseup',onTextboxMouseUp);
+  if(moved)saveState();
 }
 
 /* COLLAPSE / EXPAND */
@@ -434,9 +526,9 @@ function highlightChain(id,on){
   hiDesc(id);
 }
 
-/* ══════════════════════════════════════
+/* ========================================
    SELECTION
-══════════════════════════════════════ */
+======================================== */
 function onNClick(e,id){
   if(linkMode)return;
   if(e.shiftKey){
@@ -447,6 +539,8 @@ function onNClick(e,id){
 }
 function selectNode(id){
   if(!nodes[id]){console.warn('selectNode: node '+id+' not found');return;}
+  selectedTextboxId=null;
+  document.querySelectorAll('.orbat-textbox').forEach(e=>e.classList.remove('selected'));
   document.querySelectorAll('.orbat-node').forEach(e=>e.classList.remove('selected','multi-selected'));
   selectedId=id;multiSel.clear();
   const el=document.getElementById('el-'+id);if(el)el.classList.add('selected');
@@ -458,7 +552,8 @@ function selectNode(id){
 }
 function deselectAll(){
   document.querySelectorAll('.orbat-node').forEach(e=>e.classList.remove('selected','multi-selected'));
-  selectedId=null;multiSel.clear();
+  document.querySelectorAll('.orbat-textbox').forEach(e=>e.classList.remove('selected'));
+  selectedId=null;selectedTextboxId=null;multiSel.clear();
   document.getElementById('edit-panel').classList.add('hid');
   document.getElementById('align-bar').style.display='none';
   updSB();
@@ -482,9 +577,9 @@ function selSubtree(root){
   Object.values(nodes).filter(n=>n.parentId===root).forEach(n=>selSubtree(n.id));
 }
 
-/* ══════════════════════════════════════
+/* ========================================
    EDIT PANEL
-══════════════════════════════════════ */
+======================================== */
 function populateEditPanel(id){
   const n=nodes[id];
   if(!n){console.warn('populateEditPanel: node '+id+' not found');return;}
@@ -576,9 +671,9 @@ function addCiToPalette(){
   buildPalette();buildTypeSelect();closeModal('ci-modal');saveState();showToast('Custom icon added to palette');
 }
 
-/* ══════════════════════════════════════
+/* ========================================
    CONNECTOR DRAWING
-══════════════════════════════════════ */
+======================================== */
 const REL_STYLES={
   command:{color:'inherit',dash:'none',w:1.8},
   support:{color:'inherit',dash:'6,4',w:1.5},
@@ -645,13 +740,13 @@ function drawConnectors(){
 }
 
 
-/* ══════════════════════════════════════
+/* ========================================
    LINK MODE
-══════════════════════════════════════ */
+======================================== */
 function toggleLinkMode(){
   linkMode=!linkMode;document.body.classList.toggle('link-mode',linkMode);
   document.getElementById('btn-link').classList.toggle('active',linkMode);
-  showToast(linkMode?'Link mode ON — drag ⤢ from source to target':'Link mode OFF');
+  showToast(linkMode?'Link mode ON - drag -> from source to target':'Link mode OFF');
 }
 function startLink(e,id){
   if(!linkMode)return;e.stopPropagation();e.preventDefault();
@@ -701,9 +796,9 @@ function startLink(e,id){
   document.addEventListener('mousemove',mv);document.addEventListener('mouseup',up);
 }
 
-/* ══════════════════════════════════════
+/* ========================================
    NODE DRAGGING (multi + reparent on Shift)
-══════════════════════════════════════ */
+======================================== */
 let dragId=null,dragNS={x:0,y:0},dragMS={x:0,y:0},mDragStarts={},dragMoved=false;
 function onNMD(e){
   const targetElement = e.target instanceof Element ? e.target : e.target.parentElement;
@@ -746,7 +841,7 @@ function onNMU(e){
       if(tid!==dragId&&nodes[tid]){
         if(nodes[dragId]?.locked){ showToast('Node is locked'); }
         else if(!canSetParent(dragId,tid)){showToast('Invalid parent: cycle prevented');}
-        else{nodes[dragId].parentId=tid;drawConnectors();showToast('Reparented → '+nodes[tid].name);}
+        else{nodes[dragId].parentId=tid;drawConnectors();showToast('Reparented -> '+nodes[tid].name);}
       }
       el.classList.remove('rp-target');
     });
@@ -756,9 +851,9 @@ function onNMU(e){
   if(_moved) saveState(); // skip saveState for plain clicks that didn't move anything
 }
 
-/* ══════════════════════════════════════
+/* ========================================
    LASSO + PAN
-══════════════════════════════════════ */
+======================================== */
 let lassoActive=false,lassoStart={x:0,y:0};
 const lassoEl=document.getElementById('lasso');
 const canvasWrap=document.getElementById('canvas-wrap');
@@ -809,14 +904,14 @@ function applyTransform(){
   drawConnectors();
 }
 
-/* ══════════════════════════════════════
+/* ========================================
    SNAP / GRID CYCLE
-══════════════════════════════════════ */
-let gridMode=0;const gridModes=['snap-on','snap-off','snap-none'];const gridLabels=['Dot Grid','Line Grid','No Grid'];
+======================================== */
+canvasWrap.className='snap-on';document.getElementById('btn-snap').textContent='Grid Dot Grid';
 function toggleSnap(){
   gridMode=(gridMode+1)%3;snapOn=gridMode===0;
   canvasWrap.className=gridModes[gridMode];
-  document.getElementById('btn-snap').textContent='⌗ '+gridLabels[gridMode];
+  document.getElementById('btn-snap').textContent='Grid '+gridLabels[gridMode];
   showToast('Grid: '+gridLabels[gridMode]);
 }
 // css for grid modes
@@ -828,9 +923,9 @@ gridStyle.textContent=`
 `;
 document.head.appendChild(gridStyle);
 
-/* ══════════════════════════════════════
+/* ========================================
    FIT TO SCREEN
-══════════════════════════════════════ */
+======================================== */
 function fitScreen(){
   const all=Object.values(nodes);if(!all.length)return;
   const els=all.map(n=>({n,el:document.getElementById('el-'+n.id)})).filter(x=>x.el&&x.el.style.display!=='none');
@@ -842,9 +937,9 @@ function fitScreen(){
   panX=pad-mnX*zoom;panY=pad-mnY*zoom;applyTransform();showToast('Fit to screen');
 }
 
-/* ══════════════════════════════════════
+/* ========================================
    MINIMAP
-══════════════════════════════════════ */
+======================================== */
 let mmVisible=true;
 function syncMinimapVisibility(){
   const minimap=document.getElementById('minimap');
@@ -871,9 +966,9 @@ function updateMinimap(){
   els.forEach(({n,el})=>{ctx.fillStyle=afC[n.affil]||'#3b82f6';ctx.fillRect((n.x-mnX)*sc+5,(n.y-mnY)*sc+5,el.offsetWidth*sc,el.offsetHeight*sc)});
 }
 
-/* ══════════════════════════════════════
+/* ========================================
    CONTEXT MENU
-══════════════════════════════════════ */
+======================================== */
 function showCtx(e,id){
   ctxTarget=id;if(!multiSel.has(id)&&multiSel.size===0)selectNode(id);
   const m=document.getElementById('ctx-menu');m.style.left=e.clientX+'px';m.style.top=e.clientY+'px';m.style.display='block';
@@ -882,6 +977,10 @@ function hideCtx(){document.getElementById('ctx-menu').style.display='none';}
 function ctxAct(act){
   hideCtx();
   if(act==='add-child'&&ctxTarget)addChildNode({stopPropagation:()=>{}},ctxTarget);
+  if(act==='add-textbox-left'&&ctxTarget)addTextboxNearUnit(ctxTarget,'left');
+  if(act==='add-textbox-right'&&ctxTarget)addTextboxNearUnit(ctxTarget,'right');
+  if(act==='add-textbox-above'&&ctxTarget)addTextboxNearUnit(ctxTarget,'above');
+  if(act==='add-textbox-below'&&ctxTarget)addTextboxNearUnit(ctxTarget,'below');
   if(act==='dup')duplicateSelected();
   if(act==='del')deleteSelected();
   if(act==='detach')detachNode();
@@ -894,9 +993,9 @@ function ctxAct(act){
 document.addEventListener('click',hideCtx);
 document.addEventListener('contextmenu',e=>{if(e.target===canvasWrap||e.target===document.getElementById('canvas'))e.preventDefault()});
 
-/* ══════════════════════════════════════
+/* ========================================
    PALETTE DRAG/DROP
-══════════════════════════════════════ */
+======================================== */
 let palDragId=null;
 function onPalDrag(e){palDragId=e.currentTarget.dataset.typeId;e.dataTransfer.effectAllowed='copy';}
 canvasWrap.addEventListener('dragover',e=>e.preventDefault());
@@ -907,9 +1006,9 @@ canvasWrap.addEventListener('drop',e=>{
   palDragId=null;
 });
 
-/* ══════════════════════════════════════
+/* ========================================
    AUTO LAYOUT
-══════════════════════════════════════ */
+======================================== */
 function autoLayout(onlyIds=null){
   const mode = window.layoutMode || 'tree';
   if(mode === 'indented') return autoLayoutIndented(onlyIds);
@@ -1080,9 +1179,9 @@ function autoLayoutForce(onlyIds=null){
   drawConnectors();saveState();showToast('Force layout applied');
 }
 
-/* ══════════════════════════════════════
+/* ========================================
    ALIGN TOOLS
-══════════════════════════════════════ */
+======================================== */
 function alignNodes(dir){
   const ids=[...multiSel];if(ids.length<2)return;
   const pos=ids.map(id=>({id,n:nodes[id],el:document.getElementById('el-'+id)})).filter(x=>x.el);
@@ -1108,9 +1207,9 @@ function distributeV(){
   drawConnectors();saveState();showToast('Distributed vertically');
 }
 
-/* ══════════════════════════════════════
+/* ========================================
    COPY / PASTE / SUBTREE
-══════════════════════════════════════ */
+======================================== */
 function buildClipboardFromIds(ids){
   const selectedSet=new Set(ids);
   return ids.map(id=>{
@@ -1152,9 +1251,30 @@ function copySubtree(){
 }
 
 
-/* ══════════════════════════════════════
+/* ========================================
    ADD / DELETE / PROMOTE / DEMOTE
-══════════════════════════════════════ */
+======================================== */
+function createTextbox(d={}){const id='tb'+(textboxIdC++);textboxes[id]=normalizeTextbox(id,d);renderTextbox(id);updSB();saveState();return id;}
+function getTextboxPlacement(unitId,side){
+  const n=nodes[unitId];if(!n)return null;
+  const nodeSize=getNodeCardSize(n),tbSize={w:188,h:104},gap=24;
+  const pos={
+    left:{x:n.x-tbSize.w-gap,y:n.y+nodeSize.h/2-tbSize.h/2},
+    right:{x:n.x+nodeSize.w+gap,y:n.y+nodeSize.h/2-tbSize.h/2},
+    above:{x:n.x+nodeSize.w/2-tbSize.w/2,y:n.y-tbSize.h-gap},
+    below:{x:n.x+nodeSize.w/2-tbSize.w/2,y:n.y+nodeSize.h+gap}
+  }[side]||{x:n.x+nodeSize.w+gap,y:n.y};
+  return{x:snapV(pos.x),y:snapV(pos.y)};
+}
+function addTextboxNearUnit(unitId,side){
+  if(!unitId||!nodes[unitId])return;
+  const pos=getTextboxPlacement(unitId,side);if(!pos)return;
+  const id=createTextbox({...pos,anchorId:unitId,side});
+  selectTextbox(id);
+  const input=document.querySelector('#tb-'+id+' .textbox-input');
+  if(input)input.focus();
+  showToast(`Textbox added ${side}`);
+}
 function addRootUnit(){const id=createNode({x:snapV(200+Math.random()*200),y:80});selectNode(id);}
 function addChildNode(e,pId){
   e.stopPropagation();const p=nodes[pId];
@@ -1169,6 +1289,7 @@ function duplicateSelected(){
 }
 
 function deleteSelected(){
+  if(selectedTextboxId){deleteTextbox(selectedTextboxId);saveState();return;}
   if(multiSel.size>1){deleteMultiSel();return;}
   if(!selectedId)return;
   const total=countSubtree(selectedId);
@@ -1214,22 +1335,22 @@ function demoteNode(){
   n.parentId=target.id;drawConnectors();renderNode(selectedId);saveState();showToast('Demoted under '+nodes[target.id].name);
 }
 
-/* ══════════════════════════════════════
+/* ========================================
    BULK OPS
-══════════════════════════════════════ */
+======================================== */
 function bulkAffil(a){multiSel.forEach(id=>{nodes[id].affil=a;renderNode(id);});drawConnectors();saveState();showToast('Affiliation: '+a);}
 function bulkStatus(s){multiSel.forEach(id=>{nodes[id].status=s;renderNode(id);});saveState();showToast('Status set');}
 function bulkEchelon(v){if(!v)return;multiSel.forEach(id=>{nodes[id].echelon=v;renderNode(id);});drawConnectors();saveState();document.getElementById('bulk-echelon').value='';}
 function bulkFrame(fs){multiSel.forEach(id=>{nodes[id].frameStatus=fs;renderNode(id);});drawConnectors();saveState();showToast('Frame status set');}
 
-/* ══════════════════════════════════════
+/* ========================================
    SIDEBAR TOGGLE
-══════════════════════════════════════ */
+======================================== */
 function toggleSidebar(){document.getElementById('sidebar').classList.toggle('sb-collapsed');}
 
-/* ══════════════════════════════════════
+/* ========================================
    TEMPLATES
-══════════════════════════════════════ */
+======================================== */
 const TEMPLATES=[
   {name:'Brigade Combat Team',desc:'HQ + 3 inf bns + arty + engr + log',fn:()=>{
     const hq=createNode({typeId:'hq',name:'1 BCT',designation:'1 BCT',echelon:'brigade',x:340,y:60});
@@ -1292,22 +1413,24 @@ function openTplModal(){
   openModal('tpl-modal');
 }
 
-/* ══════════════════════════════════════
+/* ========================================
    MODALS
-══════════════════════════════════════ */
+======================================== */
 function openModal(id){document.getElementById(id).classList.add('open');}
 function closeModal(id){document.getElementById(id).classList.remove('open');}
 function openScModal(){openModal('sc-modal');}
 
-/* ══════════════════════════════════════
+/* ========================================
    SVG EXPORT
-══════════════════════════════════════ */
+======================================== */
 function exportSVG(){
   const allN=Object.values(nodes);if(!allN.length){showToast('Nothing to export');return;}
   const els=allN.map(n=>({n,el:document.getElementById('el-'+n.id)})).filter(x=>x.el&&x.el.style.display!=='none');
+  const textboxEls=Object.values(textboxes).map(tb=>({tb,el:document.getElementById('tb-'+tb.id)})).filter(x=>x.el&&x.el.style.display!=='none');
   if(!els.length){showToast('No visible units to export');return;}
   let mnX=Infinity,mnY=Infinity,mxX=-Infinity,mxY=-Infinity;
   els.forEach(({n,el})=>{mnX=Math.min(mnX,n.x-16);mnY=Math.min(mnY,n.y-16);mxX=Math.max(mxX,n.x+el.offsetWidth+16);mxY=Math.max(mxY,n.y+el.offsetHeight+16);});
+  textboxEls.forEach(({tb,el})=>{mnX=Math.min(mnX,tb.x-16);mnY=Math.min(mnY,tb.y-16);mxX=Math.max(mxX,tb.x+el.offsetWidth+16);mxY=Math.max(mxY,tb.y+el.offsetHeight+16);});
   const w=mxX-mnX,h=mxY-mnY;
   const connSvg=document.getElementById('connector-svg').innerHTML;
   const afC={friendly:'#3b82f6',hostile:'#ef4444',neutral:'#f59e0b',unknown:'#a855f7'};
@@ -1321,15 +1444,25 @@ function exportSVG(){
     out+=`<g transform="translate(${n.x},${n.y})">`;
     out+=`<rect width="${ew}" height="${eh}" rx="6" fill="${bg}" stroke="${bc}" stroke-width="1.5"${n.frameStatus==='planned'?' stroke-dasharray="4,2"':''}/>`;
     if(n.status){const statusFill={effective:'#22c55e',degraded:'#f59e0b','not-operational':'#ef4444','unknown-status':'#6b7280'}[n.status]||'#6b7280';out+=`<circle cx="${ew-6}" cy="6" r="5" fill="${statusFill}" stroke="#0d1117" stroke-width="1.5"/>`;}
-    if(n.mod&&n.mod!=='none'){const modMap={reinforced:'+',reduced:'−',hq:'⊕'};out+=`<circle cx="8" cy="8" r="7" fill="#0d1117" stroke="#30363d" stroke-width="1"/><text x="8" y="11" text-anchor="middle" font-size="10" fill="#8b949e" font-family="monospace">${modMap[n.mod]||''}</text>`;}
+    if(n.mod&&n.mod!=='none'){const modMap={reinforced:'+',reduced:'-',hq:'HQ'};out+=`<circle cx="8" cy="8" r="7" fill="#0d1117" stroke="#30363d" stroke-width="1"/><text x="8" y="11" text-anchor="middle" font-size="10" fill="#8b949e" font-family="monospace">${modMap[n.mod]||''}</text>`;}
     out+=`<g transform="translate(${(ew-52)/2},2)">${symStr}</g>`;
     let textY=eh-8;
     out+=`<text x="${ew/2}" y="${textY}" text-anchor="middle" font-size="11" fill="#e6edf3" font-weight="600">${escXml(n.name)}</text>`;
     textY-=12;
     if(n.showDesig&&n.designation){out+=`<text x="${ew/2}" y="${textY}" text-anchor="middle" font-size="9" fill="#f59e0b" font-family="monospace">${escXml(n.designation)}</text>`;textY-=10;}
     if(n.showCmd&&n.commander){out+=`<text x="${ew/2}" y="${textY}" text-anchor="middle" font-size="8" fill="#8b949e">${escXml(n.commander)}</text>`;textY-=10;}
-    if(n.showStr&&(n.strength||n.equipment)){out+=`<text x="${ew/2}" y="${textY}" text-anchor="middle" font-size="8" fill="#8b949e">${escXml(n.strength+(n.equipment&&n.strength?' · ':'')+(n.equipment||''))}</text>`;textY-=10;}
+    if(n.showStr&&(n.strength||n.equipment)){out+=`<text x="${ew/2}" y="${textY}" text-anchor="middle" font-size="8" fill="#8b949e">${escXml(n.strength+(n.equipment&&n.strength?' . ':'')+(n.equipment||''))}</text>`;textY-=10;}
     if(n.showTask&&n.task){out+=`<text x="${ew/2}" y="${textY}" text-anchor="middle" font-size="8" fill="#f97316" font-weight="700">${escXml(n.task)}</text>`;}
+    out+=`</g>`;
+  });
+  textboxEls.forEach(({tb,el})=>{
+    const tw=el.offsetWidth||188,th=el.offsetHeight||104;
+    const lines=String(tb.text||'').split(/\r?\n/);
+    out+=`<g transform="translate(${tb.x},${tb.y})">`;
+    out+=`<rect width="${tw}" height="${th}" rx="12" fill="#161b22" stroke="rgba(148,163,184,.45)" stroke-width="1"/>`;
+    out+=`<line x1="0" y1="28" x2="${tw}" y2="28" stroke="rgba(148,163,184,.2)" stroke-width="1"/>`;
+    out+=`<text x="10" y="18" font-size="10" fill="#8b949e" font-family="Barlow Condensed, Arial, sans-serif" font-weight="700">TEXT BOX</text>`;
+    lines.slice(0,6).forEach((line,idx)=>{out+=`<text x="10" y="${44+idx*15}" font-size="12" fill="#e6edf3">${escXml(line)}</text>`;});
     out+=`</g>`;
   });
   out+=`</svg>`;
@@ -1338,9 +1471,9 @@ function exportSVG(){
   showToast('SVG exported');
 }
 
-/* ══════════════════════════════════════
+/* ========================================
    EXPORT / IMPORT / CLEAR
-══════════════════════════════════════ */
+======================================== */
 function exportJSON(){
   const d=serializeDocument();
   const blob=new Blob([JSON.stringify(d,null,2)],{type:'application/json'});
@@ -1353,21 +1486,23 @@ document.getElementById('file-input').addEventListener('change',e=>{
     try{
       const d=JSON.parse(ev.target.result);
       applyDocumentState(d,{trackHistory:true,preserveView:false});
-      showToast(`ORBAT imported successfully${d.schemaVersion?` · schema v${d.schemaVersion}`:''}`);
-    }catch(err){showToast('⚠ Import error: '+err.message);}
+      showToast(`ORBAT imported successfully${d.schemaVersion?` - schema v${d.schemaVersion}`:''}`);
+    }catch(err){showToast('Warning: Import error: '+err.message);}
   };r.readAsText(file);e.target.value='';
 });
 
 function exportPNG(){
-  showToast('Generating PNG…');if(!Object.keys(nodes).length){showToast('Nothing to export');return;}
+  showToast('Generating PNG...');if(!Object.keys(nodes).length){showToast('Nothing to export');return;}
   const wrap=document.getElementById('canvas-wrap');
   const canvas=document.getElementById('canvas');
   const connectorSvg=document.getElementById('connector-svg');
   const linkSvg=document.getElementById('link-svg');
   const prev={canvasTransform:canvas.style.transform,connTransform:connectorSvg.style.transform,linkTransform:linkSvg.style.transform,left:canvas.style.left,top:canvas.style.top,connLeft:connectorSvg.style.left,connTop:connectorSvg.style.top};
   const visible=Object.values(nodes).map(n=>({n,el:document.getElementById('el-'+n.id)})).filter(x=>x.el&&x.el.style.display!=='none');
+  const visibleTextboxes=Object.values(textboxes).map(tb=>({tb,el:document.getElementById('tb-'+tb.id)})).filter(x=>x.el&&x.el.style.display!=='none');
   let mnX=Infinity,mnY=Infinity,mxX=-Infinity,mxY=-Infinity;
   visible.forEach(({n,el})=>{mnX=Math.min(mnX,n.x-24);mnY=Math.min(mnY,n.y-24);mxX=Math.max(mxX,n.x+el.offsetWidth+24);mxY=Math.max(mxY,n.y+el.offsetHeight+24);});
+  visibleTextboxes.forEach(({tb,el})=>{mnX=Math.min(mnX,tb.x-24);mnY=Math.min(mnY,tb.y-24);mxX=Math.max(mxX,tb.x+el.offsetWidth+24);mxY=Math.max(mxY,tb.y+el.offsetHeight+24);});
   const width=Math.max(1,mxX-mnX),height=Math.max(1,mxY-mnY);
   canvas.style.transform='translate(0px,0px) scale(1)';
   connectorSvg.style.transform='translate(0px,0px) scale(1)';
@@ -1394,24 +1529,24 @@ function exportPNG(){
 }
 function clearAll(silent=false){
   if(!silent&&Object.keys(nodes).length>0&&!confirm('Clear entire ORBAT?'))return;
-  clearCanvas();nodes={};nodeIdC=1;deselectAll();updSB();updEmpty();saveState();
+  clearCanvas();nodes={};textboxes={};nodeIdC=1;textboxIdC=1;deselectAll();updSB();updEmpty();saveState();
 }
 
-/* ══════════════════════════════════════
+/* ========================================
    HELPERS & STATUS BAR
-══════════════════════════════════════ */
+======================================== */
 function updSB(){
   document.getElementById('sb-units').textContent=Object.keys(nodes).length;
-  const selN=multiSel.size>0?multiSel.size:(selectedId?1:0);
-  document.getElementById('sb-sel').textContent=selN>1?selN+' units':(selectedId?nodes[selectedId]?.name||'—':'—');
+  const selN=multiSel.size>0?multiSel.size:(selectedId||selectedTextboxId?1:0);
+  document.getElementById('sb-sel').textContent=selN>1?selN+' units':(selectedId?(nodes[selectedId]?.name||'Textbox'):(selectedTextboxId?'Textbox':'-'));
   document.getElementById('sb-hist').textContent=histIdx+'/'+(history.length-1);
 }
 function updEmpty(){document.getElementById('empty-hint').style.display=Object.keys(nodes).length===0?'block':'none';}
 function showToast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200);}
 
-/* ══════════════════════════════════════
+/* ========================================
    KEYBOARD SHORTCUTS
-══════════════════════════════════════ */
+======================================== */
 document.addEventListener('keydown',e=>{
   if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA'||e.target.tagName==='SELECT')return;
   if(e.key==='Delete'||e.key==='Backspace'){if(multiSel.size>1)deleteMultiSel();else if(selectedId)deleteSelected();}
@@ -1431,16 +1566,24 @@ document.addEventListener('keydown',e=>{
   if(e.ctrlKey&&e.key==='a'){e.preventDefault();multiSel=new Set(Object.keys(nodes));updSelUI();}
 });
 
-/* ══════════════════════════════════════
+document.addEventListener('keydown',e=>{
+  if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA'||e.target.tagName==='SELECT')return;
+  if((e.key==='Delete'||e.key==='Backspace')&&selectedTextboxId&&!selectedId&&multiSel.size===0){
+    e.preventDefault();
+    deleteSelected();
+  }
+});
+
+/* ========================================
    INIT
-══════════════════════════════════════ */
+======================================== */
 buildPalette();
 buildTypeSelect();
 buildSwatches('ep-swatches',col=>{if(!selectedId)return;nodes[selectedId].tint=col;renderNode(selectedId);saveState();});
 buildSwatches('mp-swatches',col=>{multiSel.forEach(id=>{nodes[id].tint=col;renderNode(id);});saveState();});
 updEmpty();updSB();syncRelLabelBtn();
 // Init grid
-canvasWrap.className='snap-on';document.getElementById('btn-snap').textContent='⌗ Dot Grid';
+canvasWrap.className='snap-on';document.getElementById('btn-snap').textContent='Grid Dot Grid';
 
 syncMinimapVisibility();
 
@@ -1451,4 +1594,3 @@ setTimeout(()=>{
     createNode({typeId:'hq',name:'1st Division',designation:'1 DIV',echelon:'division',x:snapV(300),y:snapV(72)});
   }
 },150);
-

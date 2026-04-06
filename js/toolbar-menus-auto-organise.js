@@ -182,7 +182,7 @@
       const cleaned=[];
       for(const line of lines){
         if(/^(create|build|generate|make)\b/i.test(line)) continue;
-        const m=line.match(/^[-*â€¢]\s*(.+)$/); cleaned.push(m?m[1]:line);
+        const m=line.match(/^[-*\u2022]\s*(.+)$/); cleaned.push(m?m[1]:line);
       }
       return window.parseOutline ? window.parseOutline(cleaned.join('\n')) : [];
     };

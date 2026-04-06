@@ -261,6 +261,10 @@
     return `
 <div id="ctx-menu" style="position:fixed;background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:3px 0;z-index:9999;display:none;min-width:160px;box-shadow:0 8px 24px rgba(0,0,0,.55)">
   <div class="ctx-item" onclick="ctxAct('add-child')">&#65291; Add Subordinate</div>
+  <div class="ctx-item" onclick="ctxAct('add-textbox-left')">Text Box Left</div>
+  <div class="ctx-item" onclick="ctxAct('add-textbox-right')">Text Box Right</div>
+  <div class="ctx-item" onclick="ctxAct('add-textbox-above')">Text Box Above</div>
+  <div class="ctx-item" onclick="ctxAct('add-textbox-below')">Text Box Below</div>
   <div class="ctx-item" onclick="ctxAct('qa-inf')">&#65291; Infantry Child</div>
   <div class="ctx-item" onclick="ctxAct('qa-arm')">&#65291; Armour Child</div>
   <div class="ctx-item" onclick="ctxAct('qa-arty')">&#65291; Artillery Child</div>
