@@ -147,8 +147,9 @@
       fires:     ['artillery','rockets','mortar'],
       aviation:  ['aviation','attack_helo','fixed_wing','uav','istar'],
       engineer:  ['engineer','bridging'],
-      support:   ['log','medical','signals','intel','maintenance','mp',
-                  'chem','eod','psyops','cimic'],
+      support:   ['log','supply','supply_transport','transport','ammunition','fuel',
+                  'rations','motorised_support','mechanised_support','medical',
+                  'signals','intel','maintenance','mp','chem','eod','psyops','cimic'],
       command:   ['hq','joint_hq','tac_cp','fire_coord'],
       naval:     ['naval_surface','submarine','maritime_patrol'],
       other:     ['ew','cyber','recon','space','sigint','port','air_defense'],
@@ -166,7 +167,9 @@
         ['infantry','mech_inf'],['infantry','motorised'],
         ['recon','armd_recon'],['recon','cavalry'],
         ['artillery','fire_coord'],['hq','joint_hq'],
-        ['log','medical'],['log','maintenance'],
+        ['log','medical'],['log','maintenance'],['log','supply'],
+        ['supply','ammunition'],['supply','fuel'],['supply','rations'],
+        ['supply_transport','motorised_support'],['supply_transport','mechanised_support'],
       ];
       return OK_PAIRS.some(([a,b])=>(assignedId===a&&inferredId===b)||(assignedId===b&&inferredId===a));
     }
@@ -317,7 +320,7 @@
           if(raw.length<4) return;
           const inf=inferTypeAndEchelon(raw);
           if(inf.typeId!==n.typeId){
-            const FAMILY2={infantry:['infantry','mech_inf','motorised','airborne','air_assault','amphibious','mountain','arctic','special_ops','ranger'],armour:['armour','armd_recon'],fires:['artillery','rockets','mortar'],aviation:['aviation','attack_helo','fixed_wing','uav','istar'],engineer:['engineer','bridging'],support:['log','medical','signals','intel','maintenance','mp','chem','eod','psyops','cimic'],command:['hq','joint_hq','tac_cp','fire_coord'],naval:['naval_surface','submarine','maritime_patrol'],other:['ew','cyber','recon','space','sigint','port','air_defense']};
+            const FAMILY2={infantry:['infantry','mech_inf','motorised','airborne','air_assault','amphibious','mountain','arctic','special_ops','ranger'],armour:['armour','armd_recon'],fires:['artillery','rockets','mortar'],aviation:['aviation','attack_helo','fixed_wing','uav','istar'],engineer:['engineer','bridging'],support:['log','supply','supply_transport','transport','ammunition','fuel','rations','motorised_support','mechanised_support','medical','signals','intel','maintenance','mp','chem','eod','psyops','cimic'],command:['hq','joint_hq','tac_cp','fire_coord'],naval:['naval_surface','submarine','maritime_patrol'],other:['ew','cyber','recon','space','sigint','port','air_defense']};
             const tf2={};Object.entries(FAMILY2).forEach(([fm,ids])=>ids.forEach(id=>tf2[id]=fm));
             if(!(tf2[n.typeId]&&tf2[n.typeId]===tf2[inf.typeId])){
               n.typeId=inf.typeId; (window.renderNode||renderNode)(n.id); fixed++;
@@ -385,6 +388,11 @@
     { type:'signals',      rx:/signal|comms?|communication|r\s*?signals|signa?l/ },
     { type:'medical',      rx:/medical|medic|field\s*hosp|ambulance|casualty|rdmc/ },
     { type:'intel',        rx:/intellig(ence)?|int(?!\s*arty)|mi\s*(battalion|company|corps)/ },
+    { type:'ammunition',   rx:/ammunition|ammo|ordnance\s*supply|munitions?/ },
+    { type:'fuel',         rx:/fuel|petrol|diesel|pol|farp/ },
+    { type:'rations',      rx:/rations?|subsistence|field\s*feeding|catering/ },
+    { type:'motorised_support', rx:/motori[sz]ed\s*support|motori[sz]ed\s*log|wheeled\s*support/ },
+    { type:'mechanised_support', rx:/mechani[sz](ed|e?d)?\s*support|mechani[sz](ed|e?d)?\s*log|tracked\s*support/ },
     { type:'log',          rx:/logistic|supply|sustainment|service\s*support|admin\s*log|cssg|dssg|lsp|movement\s*con/ },
     { type:'maintenance',  rx:/maintenance|recovery|repair|reme|ordnance/ },
     { type:'mp',           rx:/military\s*police|mp(?!s)|rmp|provost/ },
