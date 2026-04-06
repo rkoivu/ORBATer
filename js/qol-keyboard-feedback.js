@@ -378,6 +378,7 @@
   // Final layout enforcement after all other modules have patched the page.
   function enforceLayoutFixes() {
     const topbar = document.getElementById('topbar');
+    const tabBar = document.getElementById('tab-bar');
     const statusbar = document.getElementById('statusbar');
     const main = document.getElementById('main');
     const sidebar = document.getElementById('sidebar');
@@ -390,8 +391,9 @@
     const mmToggle = document.getElementById('mm-toggle');
 
     const topbarH = topbar ? topbar.offsetHeight : 50;
+    const tabBarH = tabBar ? tabBar.offsetHeight : 0;
     const statusbarH = statusbar ? statusbar.offsetHeight : 25;
-    const availableH = Math.max(240, window.innerHeight - topbarH - statusbarH);
+    const availableH = Math.max(240, window.innerHeight - topbarH - tabBarH - statusbarH);
 
     if (main) {
       main.style.minHeight = '0';
