@@ -12,3 +12,10 @@
 #outline-modal .opt-row{display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin:10px 0 4px}
 #outline-modal .opt-row label{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text2);cursor:pointer}
 #outline-modal .subtle{font-size:11px;color:var(--text2);margin-top:6px}
+.tb-menu-btn{background:var(--control-bg)}
+.tb-menu-btn::after{content:' â–¾';margin-left:2px}
+.tb-menu.open .tb-menu-btn{background:linear-gradient(180deg,rgba(59,130,246,.26),rgba(37,99,235,.16));border-color:rgba(96,165,250,.62);color:#eff6ff;box-shadow:0 14px 28px rgba(37,99,235,.18)}
+.tb-menu-panel{min-width:228px;max-width:min(340px,calc(100vw - 16px));background:linear-gradient(180deg,rgba(30,39,53,.98),rgba(18,24,34,.98));border:1px solid var(--control-border-strong);border-radius:16px;padding:12px;box-shadow:0 26px 54px rgba(2,6,23,.44);backdrop-filter:blur(12px)}
+.tb-menu-panel .tb-btn,.tb-menu-panel select,.tb-menu-panel input{min-height:36px;border-radius:var(--control-radius)!important}
+.tb-menu-panel .tb-btn,.tb-menu-panel input{text-transform:none}
+.tb-menu-panel .tb-sep{margin:2px 2px;background:linear-gradient(90deg,transparent,rgba(148,163,184,.22),transparent)}
