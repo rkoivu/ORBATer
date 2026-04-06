@@ -26,6 +26,8 @@
       { key: 'L', desc: 'Auto layout' },
       { key: 'G', desc: 'Cycle grid mode' },
       { key: 'M', desc: 'Toggle minimap' },
+      { key: 'Home', desc: 'Center on root' },
+      { key: 'Alt+F', desc: 'Zoom to selection' },
       { key: '/', desc: 'Focus unit search' },
       { key: '[', desc: 'Toggle palette sidebar' },
       { key: ']', desc: 'Toggle properties panel' },

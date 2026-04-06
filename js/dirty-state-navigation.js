@@ -74,7 +74,14 @@
   const prevToggleCollapse=toggleCollapse;
   toggleCollapse=function(e,id){ prevToggleCollapse(e,id); markDirty(); };
   const prevToggleSnap=toggleSnap;
-  toggleSnap=function(){ prevToggleSnap(); showToast('Snap ' + ((window.snapOn || typeof snapOn !== 'undefined' && snapOn) ? 'enabled' : 'disabled')); };
+  function syncSnapState(){
+    const btn=document.getElementById('btn-snap');
+    if(!btn) return;
+    const snapEnabled=(window.snapOn || typeof snapOn !== 'undefined' && snapOn);
+    btn.classList.toggle('active', !!snapEnabled);
+  }
+  toggleSnap=function(){ prevToggleSnap(); syncSnapState(); showToast('Snap ' + ((window.snapOn || typeof snapOn !== 'undefined' && snapOn) ? 'enabled' : 'disabled')); };
+  syncSnapState();
   const prevClearAll=clearAll;
   clearAll=function(silent=false){ prevClearAll(silent); if(!silent) showToast('ORBAT cleared'); markDirty(); };
 
@@ -196,11 +203,16 @@
       if(e.altKey) focusSelection();
       else fitScreen();
     }
+    if(e.key==='Home'){
+      e.preventDefault();
+      if(window.centerOnRoot) window.centerOnRoot();
+    }
   }, true);
 
   // More descriptive topbar tooltips
   const extraTitles={
     'btn-focus':'Focus selection (Alt+F)',
+    'btn-snap':'Cycle grid/snap (G)',
     'btn-zoom-in':'Zoom in',
     'btn-zoom-out':'Zoom out',
     'btn-collapse-all':'Collapse all subtrees',

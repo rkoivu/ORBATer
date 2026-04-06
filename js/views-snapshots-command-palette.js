@@ -549,6 +549,8 @@
     {name:'Add root unit', run:()=>window.addRootUnit&&window.addRootUnit()},
     {name:'Auto layout', run:()=>window.autoLayout&&window.autoLayout()},
     {name:'Fit screen', run:()=>window.fitScreen&&window.fitScreen()},
+    {name:'Center on root', run:()=>window.centerOnRoot&&window.centerOnRoot()},
+    {name:'Zoom to selection', run:()=>window.focusSelection&&window.focusSelection()},
     {name:'Rename current tab', run:()=>window.__renameTabPrompt&&window.__renameTabPrompt(currentTabId)},
     {name:'Duplicate current tab', run:()=>window.__duplicateTab&&window.__duplicateTab(currentTabId)},
     {name:'Toggle ORBAT mode', run:()=>q('btn-org-toggle')?.click()},
