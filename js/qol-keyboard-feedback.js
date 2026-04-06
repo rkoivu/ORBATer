@@ -15,11 +15,18 @@
       { key: 'Ctrl+C / Cmd+C', desc: 'Copy selected' },
       { key: 'Ctrl+V / Cmd+V', desc: 'Paste' },
       { key: 'Ctrl+D / Cmd+D', desc: 'Duplicate' },
+      { key: 'Shift+N', desc: 'Add root unit' },
       { key: 'Ctrl+K / Cmd+K', desc: 'Command palette' },
+      { key: 'F2', desc: 'Rename current tab' },
+      { key: 'Ctrl+Shift+D / Cmd+Shift+D', desc: 'Duplicate current tab' },
+      { key: 'Ctrl+W / Cmd+W', desc: 'Close current tab' },
       { key: 'Delete', desc: 'Delete selected unit(s)' },
       { key: 'Enter (in search)', desc: 'Next search result' },
       { key: 'Shift+Enter (in search)', desc: 'Previous search result' },
       { key: 'L', desc: 'Auto layout' },
+      { key: 'G', desc: 'Cycle grid mode' },
+      { key: 'M', desc: 'Toggle minimap' },
+      { key: '/', desc: 'Focus unit search' },
       { key: '[', desc: 'Toggle palette sidebar' },
       { key: ']', desc: 'Toggle properties panel' },
     ];
@@ -47,7 +54,7 @@
     btn.className = 'tb-btn';
     btn.id = 'btn-keyboard-help';
     btn.textContent = '⌨ Shortcuts';
-    btn.title = 'View keyboard shortcuts (Ctrl+Shift+?)';
+    btn.title = 'View keyboard shortcuts';
     btn.onclick = () => {
       try { 
         if (typeof openModal === 'function') openModal('help-modal');
@@ -336,6 +343,14 @@
         e.preventDefault();
         search.focus();
         search.select();
+        return;
+      }
+      if (e.key === 'N' && e.shiftKey) {
+        e.preventDefault();
+        try {
+          if (typeof addRootUnit === 'function') addRootUnit();
+          if (typeof showToast === 'function') showToast('Root unit added');
+        } catch (_) {}
         return;
       }
       if (e.key === '[') {

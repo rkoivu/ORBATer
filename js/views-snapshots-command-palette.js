@@ -7,8 +7,28 @@
   // Tabs for multiple canvases
   let tabs = (()=>{try{return JSON.parse(localStorage.getItem('orbat_tabs_v1')||'[{"id":"default","name":"Main","nodes":{},"selectedId":null}]')}catch(e){return [{"id":"default","name":"Main","nodes":{},"selectedId":null}]}})();
   let currentTabId = 'default';
+  let activeTabMenuId = null;
 
   function saveTabs(){ try{ localStorage.setItem('orbat_tabs_v1', JSON.stringify(tabs)); }catch(e){ console.warn('Failed to save tabs:', e); } }
+  function cloneTabDoc(tab){
+    if(tab?.doc) return JSON.parse(JSON.stringify(tab.doc));
+    return {
+      nodes: JSON.parse(JSON.stringify(tab?.nodes || {})),
+      selectedId: tab?.selectedId || null,
+      multiSel: [...(tab?.multiSel || [])],
+      nodeIdC: tab?.nodeIdC || 1
+    };
+  }
+  function nextTabName(baseName='Tab'){
+    const existing = new Set(tabs.map(t => String(t.name || '').toLowerCase()));
+    if(!existing.has(String(baseName).toLowerCase())) return baseName;
+    let idx = 2;
+    let candidate = `${baseName} Copy`;
+    while(existing.has(candidate.toLowerCase())){
+      candidate = `${baseName} Copy ${idx++}`;
+    }
+    return candidate;
+  }
 
   // Check for readonly mode
   const urlParams = new URLSearchParams(window.location.search);
@@ -44,6 +64,67 @@
     const ov=document.createElement('div'); ov.className='modal-ov'; ov.id=id;
     ov.innerHTML=`<div class="modal-box"><h2>${title} <span class="modal-x" onclick="closeModal('${id}')">✕</span></h2>${inner}</div>`;
     document.body.appendChild(ov); return ov;
+  }
+  function ensureTabMenu(){
+    let menu = q('tab-context-menu');
+    if(menu) return menu;
+    const style = document.createElement('style');
+    style.textContent = `
+      #tab-context-menu{position:fixed;display:none;min-width:168px;padding:6px;background:rgba(15,23,42,.97);border:1px solid rgba(148,163,184,.28);border-radius:10px;box-shadow:0 16px 32px rgba(2,6,23,.4);z-index:12000}
+      #tab-context-menu.open{display:block}
+      #tab-context-menu button{display:flex;width:100%;align-items:center;justify-content:space-between;gap:12px;padding:8px 10px;border:0;background:transparent;color:var(--text);font:600 12px 'Barlow',sans-serif;text-align:left;cursor:pointer;border-radius:7px}
+      #tab-context-menu button:hover{background:rgba(59,130,246,.14)}
+      #tab-context-menu button[disabled]{opacity:.45;cursor:not-allowed}
+      #tab-context-menu .hint{color:var(--text2);font:11px 'Share Tech Mono',monospace}
+    `;
+    document.head.appendChild(style);
+    menu = document.createElement('div');
+    menu.id = 'tab-context-menu';
+    menu.innerHTML = `
+      <button type="button" data-act="rename"><span>Rename tab</span><span class="hint">F2</span></button>
+      <button type="button" data-act="duplicate"><span>Duplicate tab</span><span class="hint">Ctrl+Shift+D</span></button>
+      <button type="button" data-act="close"><span>Close tab</span><span class="hint">Ctrl+W</span></button>
+    `;
+    menu.addEventListener('click', ev => {
+      const action = ev.target.closest('button')?.dataset.act;
+      if(!action || !activeTabMenuId) return;
+      if(action === 'rename') window.__renameTabPrompt(activeTabMenuId);
+      if(action === 'duplicate') window.__duplicateTab(activeTabMenuId);
+      if(action === 'close') window.__closeTab(activeTabMenuId);
+      hideTabMenu();
+    });
+    document.body.appendChild(menu);
+    document.addEventListener('click', ev => {
+      if(!menu.classList.contains('open')) return;
+      if(ev.target.closest('#tab-context-menu')) return;
+      hideTabMenu();
+    }, true);
+    document.addEventListener('keydown', ev => {
+      if(ev.key === 'Escape' && menu.classList.contains('open')) hideTabMenu();
+    }, true);
+    window.addEventListener('resize', hideTabMenu);
+    window.addEventListener('scroll', hideTabMenu, true);
+    return menu;
+  }
+  function hideTabMenu(){
+    const menu = q('tab-context-menu');
+    if(menu) menu.classList.remove('open');
+    activeTabMenuId = null;
+  }
+  function openTabMenu(tabId, clientX, clientY){
+    const menu = ensureTabMenu();
+    activeTabMenuId = tabId;
+    const closable = tabId !== 'default' && tabs.length > 1;
+    const closeBtn = menu.querySelector('[data-act="close"]');
+    if(closeBtn) closeBtn.disabled = !closable;
+    menu.style.left = '0px';
+    menu.style.top = '0px';
+    menu.classList.add('open');
+    const rect = menu.getBoundingClientRect();
+    const left = Math.min(window.innerWidth - rect.width - 8, Math.max(8, clientX));
+    const top = Math.min(window.innerHeight - rect.height - 8, Math.max(8, clientY));
+    menu.style.left = left + 'px';
+    menu.style.top = top + 'px';
   }
   function open(id){ try{ openModal(id); }catch(e){ q(id)?.classList.add('open'); } }
   function close(id){ try{ closeModal(id); }catch(e){ q(id)?.classList.remove('open'); } }
@@ -209,6 +290,25 @@
     });
     input.addEventListener('blur', ()=>finish(true), {once:true});
   };
+  const prevRenderTabsWithRename = renderTabs;
+  renderTabs = function(){
+    prevRenderTabsWithRename();
+    const tb = q('tab-bar');
+    if(!tb) return;
+    [...tb.querySelectorAll('.tab')].forEach(el => {
+      if(el.dataset.menuBound === '1') return;
+      const tabId = el.getAttribute('onclick')?.match(/__switchTab\('([^']+)'\)/)?.[1];
+      if(tabId) el.dataset.tabId = tabId;
+      el.dataset.menuBound = '1';
+      el.title = el.classList.contains('active') ? 'Double-click or right-click for tab actions' : (el.title ? `${el.title} · Right-click for tab actions` : 'Double-click or right-click for tab actions');
+      el.addEventListener('contextmenu', ev => {
+        ev.preventDefault();
+        ev.stopPropagation();
+        const id = el.dataset.tabId;
+        if(id) openTabMenu(id, ev.clientX, ev.clientY);
+      });
+    });
+  };
 
   function markTabDirty(tabId = currentTabId){
     if(!tabId) return;
@@ -301,6 +401,7 @@
   };
   window.__closeTab = function(id){
     if(id === 'default' || tabs.length <= 1) return;
+    hideTabMenu();
     const idx = tabs.findIndex(t=>t.id===id);
     if(idx > -1){
       tabs.splice(idx, 1);
@@ -312,6 +413,29 @@
         renderTabs();
       }
     }
+  };
+  window.__duplicateTab = function(id = currentTabId){
+    const sourceTab = tabs.find(t=>t.id===id);
+    if(!sourceTab) return;
+    const newId = Date.now() + Math.random().toString(16).slice(2);
+    const liveSelected = id === currentTabId ? (window.selectedId || null) : (sourceTab.selectedId || null);
+    const liveMultiSel = id === currentTabId ? [...(window.multiSel || [])] : [...(sourceTab.multiSel || [])];
+    const liveDoc = (id === currentTabId && typeof window.serializeDocument === 'function')
+      ? JSON.parse(JSON.stringify(window.serializeDocument()))
+      : cloneTabDoc(sourceTab);
+    const dup = {
+      id: newId,
+      name: nextTabName(sourceTab.name || 'Tab'),
+      doc: liveDoc,
+      selectedId: liveSelected,
+      multiSel: liveMultiSel,
+      nodeIdC: sourceTab.nodeIdC || 1
+    };
+    tabs.push(dup);
+    tabDirtyStates[newId] = false;
+    saveTabs();
+    window.__switchTab(newId);
+    toast('Tab duplicated');
   };
   window.__newTab = function(){
     const newId = Date.now() + Math.random().toString(16).slice(2);
@@ -411,6 +535,8 @@
     {name:'Add root unit', run:()=>window.addRootUnit&&window.addRootUnit()},
     {name:'Auto layout', run:()=>window.autoLayout&&window.autoLayout()},
     {name:'Fit screen', run:()=>window.fitScreen&&window.fitScreen()},
+    {name:'Rename current tab', run:()=>window.__renameTabPrompt&&window.__renameTabPrompt(currentTabId)},
+    {name:'Duplicate current tab', run:()=>window.__duplicateTab&&window.__duplicateTab(currentTabId)},
     {name:'Toggle ORBAT mode', run:()=>q('btn-org-toggle')?.click()},
     {name:'Open saved views', run:()=>q('btn-views')?.click()},
     {name:'Open snapshots', run:()=>q('btn-snapshots')?.click()},
@@ -428,7 +554,16 @@
     [...box.querySelectorAll('[data-cmd-idx]')].forEach((btn,idx)=>btn.onclick=()=>{ items[idx].run(); close('cmdk-modal'); });
   }
   window.openCommandPalette=function(){ renderCmdk(''); open('cmdk-modal'); setTimeout(()=>q('cmdk-input')?.focus(),30); };
-  document.addEventListener('keydown',e=>{ if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==='k'){ e.preventDefault(); window.openCommandPalette(); } if(e.key==='Escape' && q('cmdk-modal')?.classList.contains('open')) close('cmdk-modal'); });
+  document.addEventListener('keydown',e=>{
+    const tag = e.target?.tagName || '';
+    const isTyping = tag==='INPUT' || tag==='TEXTAREA' || tag==='SELECT' || e.target?.isContentEditable;
+    if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==='k'){ e.preventDefault(); window.openCommandPalette(); }
+    if(e.key==='Escape' && q('cmdk-modal')?.classList.contains('open')) close('cmdk-modal');
+    if(isTyping) return;
+    if(e.key === 'F2'){ e.preventDefault(); window.__renameTabPrompt(currentTabId); return; }
+    if((e.metaKey||e.ctrlKey) && e.shiftKey && e.key.toLowerCase() === 'd'){ e.preventDefault(); window.__duplicateTab(currentTabId); return; }
+    if((e.metaKey||e.ctrlKey) && e.key.toLowerCase() === 'w'){ e.preventDefault(); window.__closeTab(currentTabId); }
+  });
   setTimeout(()=>{ q('cmdk-input')?.addEventListener('input',e=>renderCmdk(e.target.value)); q('cmdk-input')?.addEventListener('keydown',e=>{ if(e.key==='Enter'){ const btn=document.querySelector('#cmdk-list [data-cmd-idx]'); if(btn) btn.click(); }}); }, 100);
 
   // init
