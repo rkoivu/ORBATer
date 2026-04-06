@@ -53,6 +53,19 @@
 
   function toast(msg){ try{ (window.showToast||function(){})(msg); }catch(e){} }
   function q(id){ return document.getElementById(id); }
+  function restoreTabSelectionState(tab){
+    window.multiSel = new Set(tab.multiSel || []);
+    window.selectedId = tab.selectedId || null;
+    if(window.multiSel.size > 1 && typeof window.updSelUI === 'function'){
+      window.updSelUI();
+      return;
+    }
+    if(window.selectedId && typeof window.selectNode === 'function' && window.nodes?.[window.selectedId]){
+      window.selectNode(window.selectedId);
+      return;
+    }
+    if(typeof window.updSelUI === 'function') window.updSelUI();
+  }
   function ensureBtn(id,text,title,onclick,beforeId){
     if(q(id)) return q(id);
     const b=document.createElement('button'); b.className='tb-btn'; b.id=id; b.textContent=text; if(title) b.title=title; b.onclick=onclick;
@@ -373,13 +386,9 @@
       currentTabId = id;
       if(tab.doc){
         applyDocumentState(tab.doc,{trackHistory:false,preserveView:true});
-        window.multiSel = new Set(tab.multiSel || []);
-        window.selectedId = tab.selectedId || null;
-        if(window.selectedId && typeof window.selectNode==='function') window.selectNode(window.selectedId);
+        restoreTabSelectionState(tab);
       } else {
         window.nodes = JSON.parse(JSON.stringify(tab.nodes || {}));
-        window.selectedId = tab.selectedId || null;
-        window.multiSel = new Set(tab.multiSel || []);
         window.nodeIdC = tab.nodeIdC || 1;
         if(typeof customTypes !== 'undefined' && Array.isArray(tab.customTypes)) customTypes = JSON.parse(JSON.stringify(tab.customTypes));
         showRelLabels = tab.showRelLabels !== false;
@@ -393,6 +402,7 @@
         if(typeof updSB === 'function') updSB();
         if(typeof syncRelLabelBtn==='function') syncRelLabelBtn();
         if(typeof syncIconModeBtn==='function') syncIconModeBtn();
+        restoreTabSelectionState(tab);
       }
       clearTabDirty(id);
       renderTabs();
