@@ -3,6 +3,7 @@
 A modern, browser-based tool for creating and managing orders of battle (ORBATs) using NATO APP-6 military symbols. ORBATer combines visual diagram editing with powerful state management, collaboration features, and temporal navigation.
 
 **Live Demo:** https://rkoivu.github.io/ORBATer/
+**Project Docs:** [CHANGELOG.md](CHANGELOG.md) | [TODO.md](TODO.md)
 
 ---
 
@@ -13,6 +14,7 @@ A modern, browser-based tool for creating and managing orders of battle (ORBATs)
 - [User Guide](#user-guide)
 - [Advanced Features](#advanced-features)
 - [Architecture](#architecture)
+- [Changelog](#changelog)
 - [Roadmap](#roadmap)
 - [Troubleshooting](#troubleshooting)
 - [Contributing](#contributing)
