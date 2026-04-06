@@ -53,6 +53,8 @@
 
   function toast(msg){ try{ (window.showToast||function(){})(msg); }catch(e){} }
   function q(id){ return document.getElementById(id); }
+  // Restoring selection through updSelUI/selectNode keeps all downstream wrappers
+  // in sync, including focus dimming, panel state, and stats overlays.
   function restoreTabSelectionState(tab){
     window.multiSel = new Set(tab.multiSel || []);
     window.selectedId = tab.selectedId || null;
@@ -304,6 +306,8 @@
     input.addEventListener('blur', ()=>finish(true), {once:true});
   };
   const prevRenderTabsWithRename = renderTabs;
+  // The later renderTabs override keeps legacy boot behavior intact while adding
+  // richer tab controls without rewriting the earlier initialization path.
   renderTabs = function(){
     prevRenderTabsWithRename();
     const tb = q('tab-bar');
