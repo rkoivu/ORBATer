@@ -8,6 +8,15 @@ A modern, browser-based tool for creating and managing orders of battle (ORBATs)
 ---
 
 ## Table of Contents
+
+ORBATer is a browser-based NATO APP-6 order of battle builder for military unit diagrams, command hierarchies, and force structure maps.
+
+It is built for military planners, defense analysts, wargamers, scenario designers, and researchers who need a fast client-side ORBAT editor with drag-and-drop editing, saved views, snapshots, and export support.
+
+Primary keywords: ORBAT builder, order of battle software, NATO APP-6, military symbols, force structure planner, unit hierarchy editor, command relationship diagram, wargaming tool.
+
+Live app: https://rkoivu.github.io/ORBATer/
+
 - [Features](#features)
 - [Getting Started](#getting-started)
 - [Core Concepts](#core-concepts)
