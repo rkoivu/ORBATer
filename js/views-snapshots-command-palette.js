@@ -1,6 +1,7 @@
 (function(){
   const LS_VIEWS='orbat_saved_views_v1';
   const LS_SNAPS='orbat_version_snaps_v1';
+  const LS_RECENTS='orbat_recent_docs_v1';
   let orbatMode=(()=>{try{return localStorage.getItem('orbat_mode_v1')||'admin';}catch(e){return 'admin';}})();
   let lastAutoDiffBase='';
 
@@ -59,7 +60,7 @@
   let currentTabId = 'default';
   let activeTabMenuId = null;
 
-  function saveTabs(){ try{ localStorage.setItem('orbat_tabs_v1', JSON.stringify(tabs)); }catch(e){ console.warn('Failed to save tabs:', e); } }
+  function saveTabs(){ try{ localStorage.setItem('orbat_tabs_v1', JSON.stringify(tabs)); }catch(e){ console.warn('Failed to save tabs:', e); toast('Tabs could not be saved. Check browser storage availability.'); } }
   function cloneTabDoc(tab){
     return normalizeTab(tab).doc;
   }
@@ -78,11 +79,7 @@
   const urlParams = new URLSearchParams(window.location.search);
   const readonly = urlParams.get('readonly') === '1';
   const sharedViewId = urlParams.get('view');
-  if (readonly) {
-    document.body.classList.add('readonly-mode');
-    // Disable editing buttons, etc.
-    // This is a basic implementation; more can be added
-  }
+  if (readonly) document.body.classList.add('readonly-mode');
   if (sharedViewId) {
     // Load the shared view
     setTimeout(() => {
@@ -108,6 +105,41 @@
 
   function toast(msg){ try{ (window.showToast||function(){})(msg); }catch(e){} }
   function q(id){ return document.getElementById(id); }
+  function setReadonlyBanner(){
+    const banner=q('readonly-banner');
+    if(!banner) return;
+    if(readonly){
+      banner.style.display='block';
+      banner.textContent=sharedViewId?'Read-only shared view. Use Share to copy the link again.':'Read-only mode. Editing actions are intentionally limited.';
+      return;
+    }
+    if(sharedViewId){
+      banner.style.display='block';
+      banner.textContent='Shared camera view loaded. Use Share to copy a view-only link.';
+      return;
+    }
+    banner.style.display='none';
+    banner.textContent='';
+  }
+  function getRecentDocs(){ try{return JSON.parse(localStorage.getItem(LS_RECENTS)||'[]')}catch(e){return []} }
+  function setRecentDocs(items){ try{ localStorage.setItem(LS_RECENTS, JSON.stringify(items.slice(0,6))); }catch(e){ console.warn('Failed to save recent docs:', e); toast('Recent diagrams could not be saved.'); } }
+  function rememberRecentDoc(doc){
+    if(!doc) return;
+    const name=String(doc.opName||'OPERATION').trim()||'OPERATION';
+    const next={id:Date.now()+Math.random().toString(16).slice(2),name,ts:new Date().toISOString(),units:Object.keys(doc.nodes||{}).length,state:doc};
+    const items=[next,...getRecentDocs().filter(item=>item.name!==name)];
+    setRecentDocs(items);
+  }
+  function renderRecentDocs(){
+    const box=q('recent-doc-list');
+    if(!box) return;
+    const items=getRecentDocs();
+    if(!items.length){
+      box.innerHTML='<div class="panel-help">No recent diagrams yet. Saved work will appear here for quick restore.</div>';
+      return;
+    }
+    box.innerHTML=items.map(item=>`<div class="view-row"><div><div style="font-weight:700">${esc(item.name)}</div><div class="panel-help">${new Date(item.ts).toLocaleString()} · ${item.units||0} unit(s)</div></div><div style="display:flex;gap:6px"><button class="pb" onclick="window.__restoreRecentDoc('${item.id}')">Restore</button></div></div>`).join('');
+  }
   // Restoring selection through updSelUI/selectNode keeps all downstream wrappers
   // in sync, including focus dimming, panel state, and stats overlays.
   function restoreTabSelectionState(tab){
@@ -205,9 +237,9 @@
   function close(id){ try{ closeModal(id); }catch(e){ q(id)?.classList.remove('open'); } }
   function esc(s){ return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
   function getViews(){ try{return JSON.parse(localStorage.getItem(LS_VIEWS)||'[]')}catch(e){return []} }
-  function setViews(v){ try{ localStorage.setItem(LS_VIEWS, JSON.stringify(v)); }catch(e){ console.warn('Failed to save views:', e); } }
+  function setViews(v){ try{ localStorage.setItem(LS_VIEWS, JSON.stringify(v)); }catch(e){ console.warn('Failed to save views:', e); toast('Views could not be saved. Check browser storage availability.'); } }
   function getSnaps(){ try{return JSON.parse(localStorage.getItem(LS_SNAPS)||'[]')}catch(e){return []} }
-  function setSnaps(v){ try{ localStorage.setItem(LS_SNAPS, JSON.stringify(v.slice(0,40))); }catch(e){ console.warn('Failed to save snapshots:', e); } }
+  function setSnaps(v){ try{ localStorage.setItem(LS_SNAPS, JSON.stringify(v.slice(0,40))); }catch(e){ console.warn('Failed to save snapshots:', e); toast('Snapshots could not be saved. Check browser storage availability.'); } }
   function currentTransform(){
     const scaleVal = Number.isFinite(window.zoom) ? window.zoom : (typeof zoom!=='undefined' && Number.isFinite(zoom) ? zoom : 1);
     const panXVal = Number.isFinite(window.panX) ? window.panX : (typeof panX!=='undefined' && Number.isFinite(panX) ? panX : 0);
@@ -258,6 +290,7 @@
   }
   function renderViews(){
     const box=q('view-list'); if(!box) return; const views=getViews();
+    renderRecentDocs();
     if(!views.length){
       box.innerHTML='<div class="panel-help">No saved views yet. Save the current camera position to jump back to it later.</div>';
       return;
@@ -288,6 +321,13 @@
   window.__restoreSnap=function(id){ const s=getSnaps().find(x=>x.id===id); if(!s) return; if(typeof window.restoreState==='function') window.restoreState(s.state); applyTransformState(s.transform); if(typeof window.updSB==='function') window.updSB(); close('snapshot-modal'); toast('Snapshot restored'); };
   window.__loadSnapView=function(id){ const s=getSnaps().find(x=>x.id===id); if(!s) return; applyTransformState(s.transform); toast('Snapshot camera restored'); };
   window.__deleteSnap=function(id){ setSnaps(getSnaps().filter(x=>x.id!==id)); renderSnapshots(); };
+  window.__restoreRecentDoc=function(id){
+    const doc=getRecentDocs().find(item=>item.id===id)?.state;
+    if(!doc || typeof window.applyDocumentState!=='function') return;
+    window.applyDocumentState(doc,{trackHistory:true,preserveView:false});
+    close('view-modal');
+    toast('Recent diagram restored');
+  };
 
   function ensureViewsUI(){
     // Add tab bar
@@ -302,12 +342,12 @@
     ensureBtn('btn-snapshots','🗂 Snaps','Version snapshots',()=>{ renderSnapshots(); open('snapshot-modal'); },'btn-views');
     ensureBtn('btn-export-pdf','⤓ PDF','Export PDF',()=>window.exportPDF&&window.exportPDF(),'btn-random-orbat');
     ensureBtn('btn-cmdk','⌘K','Command palette',()=>window.openCommandPalette&&window.openCommandPalette(),'btn-export-pdf');
-    ensureModal('view-modal','Saved Views',`<div class="fg"><label>Save current view as</label><div style="display:flex;gap:8px"><input id="view-name-input" type="text" placeholder="e.g. Corps overview"><button class="pb" style="width:auto;margin:0" id="save-view-btn">Save</button></div></div><div id="view-list"></div>`);
+    ensureModal('view-modal','Saved Views',`<div class="fg"><label>Save current view as</label><div style="display:flex;gap:8px"><input id="view-name-input" type="text" placeholder="e.g. Corps overview"><button class="pb" style="width:auto;margin:0" id="save-view-btn">Save</button></div></div><div class="psec">Saved Views</div><div id="view-list"></div><div class="psec">Recent Diagrams</div><div id="recent-doc-list"></div>`);
     ensureModal('snapshot-modal','Version Snapshots',`<div style="display:flex;gap:8px;margin-bottom:10px"><button class="pb" style="width:auto;margin:0" id="snap-now-btn">Create snapshot</button></div><div id="timeline-slider" style="margin-bottom:10px"><input type="range" id="phase-slider" min="0" max="0" value="0" style="width:100%"><div id="phase-label"></div></div><div id="snapshot-list"></div>`);
     ensureModal('cmdk-modal','Command Palette',`<input id="cmdk-input" placeholder="Type a command…"><div id="cmdk-list"></div><div class="cmdk-hint">Enter to run · Esc to close · Cmd/Ctrl+K to open</div>`);
     q('save-view-btn')?.addEventListener('click',()=>{ const name=q('view-name-input').value.trim(); if(!name) return; const views=getViews(); views.unshift({id:Date.now()+Math.random().toString(16).slice(2), name, transform:currentTransform()}); setViews(views.slice(0,20)); q('view-name-input').value=''; renderViews(); toast('View saved'); });
     q('snap-now-btn')?.addEventListener('click',()=>{ snapshotNow('Manual snapshot'); toast('Snapshot created'); });
-    updateOrgBtn(); renderViews(); renderSnapshots();
+    updateOrgBtn(); renderViews(); renderSnapshots(); renderRecentDocs(); setReadonlyBanner();
   }
   let tabDirtyStates = {}; // Track dirty state per tab
   
@@ -420,6 +460,8 @@
         currTab.selectedId = readSelectedId();
         currTab.multiSel = readMultiSelection();
         currTab.nodeIdC = currTab.doc?.nodeIdC || currTab.nodeIdC || 1;
+        rememberRecentDoc(currTab.doc);
+        renderRecentDocs();
         saveTabs();
       }
       clearTabDirty(currentTabId);
@@ -450,6 +492,8 @@
       currTab.selectedId = readSelectedId();
       currTab.multiSel = readMultiSelection();
       currTab.nodeIdC = currTab.doc?.nodeIdC || currTab.nodeIdC || 1;
+      rememberRecentDoc(currTab.doc);
+      renderRecentDocs();
       saveTabs();
     }
     // Load new tab state
@@ -618,7 +662,14 @@
   ];
   function renderCmdk(filter=''){
     const box=q('cmdk-list'); if(!box) return; const term=filter.trim().toLowerCase();
-    const items=commands.filter(c=>!term||c.name.toLowerCase().includes(term));
+    const items=commands
+      .filter(c=>!term||c.name.toLowerCase().includes(term))
+      .sort((a,b)=>{
+        const ai=a.name.toLowerCase(), bi=b.name.toLowerCase();
+        const aStarts=term&&ai.startsWith(term), bStarts=term&&bi.startsWith(term);
+        if(aStarts!==bStarts) return aStarts?-1:1;
+        return ai.localeCompare(bi);
+      });
     box.innerHTML=items.map((c,i)=>`<div class="cmdk-row"><div>${esc(c.name)}</div><button class="pb" data-cmd-idx="${i}" style="width:auto;margin:0">Run</button></div>`).join('') || '<div class="panel-help">No commands match that search. Try a shorter term.</div>';
     [...box.querySelectorAll('[data-cmd-idx]')].forEach((btn,idx)=>btn.onclick=()=>{ items[idx].run(); close('cmdk-modal'); });
   }

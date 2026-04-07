@@ -214,6 +214,9 @@ let nodes={},selectedId=null,multiSel=new Set(),nodeIdC=1;
 let textboxes={},selectedTextboxId=null,textboxIdC=1;
 let zoom=1,panX=0,panY=0,isPanning=false,panStart={x:0,y:0};
 let snapOn=true;const SNAP=24;
+const gridModes=['snap-on','snap-off','snap-none'];
+const gridLabels=['Dot Grid','Line Grid','Off'];
+let gridMode=(()=>{try{const saved=Number(localStorage.getItem('orbat_grid_mode_v1'));return Number.isInteger(saved)&&saved>=0&&saved<gridModes.length?saved:0;}catch(e){return 0;}})();
 let history=[],histIdx=-1;
 let linkMode=false,linkSrc=null;
 let ctxTarget=null,ciDataUrl=null;
@@ -252,7 +255,7 @@ function normalizeTextbox(id,raw={}){const fallbackX=120+Object.keys(textboxes).
     x:Number.isFinite(+raw.x)?snapV(+raw.x):snapV(fallbackX),y:Number.isFinite(+raw.y)?snapV(+raw.y):snapV(fallbackY),
     anchorId:raw.anchorId||null,side:raw.side||'right'
   }}
-function serializeDocument(){return{schemaVersion:APP_SCHEMA_VERSION,opName:document.getElementById('op-name-input').value,nodeIdC,textboxIdC,nodes,textboxes,customTypes,showRelLabels,useSymbolPackImages,minimapVisible:mmVisible}}
+function serializeDocument(){return{schemaVersion:APP_SCHEMA_VERSION,opName:document.getElementById('op-name-input').value,nodeIdC,textboxIdC,nodes,textboxes,customTypes,showRelLabels,useSymbolPackImages,minimapVisible:mmVisible,gridMode}}
 function validateOrbatData(d){
   if(!d||typeof d!=='object')throw new Error('Invalid ORBAT file');
   if(!d.nodes||typeof d.nodes!=='object')throw new Error('Invalid ORBAT file - missing nodes');
@@ -272,7 +275,8 @@ function validateOrbatData(d){
     textboxIdC:Math.max(d.textboxIdC||1,maxTextboxId+1),
     customTypes:Array.isArray(d.customTypes)?d.customTypes:[],
     nodes:normalized,
-    textboxes:normalizedTextboxes
+    textboxes:normalizedTextboxes,
+    gridMode:Number.isInteger(d.gridMode)&&d.gridMode>=0&&d.gridMode<gridModes.length?d.gridMode:0
   };
 }
 function applyDocumentState(doc,{trackHistory=true,preserveView=true}={}){
@@ -284,6 +288,7 @@ function applyDocumentState(doc,{trackHistory=true,preserveView=true}={}){
   showRelLabels=doc.showRelLabels!==false;
   useSymbolPackImages=doc.useSymbolPackImages!==false;
   mmVisible=doc.minimapVisible!==false;
+  applyGridMode(valid.gridMode,{persist:false});
   syncRelLabelBtn();
   syncIconModeBtn();
   syncMinimapVisibility();
@@ -324,15 +329,32 @@ function flash(txt){
 
 /* AUTOSAVE */
 let asTimer=null;
+function getStorageUsageHint(){
+  try{
+    let total=0;
+    for(let i=0;i<localStorage.length;i++){
+      const key=localStorage.key(i);
+      const value=localStorage.getItem(key)||'';
+      total+=String(key).length+String(value).length;
+    }
+    const kb=Math.round(total/1024);
+    const level=kb>4000?'Storage high':kb>2500?'Storage medium':'Storage ok';
+    return `${level} · ${kb} KB local`;
+  }catch(e){return 'Storage unavailable';}
+}
 function scheduleAutosave(){
   clearTimeout(asTimer);
   asTimer=setTimeout(()=>{
     try{
       localStorage.setItem('orbat_v3',JSON.stringify({...serializeDocument(),ts:Date.now()}));
       const el=document.getElementById('afsave');
-      if(el){el.textContent='OK SAVED '+new Date().toLocaleTimeString();
+      if(el){el.textContent='OK SAVED '+new Date().toLocaleTimeString();el.title=getStorageUsageHint();
       el.classList.add('on');setTimeout(()=>el.classList.remove('on'),1800);}
-    }catch(e){}
+    }catch(e){
+      const el=document.getElementById('afsave');
+      if(el){el.textContent='SAVE FAILED';el.title='Autosave could not write to local storage';el.classList.add('on');setTimeout(()=>el.classList.remove('on'),2200);}
+      showToast('Autosave failed. Check browser storage availability.');
+    }
   },2500);
 }
 function loadAutosave(){
@@ -827,6 +849,15 @@ function toggleLinkMode(){
   document.getElementById('btn-link').classList.toggle('active',linkMode);
   showToast(linkMode?'Link mode on. Drag from a unit to its new parent.':'Link mode off');
 }
+function setDragPreviewGhost(text,clientX,clientY){
+  const ghost=document.getElementById('drag-preview-ghost');if(!ghost)return;
+  if(!text){ghost.style.display='none';ghost.textContent='';return;}
+  const wrap=canvasWrap.getBoundingClientRect();
+  ghost.textContent=text;
+  ghost.style.display='block';
+  ghost.style.left=(clientX-wrap.left+14)+'px';
+  ghost.style.top=(clientY-wrap.top+14)+'px';
+}
 function startLink(e,id){
   if(!linkMode)return;e.stopPropagation();e.preventDefault();
   if(window.__activeLinkCleanup){ try{ window.__activeLinkCleanup(); }catch(_){} }
@@ -843,6 +874,7 @@ function startLink(e,id){
   function cleanup(){
     svg.innerHTML='';svg.style.width='1px';svg.style.height='1px';
     document.querySelectorAll('.link-tgt').forEach(el=>el.classList.remove('link-tgt'));
+    setDragPreviewGhost(null);
     document.removeEventListener('mousemove',mv);document.removeEventListener('mouseup',up);
     if(window.__activeLinkCleanup===cleanup) window.__activeLinkCleanup=null;
     linkSrc=null;
@@ -855,6 +887,8 @@ function startLink(e,id){
       const r=el.getBoundingClientRect();
       el.classList.toggle('link-tgt',ev.clientX>=r.left&&ev.clientX<=r.right&&ev.clientY>=r.top&&ev.clientY<=r.bottom&&el.id!=='el-'+linkSrc);
     });
+    const target=document.querySelector('.orbat-node.link-tgt');
+    setDragPreviewGhost(target?`Link under ${nodes[target.id.replace('el-','')]?.name||'target'}`:'Choose a parent unit',ev.clientX,ev.clientY);
   }
   function up(ev){
     if(linkSrc && nodes[linkSrc]){
@@ -910,6 +944,10 @@ function onNMM(e){
       const over=e.clientX>=r.left&&e.clientX<=r.right&&e.clientY>=r.top&&e.clientY<=r.bottom&&el.id!=='el-'+dragId;
       el.classList.toggle('rp-target',over);
     });
+    const target=document.querySelector('.orbat-node.rp-target');
+    setDragPreviewGhost(target?`Reparent under ${nodes[target.id.replace('el-','')]?.name||'target'}`:'Choose a parent unit',e.clientX,e.clientY);
+  }else{
+    setDragPreviewGhost(null);
   }
   drawConnectors();
 }
@@ -926,6 +964,7 @@ function onNMU(e){
     });
   }
   const _moved=dragMoved; dragId=null; dragMoved=false;
+  setDragPreviewGhost(null);
   document.removeEventListener('mousemove',onNMM);document.removeEventListener('mouseup',onNMU);
   if(_moved) saveState(); // skip saveState for plain clicks that didn't move anything
 }
@@ -986,21 +1025,18 @@ function applyTransform(){
 /* ========================================
    SNAP / GRID CYCLE
 ======================================== */
-canvasWrap.className='snap-on';document.getElementById('btn-snap').textContent='Grid Dot Grid';
-function toggleSnap(){
-  gridMode=(gridMode+1)%3;snapOn=gridMode===0;
+function applyGridMode(mode,{persist=true,announce=false}={}){
+  gridMode=((Number(mode)%gridModes.length)+gridModes.length)%gridModes.length;
+  snapOn=gridMode===0;
   canvasWrap.className=gridModes[gridMode];
   document.getElementById('btn-snap').textContent='Grid '+gridLabels[gridMode];
-  showToast('Grid: '+gridLabels[gridMode]);
+  if(persist){ try{ localStorage.setItem('orbat_grid_mode_v1', String(gridMode)); }catch(e){} }
+  if(announce) showToast('Grid: '+gridLabels[gridMode]);
 }
-// css for grid modes
-const gridStyle=document.createElement('style');
-gridStyle.textContent=`
-  .snap-on{background-image:radial-gradient(circle,#1e2d3d 1px,transparent 1px);background-size:24px 24px}
-  .snap-off{background-image:linear-gradient(rgba(30,45,61,.25) 1px,transparent 1px),linear-gradient(90deg,rgba(30,45,61,.25) 1px,transparent 1px);background-size:24px 24px}
-  .snap-none{background-image:none}
-`;
-document.head.appendChild(gridStyle);
+applyGridMode(gridMode,{persist:false});
+function toggleSnap(){
+  applyGridMode((gridMode+1)%gridModes.length,{persist:true,announce:true});
+}
 
 /* ========================================
    FIT TO SCREEN
@@ -1043,6 +1079,16 @@ function updateMinimap(){
   const sc=Math.min(144/(mxX-mnX+1),86/(mxY-mnY+1),1);
   const afC={friendly:'#3b82f6',hostile:'#ef4444',neutral:'#f59e0b',unknown:'#a855f7'};
   els.forEach(({n,el})=>{ctx.fillStyle=afC[n.affil]||'#3b82f6';ctx.fillRect((n.x-mnX)*sc+5,(n.y-mnY)*sc+5,el.offsetWidth*sc,el.offsetHeight*sc)});
+  const wrap=canvasWrap.getBoundingClientRect();
+  const viewW=wrap.width/zoom;
+  const viewH=wrap.height/zoom;
+  const viewX=(-panX)/zoom;
+  const viewY=(-panY)/zoom;
+  ctx.strokeStyle='rgba(248,250,252,.92)';
+  ctx.lineWidth=1.2;
+  ctx.setLineDash([4,3]);
+  ctx.strokeRect((viewX-mnX)*sc+5,(viewY-mnY)*sc+5,Math.max(8,viewW*sc),Math.max(8,viewH*sc));
+  ctx.setLineDash([]);
 }
 
 /* ========================================
@@ -1594,7 +1640,7 @@ document.getElementById('file-input').addEventListener('change',e=>{
       const d=JSON.parse(ev.target.result);
       applyDocumentState(d,{trackHistory:true,preserveView:false});
       showToast(`ORBAT imported successfully${d.schemaVersion?` - schema v${d.schemaVersion}`:''}`);
-    }catch(err){showToast('Import error: '+err.message);}
+    }catch(err){showToast('Import error: '+err.message+' Try a current ORBAT JSON export or the outline importer for plain text.');}
   };r.readAsText(file);e.target.value='';
 });
 
