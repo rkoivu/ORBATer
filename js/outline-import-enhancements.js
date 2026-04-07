@@ -25,16 +25,12 @@
           e.preventDefault();
           const start=this.selectionStart||0, end=this.selectionEnd||0, val=this.value||'';
           const selected=val.slice(start,end);
-          const hasMulti=start!==end && selected.includes('
-');
-          const lineStart=val.lastIndexOf('
-', start-1)+1;
+          const hasMulti=start!==end && selected.includes('\n');
+          const lineStart=val.lastIndexOf('\n', start-1)+1;
           if(e.shiftKey){
             if(hasMulti){
               const block=val.slice(lineStart,end);
-              const outdented=block.split('
-').map(line=>line.startsWith('  ')?line.slice(2):line.startsWith('	')?line.slice(1):line).join('
-');
+              const outdented=block.split('\n').map(line=>line.startsWith('  ')?line.slice(2):line.startsWith('\t')?line.slice(1):line).join('\n');
               this.value=val.slice(0,lineStart)+outdented+val.slice(end);
               this.selectionStart=lineStart;
               this.selectionEnd=lineStart+outdented.length;
@@ -52,9 +48,7 @@
           }
           if(hasMulti){
             const block=val.slice(lineStart,end);
-            const indented=block.split('
-').map(line=>'  '+line).join('
-');
+            const indented=block.split('\n').map(line=>'  '+line).join('\n');
             this.value=val.slice(0,lineStart)+indented+val.slice(end);
             this.selectionStart=lineStart;
             this.selectionEnd=lineStart+indented.length;
@@ -70,8 +64,7 @@
         importBtn.addEventListener('click', function(e){
           e.preventDefault();
           e.stopImmediatePropagation();
-          const txt=(ta?.value||'').replace(/
-/g,'');
+          const txt=(ta?.value||'').replace(/\r/g,'');
           if(!txt.trim()) return;
           const clearExisting=ov.querySelector('#outline-clear-existing')?.checked;
           const promptMode=ov.querySelector('#outline-prompt-mode')?.checked;

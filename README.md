@@ -85,6 +85,25 @@ Live app: https://rkoivu.github.io/ORBATer/
 
 ## Getting Started
 
+### Local Automation
+This repo now includes a lightweight local automation setup based on plain Node scripts. No bundler or external test framework is required.
+
+Requirements:
+- Node.js 18+ recommended
+
+Commands:
+- `npm run lint` - validate `index.html` references and run syntax checks across app scripts
+- `npm run test` - same validation pass, kept as a test entrypoint for local or CI use
+- `npm run build` - validate first, then copy the static app into `dist/`
+- `npm run serve` - serve the built `dist/` folder locally at `http://127.0.0.1:4173`
+- `npm run serve:src` - serve the source tree directly without building
+- `npm run check` - run validation and then build
+
+Typical local flow:
+1. Run `npm run check`
+2. Run `npm run serve`
+3. Open `http://127.0.0.1:4173`
+
 ### Quick Start
 1. Open https://rkoivu.github.io/ORBATer/ in any modern browser
 2. Click **＋ Root** to create first unit

@@ -1,0 +1,14 @@
+{
+  "name": "orbater",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Local automation for the ORBATer static app",
+  "scripts": {
+    "lint": "node scripts/validate-static.mjs",
+    "test": "node scripts/validate-static.mjs",
+    "build": "node scripts/build-static.mjs",
+    "serve": "node scripts/serve-static.mjs dist 4173",
+    "serve:src": "node scripts/serve-static.mjs . 4173",
+    "check": "node scripts/validate-static.mjs && node scripts/build-static.mjs"
+  }
+}

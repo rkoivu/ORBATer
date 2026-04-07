@@ -11,6 +11,7 @@ This backlog is grouped by estimated implementation effort so the next work can 
 - Fixed tab switching and new-tab restore paths to use full document state instead of drifting `window.*` tab snapshots.
 - Cleaned up more visible action labels and empty-state copy in the link and attachments UI.
 - Improved tabs and saved-view access with cleaner labels, Enter-to-save support, and clearer feedback toasts.
+- Added a zero-dependency local automation setup with `npm` scripts for validation, static builds, and local serving.
 
 ## Small
 
@@ -29,7 +30,6 @@ This backlog is grouped by estimated implementation effort so the next work can 
 - Harden localStorage failure paths so views, tabs, snapshots, and autosave fail consistently and visibly.
 - Check for duplicate event listeners created by repeated modal or enhancement initialization.
 - Fix stale documentation references whenever architecture or loaded files change.
-- Add a simple local automated `npm` check setup with lint and smoke-test scripts.
 - Add smoke-test coverage for tab switching, snapshot restore, import/export, and minimap visibility.
 - Add clearer empty-state guidance to attachments, templates, and outline import flows.
 - Add success/error toasts for view save, tab duplicate, and tab close actions where feedback is currently silent.
