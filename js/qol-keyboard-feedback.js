@@ -174,11 +174,26 @@
     if (!wrap || !canvas || wrap.dataset.qolCanvas === '1') return;
     wrap.dataset.qolCanvas = '1';
 
+    function createRootAtClientPoint(clientX, clientY) {
+      if (typeof createNode !== 'function') {
+        if (typeof addRootUnit === 'function') addRootUnit();
+        return;
+      }
+      const rect = wrap.getBoundingClientRect();
+      const x = typeof snapV === 'function' ? snapV((clientX - rect.left - panX) / zoom) : ((clientX - rect.left - panX) / zoom);
+      const y = typeof snapV === 'function' ? snapV((clientY - rect.top - panY) / zoom) : ((clientY - rect.top - panY) / zoom);
+      const id = createNode({ x, y });
+      if (typeof selectNode === 'function') selectNode(id);
+      if (typeof saveState === 'function') saveState();
+      if (typeof showToast === 'function') showToast('Root unit added');
+    }
+    window.createRootAtClientPoint = createRootAtClientPoint;
+
     wrap.addEventListener('dblclick', e => {
       const blocked = e.target.closest('.orbat-node, #minimap, #ctx, #edit-panel, #sidebar, .tb-btn, input, select, textarea, button');
       if (blocked) return;
       try {
-        if (typeof addRootUnit === 'function') addRootUnit();
+        createRootAtClientPoint(e.clientX, e.clientY);
       } catch (_) {}
     });
   }
@@ -350,8 +365,14 @@
       if (e.key === 'N' && e.shiftKey) {
         e.preventDefault();
         try {
-          if (typeof addRootUnit === 'function') addRootUnit();
-          if (typeof showToast === 'function') showToast('Root unit added');
+          const wrap = document.getElementById('canvas-wrap');
+          if (wrap && typeof window.createRootAtClientPoint === 'function') {
+            const rect = wrap.getBoundingClientRect();
+            window.createRootAtClientPoint(rect.left + rect.width / 2, rect.top + rect.height / 2);
+          } else if (typeof addRootUnit === 'function') {
+            addRootUnit();
+            if (typeof showToast === 'function') showToast('Root unit added');
+          }
         } catch (_) {}
         return;
       }
