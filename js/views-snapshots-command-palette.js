@@ -4,20 +4,64 @@
   let orbatMode=(()=>{try{return localStorage.getItem('orbat_mode_v1')||'admin';}catch(e){return 'admin';}})();
   let lastAutoDiffBase='';
 
+  function readSelectedId(){
+    return (typeof selectedId!=='undefined') ? selectedId : (window.selectedId ?? null);
+  }
+  function readMultiSelection(){
+    if(typeof multiSel!=='undefined' && multiSel instanceof Set) return [...multiSel];
+    if(window.multiSel instanceof Set) return [...window.multiSel];
+    if(Array.isArray(window.multiSel)) return [...window.multiSel];
+    return [];
+  }
+  function readNodeMap(){
+    return (typeof nodes!=='undefined' && nodes) ? nodes : (window.nodes || {});
+  }
+  function createEmptyTabDoc(){
+    return {
+      schemaVersion: typeof APP_SCHEMA_VERSION!=='undefined' ? APP_SCHEMA_VERSION : 1,
+      opName: 'OPERATION',
+      nodeIdC: 1,
+      textboxIdC: 1,
+      nodes: {},
+      textboxes: {},
+      customTypes: [],
+      showRelLabels: true,
+      useSymbolPackImages: true,
+      minimapVisible: true
+    };
+  }
+  function normalizeTab(tab, idx=0){
+    const baseDoc = tab?.doc ? JSON.parse(JSON.stringify(tab.doc)) : createEmptyTabDoc();
+    if(!tab?.doc && tab?.nodes) baseDoc.nodes = JSON.parse(JSON.stringify(tab.nodes));
+    if(!tab?.doc && tab?.nodeIdC != null) baseDoc.nodeIdC = tab.nodeIdC;
+    if(!tab?.doc && tab?.opName) baseDoc.opName = tab.opName;
+    if(!tab?.doc && Array.isArray(tab?.customTypes)) baseDoc.customTypes = JSON.parse(JSON.stringify(tab.customTypes));
+    if(!tab?.doc && tab?.showRelLabels === false) baseDoc.showRelLabels = false;
+    if(!tab?.doc && tab?.useSymbolPackImages === false) baseDoc.useSymbolPackImages = false;
+    return {
+      id: tab?.id || (idx === 0 ? 'default' : Date.now() + Math.random().toString(16).slice(2)),
+      name: tab?.name || (idx === 0 ? 'Main' : `Tab ${idx + 1}`),
+      doc: baseDoc,
+      selectedId: tab?.selectedId || null,
+      multiSel: Array.isArray(tab?.multiSel) ? [...tab.multiSel] : [],
+      nodeIdC: baseDoc.nodeIdC || 1
+    };
+  }
+
   // Tabs for multiple canvases
-  let tabs = (()=>{try{return JSON.parse(localStorage.getItem('orbat_tabs_v1')||'[{"id":"default","name":"Main","nodes":{},"selectedId":null}]')}catch(e){return [{"id":"default","name":"Main","nodes":{},"selectedId":null}]}})();
+  let tabs = (()=>{try{
+    const raw = JSON.parse(localStorage.getItem('orbat_tabs_v1')||'[{"id":"default","name":"Main","doc":{"nodes":{},"textboxes":{},"nodeIdC":1,"textboxIdC":1,"customTypes":[],"opName":"OPERATION","showRelLabels":true,"useSymbolPackImages":true,"minimapVisible":true},"selectedId":null,"multiSel":[]}]');
+    const arr = Array.isArray(raw) && raw.length ? raw : [{}];
+    return arr.map((tab, idx)=>normalizeTab(tab, idx));
+  }catch(e){
+    return [normalizeTab({id:'default', name:'Main'}, 0)];
+  }})();
   let currentTabId = 'default';
   let activeTabMenuId = null;
 
   function saveTabs(){ try{ localStorage.setItem('orbat_tabs_v1', JSON.stringify(tabs)); }catch(e){ console.warn('Failed to save tabs:', e); } }
   function cloneTabDoc(tab){
-    if(tab?.doc) return JSON.parse(JSON.stringify(tab.doc));
-    return {
-      nodes: JSON.parse(JSON.stringify(tab?.nodes || {})),
-      selectedId: tab?.selectedId || null,
-      multiSel: [...(tab?.multiSel || [])],
-      nodeIdC: tab?.nodeIdC || 1
-    };
+    return normalizeTab(tab).doc;
   }
   function nextTabName(baseName='Tab'){
     const existing = new Set(tabs.map(t => String(t.name || '').toLowerCase()));
@@ -67,14 +111,19 @@
   // Restoring selection through updSelUI/selectNode keeps all downstream wrappers
   // in sync, including focus dimming, panel state, and stats overlays.
   function restoreTabSelectionState(tab){
-    window.multiSel = new Set(tab.multiSel || []);
-    window.selectedId = tab.selectedId || null;
-    if(window.multiSel.size > 1 && typeof window.updSelUI === 'function'){
-      window.updSelUI();
+    const selected = tab?.selectedId || null;
+    const liveNodes = readNodeMap();
+    const multi = (tab?.multiSel || []).filter(id=>liveNodes[id]);
+    if(selected && typeof window.selectNode === 'function' && liveNodes[selected]){
+      window.selectNode(selected);
       return;
     }
-    if(window.selectedId && typeof window.selectNode === 'function' && window.nodes?.[window.selectedId]){
-      window.selectNode(window.selectedId);
+    if(typeof selectedId!=='undefined') selectedId = null;
+    else window.selectedId = null;
+    if(typeof multiSel!=='undefined') multiSel = new Set(multi);
+    else window.multiSel = new Set(multi);
+    if(multi.length > 1 && typeof window.updSelUI === 'function'){
+      window.updSelUI();
       return;
     }
     if(typeof window.updSelUI === 'function') window.updSelUI();
@@ -163,8 +212,8 @@
     const scaleVal = Number.isFinite(window.zoom) ? window.zoom : (typeof zoom!=='undefined' && Number.isFinite(zoom) ? zoom : 1);
     const panXVal = Number.isFinite(window.panX) ? window.panX : (typeof panX!=='undefined' && Number.isFinite(panX) ? panX : 0);
     const panYVal = Number.isFinite(window.panY) ? window.panY : (typeof panY!=='undefined' && Number.isFinite(panY) ? panY : 0);
-    const selectedVal = window.selectedId ?? (typeof selectedId!=='undefined' ? selectedId : null);
-    const multiVal = window.multiSel ?? (typeof multiSel!=='undefined' ? multiSel : []);
+    const selectedVal = readSelectedId();
+    const multiVal = readMultiSelection();
     return {scale:scaleVal, panX:panXVal, panY:panYVal, selected:selectedVal, multi:[...multiVal], mode:orbatMode};
   }
   function applyTransformState(v){
@@ -176,7 +225,7 @@
       if(typeof panY!=='undefined' && v.panY!=null) { panY=v.panY; window.panY=panY; }
     }catch(e){}
     if(typeof window.applyTransform==='function') window.applyTransform();
-    if(v.selected && window.nodes?.[v.selected]) window.selectNode(v.selected);
+    if(v.selected && readNodeMap()?.[v.selected]) window.selectNode(v.selected);
   }
   function summariseState(doc){
     try{ const obj=JSON.parse(doc); const nodes=obj.nodes||{}; const arr=Object.values(nodes); return {count:arr.length, roots:arr.filter(n=>!n.parentId).length}; }catch(e){ return {count:0,roots:0}; }
@@ -368,8 +417,9 @@
       const currTab = tabs.find(t=>t.id===currentTabId);
       if(currTab && typeof window.serializeDocument==='function'){
         currTab.doc = JSON.parse(JSON.stringify(window.serializeDocument()));
-        currTab.selectedId = window.selectedId || null;
-        currTab.multiSel = [...(window.multiSel || [])];
+        currTab.selectedId = readSelectedId();
+        currTab.multiSel = readMultiSelection();
+        currTab.nodeIdC = currTab.doc?.nodeIdC || currTab.nodeIdC || 1;
         saveTabs();
       }
       clearTabDirty(currentTabId);
@@ -397,34 +447,18 @@
     const currTab = tabs.find(t=>t.id===currentTabId);
     if(currTab && typeof window.serializeDocument==='function'){
       currTab.doc = JSON.parse(JSON.stringify(window.serializeDocument()));
-      currTab.selectedId = window.selectedId || null;
-      currTab.multiSel = [...(window.multiSel || [])];
+      currTab.selectedId = readSelectedId();
+      currTab.multiSel = readMultiSelection();
+      currTab.nodeIdC = currTab.doc?.nodeIdC || currTab.nodeIdC || 1;
       saveTabs();
     }
     // Load new tab state
     const tab = tabs.find(t=>t.id===id);
     if(tab){
       currentTabId = id;
-      if(tab.doc){
-        applyDocumentState(tab.doc,{trackHistory:false,preserveView:true});
-        restoreTabSelectionState(tab);
-      } else {
-        window.nodes = JSON.parse(JSON.stringify(tab.nodes || {}));
-        window.nodeIdC = tab.nodeIdC || 1;
-        if(typeof customTypes !== 'undefined' && Array.isArray(tab.customTypes)) customTypes = JSON.parse(JSON.stringify(tab.customTypes));
-        showRelLabels = tab.showRelLabels !== false;
-        useSymbolPackImages = tab.useSymbolPackImages !== false;
-        const opNameInput = document.getElementById('op-name-input');
-        if(opNameInput) opNameInput.value = tab.opName || 'OPERATION';
-        if(typeof buildPalette==='function') buildPalette();
-        if(typeof buildTypeSelect==='function') buildTypeSelect();
-        if(typeof clearCanvas === 'function') clearCanvas();
-        Object.keys(window.nodes||{}).forEach(nid=> { if(typeof renderNode === 'function') renderNode(nid); });
-        if(typeof updSB === 'function') updSB();
-        if(typeof syncRelLabelBtn==='function') syncRelLabelBtn();
-        if(typeof syncIconModeBtn==='function') syncIconModeBtn();
-        restoreTabSelectionState(tab);
-      }
+      tab.doc = cloneTabDoc(tab);
+      applyDocumentState(tab.doc,{trackHistory:false,preserveView:true});
+      restoreTabSelectionState(tab);
       clearTabDirty(id);
       renderTabs();
       saveTabs();
@@ -449,8 +483,8 @@
     const sourceTab = tabs.find(t=>t.id===id);
     if(!sourceTab) return;
     const newId = Date.now() + Math.random().toString(16).slice(2);
-    const liveSelected = id === currentTabId ? (window.selectedId || null) : (sourceTab.selectedId || null);
-    const liveMultiSel = id === currentTabId ? [...(window.multiSel || [])] : [...(sourceTab.multiSel || [])];
+    const liveSelected = id === currentTabId ? readSelectedId() : (sourceTab.selectedId || null);
+    const liveMultiSel = id === currentTabId ? readMultiSelection() : [...(sourceTab.multiSel || [])];
     const liveDoc = (id === currentTabId && typeof window.serializeDocument === 'function')
       ? JSON.parse(JSON.stringify(window.serializeDocument()))
       : cloneTabDoc(sourceTab);
@@ -471,7 +505,7 @@
   window.__newTab = function(){
     const newId = Date.now() + Math.random().toString(16).slice(2);
     const newName = 'Tab ' + (tabs.length + 1);
-    tabs.push({id: newId, name: newName, nodes: {}, selectedId: null, multiSel: [], nodeIdC: 1});
+    tabs.push({id: newId, name: newName, doc: createEmptyTabDoc(), selectedId: null, multiSel: [], nodeIdC: 1});
     saveTabs();
     window.__switchTab(newId);
   };
@@ -608,8 +642,9 @@
     // Initialize default tab with current state
     if(tabs.length === 1 && tabs[0].id === 'default' && typeof window.serializeDocument==='function'){
       tabs[0].doc = JSON.parse(JSON.stringify(window.serializeDocument()));
-      tabs[0].selectedId = window.selectedId || null;
-      tabs[0].multiSel = [...(window.multiSel || [])];
+      tabs[0].selectedId = readSelectedId();
+      tabs[0].multiSel = readMultiSelection();
+      tabs[0].nodeIdC = tabs[0].doc?.nodeIdC || 1;
       saveTabs();
     }
     renderTabs();
