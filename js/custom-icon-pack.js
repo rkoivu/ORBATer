@@ -24,10 +24,10 @@
       <div class="psec">Attachments</div>
       <div class="fg">
         <div class="icon-row" style="margin-bottom:6px">
-          <button class="pb" id="btn-attach-files" style="margin:0;flex:1">⤒ Add Attachment(s)</button>
+          <button class="pb" id="btn-attach-files" style="margin:0;flex:1">Add attachment(s)</button>
           <button class="pb" id="btn-clear-attachments" style="margin:0;width:90px;padding:6px 4px" title="Remove all">Clear</button>
         </div>
-        <div id="ep-attachment-list" class="panel-help">No attachments</div>
+        <div id="ep-attachment-list" class="panel-help">No attachments yet</div>
       </div>
     `;
     epInner.insertBefore(wrap, actionsPsec || epInner.lastElementChild);
@@ -51,7 +51,7 @@
   function renderAttachmentList(list){
     if(!epAttachmentList) return;
     const items=(list||[]);
-    if(!items.length){ epAttachmentList.textContent='No attachments'; return; }
+    if(!items.length){ epAttachmentList.textContent='No attachments yet'; return; }
     epAttachmentList.innerHTML=items.map((a,i)=>`<div style="display:flex;justify-content:space-between;gap:8px;margin-bottom:4px"><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${a.name||('Attachment '+(i+1))}</span><button class="pb" style="width:auto;margin:0;padding:2px 8px" onclick="window.open('${(a.dataUrl||'').replace(/'/g,"&#39;")}','_blank')">Open</button></div>`).join('');
   }
 
@@ -207,7 +207,7 @@
             {typeId:'supply',name:'DIST COY',echelon:'company',reltype:'support'},
             {typeId:'supply',name:'MAINT COY',echelon:'company',reltype:'support'},
             {typeId:'medical',name:'MED COY',echelon:'company',reltype:'support'}
-          });
+          ]);
           autoLayout();
         }
       },
@@ -252,7 +252,7 @@
             {typeId:'supply',name:'DIST COY',echelon:'company',reltype:'support'},
             {typeId:'supply',name:'FIELD MAINT COY',echelon:'company',reltype:'support'},
             {typeId:'medical',name:'MED COY',echelon:'company',reltype:'support'}
-          });
+          ]);
           autoLayout();
         }
       },
@@ -277,7 +277,7 @@
             {typeId:'supply',name:'SUPPLY COY',echelon:'company',reltype:'support'},
             {typeId:'supply',name:'REPAIR COY',echelon:'company',reltype:'support'},
             {typeId:'medical',name:'MED COY',echelon:'company',reltype:'support'}
-          });
+          ]);
           autoLayout();
         }
       }
