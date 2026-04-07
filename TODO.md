@@ -15,7 +15,7 @@ This backlog is grouped by estimated implementation effort so the next work can 
 - Tightened the local serve flow and tab/view text cleanup so common commands fail more clearly and render with cleaner labels.
 - Added clearer first-use guidance and feedback in history, templates, and outline import flows.
 
-## Small
+## Quick Wins
 
 - Replace remaining text-encoding artifacts in labels and button copy with clean ASCII or intentional symbols.
 - Unify toolbar iconography and wording so controls read consistently across core and patch modules.
@@ -35,16 +35,35 @@ This backlog is grouped by estimated implementation effort so the next work can 
 - Add smoke-test coverage for tab switching, snapshot restore, import/export, and minimap visibility.
 - Add clearer empty-state guidance to attachments, templates, and outline import flows.
 - Add success/error toasts for view save, tab duplicate, and tab close actions where feedback is currently silent.
+- Add more unit types and icon variants to the palette so doctrine-specific structures need less manual reuse.
+- Add a drag preview ghost for link/reparent actions so users can see the likely drop target before releasing.
+- Add better import error handling and recovery hints for broken or partially supported import files.
 
-## Medium
+## Bigger Lifts
 
 - Add stronger visual distinction between selected, multi-selected, locked, and faded nodes.
+- Add full keyboard-only navigation across the canvas, palette, modals, and edit panel.
 - Refine mobile and narrow-width handling for the toolbar, tab strip, and side panels.
 - Improve tab overflow handling with scrolling cues or a tab list dropdown.
 - Add connector labels that can be edited directly on-canvas instead of only through panel state.
+- Add smarter connector routing so lines avoid overlapping nodes and stay readable in dense layouts.
+- Add a text-to-ORBAT parser that can turn freeform structured text into an initial hierarchy, beyond the current indented outline import.
+- Add explicit connector style controls for Bezier, elbow, and straight routing in the main toolbar.
+- Add richer connector semantics and styling for command, support, attached, OPCON, and TACON relationships.
+- Add smart labels that auto-format unit names and optionally toggle between abbreviated and expanded military naming.
 - Extend templates into reusable subtree presets that can be inserted under an existing parent, not only as full ORBAT starters.
 - Add bulk tag management and saved filters for recurring analytic views.
 - Add search-by-path and search-by-parent queries for large ORBATs.
+- Add a doctrine validator that warns when a formation looks structurally unrealistic for the selected doctrine.
+- Add import support for ORBAT Mapper exports and ORBAT XML interchange formats.
+- Add a map overlay mode for placing units against a reference map without fully georeferenced behavior.
+- Add richer relationship modeling so units can carry multiple relationship types, not only a single parent/edge meaning.
+- Add a layer visibility system so users can toggle structure, equipment, logistics, and relationship overlays independently.
+- Add a data panel with tabs for general, structure, equipment, logistics, and notes.
+- Add strength/composition aggregation so parent units can show rolled-up personnel, equipment, and readiness from subordinates.
+- Add UI customization controls for line thickness, symbol size, font choice, and theme presets.
+- Add NATO symbol and modifier tooltips so users can understand icons without leaving the app.
+- Add a visible tutorial / onboarding button for first-time users who miss the guided flow.
 - Add a recovery modal when storage quota is close to being exceeded.
 - Review export code paths for large canvases and large embedded images.
 - Verify readonly mode actually blocks drag, delete, paste, and panel mutation paths end-to-end.
@@ -56,8 +75,9 @@ This backlog is grouped by estimated implementation effort so the next work can 
 - Add keyboard shortcuts help grouped by workflow instead of a flat reference list.
 - Add bulk rename patterns for selected nodes, such as prefix, suffix, and sequential numbering.
 - Add duplicate-subtree and mirror-layout actions for faster ORBAT construction.
+- Add alternate views such as flat table view, equipment summary view, and command-chain view.
 
-## Large
+## Major Projects
 
 - Audit all modules for `window.*` state writes that can drift from closure-owned state in `symbols-data.js`.
 - Introduce a small central state adapter so feature modules stop patching raw globals directly.
@@ -65,9 +85,29 @@ This backlog is grouped by estimated implementation effort so the next work can 
 - Add collapsible task groups or lane regions so users can organize branches by phase, mission, or functional area.
 - Add an assumptions / notes layer for briefing annotations, arrows, and map callouts.
 - Add optional background map georeferencing so units can be placed against a scaled operational map.
+- Add full map integration with map-aware overlays, unit placement workflows, and shared map state across views.
+- Add an AI-assisted builder that can draft an ORBAT from user prompting and then hand the result back for manual refinement.
+- Add campaign mode to track units over time, including reinforcements, losses, and changing readiness across phases.
+- Add force comparison tools to compare two ORBATs by strength, equipment balance, and combat-power estimate.
+- Add a combat-power calculator with weighted scoring by subunit type and an overall effectiveness rating.
+- Add a logistics layer covering supply state, ammo, fuel, and sustainment readiness.
+- Add a scenario builder for objectives, axes of advance, task links, and mission overlays.
+- Add casualty and attrition simulation across phases so combat losses change strength and effectiveness over time.
+- Add richer mode switching across structure, task organization, analysis, and logistics workflows.
+- Add a more configurable random ORBAT generator with nation, doctrine, era, and output-size parameters.
 - Add a proper readonly presentation mode with hard-disabled editing paths, not just visual cues.
 - Add multi-user import/merge tools so two JSON diagrams can be compared and selectively merged.
+- Add performance optimizations for very large ORBATs, including render throttling, connector batching, and viewport culling.
+- Add a loading/skeleton UI for heavy imports, restores, and large template loads.
 - Add a documented convention for CSS ownership to reduce style overrides across multiple files.
 - Add unit/integration test seams for core document state, selection state, and import/export validation.
 - Migrate storage, tabs, views, and snapshots behind a single document/session service.
 - Add undo/redo diff summaries so history navigation is easier to trust before restoring state.
+- Improve mobile compatibility beyond layout tweaks, including touch interactions, panel behavior, and narrow-screen workflows.
+
+## Platform Bets
+
+- Integrate real `milsymbol.js` rendering instead of maintaining the current custom symbology approximation layer.
+- Add a full milsymbol modifier UI for symbol sets, amplifiers, HQ/task-force modifiers, mobility, and status options.
+- Add broader APP-6 / MIL-STD-2525 coverage for equipment, installations, tactical graphics, and advanced text/graphic modifiers.
+- Add collaborative real-time editing with shared document state, conflict handling, and presence.
