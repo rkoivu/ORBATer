@@ -169,6 +169,8 @@
   pasteNodes=function(atPoint){
     const point=atPoint || pendingPastePoint;
     pendingPastePoint=null;
+    const ghost=document.getElementById('drag-preview-ghost');
+    if(ghost){ ghost.style.display='none'; ghost.textContent=''; }
     if(point && clipboard && clipboard.length){
       const minX=Math.min(...clipboard.map(n=>+n.x||0));
       const minY=Math.min(...clipboard.map(n=>+n.y||0));
@@ -190,6 +192,13 @@
     e.preventDefault();
     const rect=canvasWrap.getBoundingClientRect();
     pendingPastePoint={x:snapV((e.clientX-rect.left-panX)/zoom), y:snapV((e.clientY-rect.top-panY)/zoom)};
+    const ghost=document.getElementById('drag-preview-ghost');
+    if(ghost){
+      ghost.textContent=`Paste ${clipboard.length} unit(s) here`;
+      ghost.style.display='block';
+      ghost.style.left=(e.clientX-rect.left+14)+'px';
+      ghost.style.top=(e.clientY-rect.top+14)+'px';
+    }
     pasteNodes(pendingPastePoint);
   }, true);
 

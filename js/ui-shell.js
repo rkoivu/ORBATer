@@ -72,6 +72,7 @@
       </div>
     </div>
     <div id="lasso"></div>
+    <div id="drag-preview-ghost" style="display:none"></div>
     <button class="tb-btn" id="mm-toggle" style="font-size:9px;padding:3px 8px" onclick="toggleMinimap()">&#8861; Map</button>
     <div id="minimap">
       <canvas id="mm-canvas" width="158" height="98"></canvas>
@@ -79,6 +80,7 @@
     </div>
     <div id="undo-flash">UNDO</div>
     <div id="afsave">&#10003; SAVED</div>
+    <div id="readonly-banner" style="display:none"></div>
     <div id="align-bar">
       <span style="font-family:'Barlow Condensed',sans-serif;font-size:9px;color:var(--text2);letter-spacing:1px">ALIGN:</span>
       <button class="tb-btn" onclick="alignNodes('left')" title="Align left edges">L</button>

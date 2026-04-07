@@ -14,30 +14,22 @@ This backlog is grouped by estimated implementation effort so the next work can 
 - Added a zero-dependency local automation setup with `npm` scripts for validation, static builds, and local serving.
 - Tightened the local serve flow and tab/view text cleanup so common commands fail more clearly and render with cleaner labels.
 - Added clearer first-use guidance and feedback in history, templates, and outline import flows.
+- Persisted grid mode in document state so tabs and restores keep the selected grid style.
+- Added a readonly/share banner, recent diagram restore list, paste target preview, minimap viewport framing, and drag/reparent preview ghosting.
+- Improved storage failure feedback for autosave, tabs, views, and snapshots, with clearer import recovery hints and stronger command palette ranking.
 
 ## Tier 1
 
 - Replace remaining text-encoding artifacts in labels and button copy with clean ASCII or intentional symbols.
 - Unify toolbar iconography and wording so controls read consistently across core and patch modules.
-- Improve command palette ranking, keyboard navigation, and grouping.
 - Add empty states for more modals and panels so blank views explain what to do next.
-- Persist grid mode per document/tab instead of resetting to the default on reload.
-- Add a clearer readonly/share banner so exported readonly links are harder to mistake for editable views.
-- Add recent files / recent diagrams support on top of current localStorage persistence.
-- Add a clipboard preview or paste target indicator before large paste operations.
 - Add inline validation hints for malformed imports and unsupported schemas before apply.
-- Add optional autosave status details showing last saved time and storage pressure.
-- Add minimap viewport framing so users can see the current camera bounds inside the overview.
-- Replace remaining `||` fallback patterns where valid `0`, `false`, or empty-string values can be lost.
-- Harden localStorage failure paths so views, tabs, snapshots, and autosave fail consistently and visibly.
-- Check for duplicate event listeners created by repeated modal or enhancement initialization.
+- Add a recent-files style launcher on startup, not only restore actions inside the views modal.
 - Fix stale documentation references whenever architecture or loaded files change.
-- Add smoke-test coverage for tab switching, snapshot restore, import/export, and minimap visibility.
 - Add clearer empty-state guidance to attachments, templates, and outline import flows.
 - Add success/error toasts for view save, tab duplicate, and tab close actions where feedback is currently silent.
 - Add more unit types and icon variants to the palette so doctrine-specific structures need less manual reuse.
-- Add a drag preview ghost for link/reparent actions so users can see the likely drop target before releasing.
-- Add better import error handling and recovery hints for broken or partially supported import files.
+- Add richer keyboard navigation and grouping to the command palette beyond ranking improvements.
 
 ## Tier 2
 
@@ -65,6 +57,9 @@ This backlog is grouped by estimated implementation effort so the next work can 
 - Add NATO symbol and modifier tooltips so users can understand icons without leaving the app.
 - Add a visible tutorial / onboarding button for first-time users who miss the guided flow.
 - Add a recovery modal when storage quota is close to being exceeded.
+- Replace remaining `||` fallback patterns where valid `0`, `false`, or empty-string values can be lost.
+- Harden localStorage failure paths so views, tabs, snapshots, and autosave fail consistently and visibly across every module.
+- Check for duplicate event listeners created by repeated modal or enhancement initialization.
 - Review export code paths for large canvases and large embedded images.
 - Verify readonly mode actually blocks drag, delete, paste, and panel mutation paths end-to-end.
 - Remove or integrate dead / unloaded modules so repo structure matches runtime reality.
@@ -76,6 +71,7 @@ This backlog is grouped by estimated implementation effort so the next work can 
 - Add bulk rename patterns for selected nodes, such as prefix, suffix, and sequential numbering.
 - Add duplicate-subtree and mirror-layout actions for faster ORBAT construction.
 - Add alternate views such as flat table view, equipment summary view, and command-chain view.
+- Add smoke-test coverage for tab switching, snapshot restore, import/export, and minimap visibility.
 
 ## Tier 3
 
