@@ -13,6 +13,7 @@ This backlog is grouped by estimated implementation effort so the next work can 
 - Improved tabs and saved-view access with cleaner labels, Enter-to-save support, and clearer feedback toasts.
 - Added a zero-dependency local automation setup with `npm` scripts for validation, static builds, and local serving.
 - Tightened the local serve flow and tab/view text cleanup so common commands fail more clearly and render with cleaner labels.
+- Added clearer first-use guidance and feedback in history, templates, and outline import flows.
 
 ## Small
 

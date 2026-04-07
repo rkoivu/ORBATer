@@ -1501,12 +1501,19 @@ const TEMPLATES=[
 
 function openTplModal(){
   const grid=document.getElementById('tpl-grid');grid.innerHTML='';
+  const help=document.getElementById('tpl-help');
+  if(help) help.textContent='Choose a doctrinal starter to replace the current ORBAT with a ready-made structure.';
+  if(!TEMPLATES.length){
+    grid.innerHTML='<div class="panel-help">No templates available yet. Add or load template definitions first.</div>';
+    openModal('tpl-modal');
+    return;
+  }
   TEMPLATES.forEach(tpl=>{
     const card=document.createElement('div');card.className='tpl-card';
     card.innerHTML=`<div class="tpl-name">${tpl.name}</div><div class="tpl-desc">${tpl.desc}</div>`;
     card.onclick=()=>{
       if(Object.keys(nodes).length>0&&!confirm('Load template? This clears the current ORBAT.'))return;
-      clearAll(true);tpl.fn();closeModal('tpl-modal');
+      clearAll(true);tpl.fn();closeModal('tpl-modal');showToast(`Template loaded: ${tpl.name}`);
     };
     grid.appendChild(card);
   });
