@@ -476,7 +476,7 @@ function renderNode(id){
     ${n.showStr&&n.strength?`<div class="node-strength-lbl">${escXml(n.strength)}${n.equipment?' . '+escXml(n.equipment):''}</div>`:''}
     ${n.showRdy&&n.readiness?`<div class="node-strength-lbl">Rdy: ${escXml(n.readiness)}%</div>`:''}
     ${n.showTask&&n.task?`<div class="node-task-lbl">${escXml(n.task)}</div>`:''}
-    <div class="node-link-btn" onmousedown="startLink(event,'${id}')" title="Drag to set parent">-></div>
+    <div class="node-link-btn" onmousedown="startLink(event,'${id}')" title="Drag to set parent">↳</div>
     <div class="node-add-btn" onclick="addChildNode(event,'${id}')" title="Add subordinate">+</div>
     ${colBtnHtml}
     ${colBadge}
@@ -864,7 +864,7 @@ function startLink(e,id){
           const tid=el.id.replace('el-','');
           if(tid!==linkSrc&&nodes[tid]){
             if(!canSetParent(linkSrc,tid)){showToast('Invalid link: would create a cycle');}
-            else{ nodes[linkSrc].parentId=tid;drawConnectors();saveState();showToast('Linked!'); }
+            else{ nodes[linkSrc].parentId=tid;drawConnectors();saveState();showToast('Parent linked to '+(nodes[tid].name||tid)); }
           }
         }
       });
@@ -920,7 +920,7 @@ function onNMU(e){
       if(tid!==dragId&&nodes[tid]){
         if(nodes[dragId]?.locked){ showToast('Node is locked'); }
         else if(!canSetParent(dragId,tid)){showToast('Invalid parent: cycle prevented');}
-        else{nodes[dragId].parentId=tid;drawConnectors();showToast('Reparented -> '+nodes[tid].name);}
+        else{nodes[dragId].parentId=tid;drawConnectors();showToast('Reparented under '+(nodes[tid].name||tid));}
       }
       el.classList.remove('rp-target');
     });
@@ -1438,10 +1438,10 @@ function demoteNode(){
 /* ========================================
    BULK OPS
 ======================================== */
-function bulkAffil(a){multiSel.forEach(id=>{nodes[id].affil=a;renderNode(id);});drawConnectors();saveState();showToast('Affiliation: '+a);}
-function bulkStatus(s){multiSel.forEach(id=>{nodes[id].status=s;renderNode(id);});saveState();showToast('Status set');}
+function bulkAffil(a){multiSel.forEach(id=>{nodes[id].affil=a;renderNode(id);});drawConnectors();saveState();showToast('Bulk affiliation set to '+a);}
+function bulkStatus(s){multiSel.forEach(id=>{nodes[id].status=s;renderNode(id);});saveState();showToast('Bulk combat status updated');}
 function bulkEchelon(v){if(!v)return;multiSel.forEach(id=>{nodes[id].echelon=v;renderNode(id);});drawConnectors();saveState();document.getElementById('bulk-echelon').value='';}
-function bulkFrame(fs){multiSel.forEach(id=>{nodes[id].frameStatus=fs;renderNode(id);});drawConnectors();saveState();showToast('Frame status set');}
+function bulkFrame(fs){multiSel.forEach(id=>{nodes[id].frameStatus=fs;renderNode(id);});drawConnectors();saveState();showToast('Bulk frame status updated');}
 
 /* ========================================
    SIDEBAR TOGGLE
