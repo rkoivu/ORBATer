@@ -15,7 +15,7 @@ This backlog is grouped by estimated implementation effort so the next work can 
 - Tightened the local serve flow and tab/view text cleanup so common commands fail more clearly and render with cleaner labels.
 - Added clearer first-use guidance and feedback in history, templates, and outline import flows.
 
-## Quick Wins
+## Tier 1
 
 - Replace remaining text-encoding artifacts in labels and button copy with clean ASCII or intentional symbols.
 - Unify toolbar iconography and wording so controls read consistently across core and patch modules.
@@ -39,7 +39,7 @@ This backlog is grouped by estimated implementation effort so the next work can 
 - Add a drag preview ghost for link/reparent actions so users can see the likely drop target before releasing.
 - Add better import error handling and recovery hints for broken or partially supported import files.
 
-## Bigger Lifts
+## Tier 2
 
 - Add stronger visual distinction between selected, multi-selected, locked, and faded nodes.
 - Add full keyboard-only navigation across the canvas, palette, modals, and edit panel.
@@ -77,7 +77,7 @@ This backlog is grouped by estimated implementation effort so the next work can 
 - Add duplicate-subtree and mirror-layout actions for faster ORBAT construction.
 - Add alternate views such as flat table view, equipment summary view, and command-chain view.
 
-## Major Projects
+## Tier 3
 
 - Audit all modules for `window.*` state writes that can drift from closure-owned state in `symbols-data.js`.
 - Introduce a small central state adapter so feature modules stop patching raw globals directly.
@@ -105,7 +105,7 @@ This backlog is grouped by estimated implementation effort so the next work can 
 - Add undo/redo diff summaries so history navigation is easier to trust before restoring state.
 - Improve mobile compatibility beyond layout tweaks, including touch interactions, panel behavior, and narrow-screen workflows.
 
-## Platform Bets
+## Tier 4
 
 - Integrate real `milsymbol.js` rendering instead of maintaining the current custom symbology approximation layer.
 - Add a full milsymbol modifier UI for symbol sets, amplifiers, HQ/task-force modifiers, mobility, and status options.
