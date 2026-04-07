@@ -209,12 +209,18 @@
   }
   function renderViews(){
     const box=q('view-list'); if(!box) return; const views=getViews();
-    if(!views.length){ box.innerHTML='<div class="panel-help">No saved views yet.</div>'; return; }
+    if(!views.length){
+      box.innerHTML='<div class="panel-help">No saved views yet. Save the current camera position to jump back to it later.</div>';
+      return;
+    }
     box.innerHTML=views.map(v=>`<div class="view-row"><div><div style="font-weight:700">${esc(v.name)}</div><div class="panel-help">Scale ${Math.round((v.transform?.scale||1)*100)}%</div></div><div style="display:flex;gap:6px"><button class="pb" onclick="window.__loadView('${v.id}')">Load</button><button class="pb" onclick="window.__shareView('${v.id}')">Share</button><button class="pb del" onclick="window.__deleteView('${v.id}')">Delete</button></div></div>`).join('');
   }
   function renderSnapshots(){
     const box=q('snapshot-list'); if(!box) return; const snaps=getSnaps();
-    if(!snaps.length){ box.innerHTML='<div class="panel-help">No snapshots yet.</div>'; return; }
+    if(!snaps.length){
+      box.innerHTML='<div class="panel-help">No snapshots yet. Create one before a major edit if you want an easy restore point.</div>';
+      return;
+    }
     box.innerHTML=snaps.map(s=>`<div class="snap-row"><div><div style="font-weight:700">${esc(s.reason)}</div><div class="panel-help">${new Date(s.ts).toLocaleString()} · <span class="diff-pill">+${s.diff?.added||0} −${s.diff?.removed||0} Δ${s.diff?.changed||0}</span></div></div><div style="display:flex;gap:6px"><button class="pb" onclick="window.__restoreSnap('${s.id}')">Restore</button><button class="pb" onclick="window.__loadSnapView('${s.id}')">View</button><button class="pb del" onclick="window.__deleteSnap('${s.id}')">Delete</button></div></div>`).join('');
     // Update slider
     const slider = q('phase-slider');
@@ -579,7 +585,7 @@
   function renderCmdk(filter=''){
     const box=q('cmdk-list'); if(!box) return; const term=filter.trim().toLowerCase();
     const items=commands.filter(c=>!term||c.name.toLowerCase().includes(term));
-    box.innerHTML=items.map((c,i)=>`<div class="cmdk-row"><div>${esc(c.name)}</div><button class="pb" data-cmd-idx="${i}" style="width:auto;margin:0">Run</button></div>`).join('') || '<div class="panel-help">No commands</div>';
+    box.innerHTML=items.map((c,i)=>`<div class="cmdk-row"><div>${esc(c.name)}</div><button class="pb" data-cmd-idx="${i}" style="width:auto;margin:0">Run</button></div>`).join('') || '<div class="panel-help">No commands match that search. Try a shorter term.</div>';
     [...box.querySelectorAll('[data-cmd-idx]')].forEach((btn,idx)=>btn.onclick=()=>{ items[idx].run(); close('cmdk-modal'); });
   }
   window.openCommandPalette=function(){ renderCmdk(''); open('cmdk-modal'); setTimeout(()=>q('cmdk-input')?.focus(),30); };

@@ -116,16 +116,16 @@
           <div class="aff-btn a-friendly" data-aff="friendly" onclick="setAffil('friendly')">Friend</div>
           <div class="aff-btn" data-aff="hostile" onclick="setAffil('hostile')">Hostile</div>
           <div class="aff-btn" data-aff="neutral" onclick="setAffil('neutral')">Neutral</div>
-          <div class="aff-btn" data-aff="unknown" onclick="setAffil('unknown')">Unknwn</div>
+          <div class="aff-btn" data-aff="unknown" onclick="setAffil('unknown')">Unknown</div>
         </div>
       </div>
       <div class="psec">Status &amp; Tasking</div>
       <div class="fg"><label>Combat Status</label>
         <div class="stat-row">
-          <div class="stat-btn" data-st="effective" onclick="setStat('effective')">C/E</div>
-          <div class="stat-btn" data-st="degraded" onclick="setStat('degraded')">Degr.</div>
-          <div class="stat-btn" data-st="not-operational" onclick="setStat('not-operational')">N/O</div>
-          <div class="stat-btn" data-st="unknown-status" onclick="setStat('unknown-status')">Unk.</div>
+          <div class="stat-btn" data-st="effective" onclick="setStat('effective')">Effective</div>
+          <div class="stat-btn" data-st="degraded" onclick="setStat('degraded')">Degraded</div>
+          <div class="stat-btn" data-st="not-operational" onclick="setStat('not-operational')">Non-Op</div>
+          <div class="stat-btn" data-st="unknown-status" onclick="setStat('unknown-status')">Unknown</div>
         </div>
       </div>
       <div class="fr">
@@ -188,7 +188,7 @@
           <label><input type="checkbox" id="show-cmd" checked onchange="applyEP()"> Cmd.</label>
           <label><input type="checkbox" id="show-str" onchange="applyEP()"> Strength</label>
           <label><input type="checkbox" id="show-task" onchange="applyEP()"> Task</label>
-          <label><input type="checkbox" id="show-rdy" onchange="applyEP()"> Rdy %</label>
+          <label><input type="checkbox" id="show-rdy" onchange="applyEP()"> Readiness %</label>
         </div>
       </div>
       <div class="psec">Actions</div>
@@ -214,14 +214,14 @@
         <div class="aff-btn" onclick="bulkAffil('friendly')" style="border-color:var(--friendly);color:var(--friendly)">Friend</div>
         <div class="aff-btn" onclick="bulkAffil('hostile')" style="border-color:var(--hostile);color:var(--hostile)">Hostile</div>
         <div class="aff-btn" onclick="bulkAffil('neutral')" style="border-color:var(--neutral);color:var(--neutral)">Neutral</div>
-        <div class="aff-btn" onclick="bulkAffil('unknown')" style="border-color:var(--unknown);color:var(--unknown)">Unknwn</div>
+        <div class="aff-btn" onclick="bulkAffil('unknown')" style="border-color:var(--unknown);color:var(--unknown)">Unknown</div>
       </div>
       <div class="psec">Bulk: Status</div>
       <div class="stat-row" style="margin-bottom:10px">
-        <div class="stat-btn" onclick="bulkStatus('effective')" style="border-color:#22c55e;color:#22c55e">C/E</div>
-        <div class="stat-btn" onclick="bulkStatus('degraded')" style="border-color:#f59e0b;color:#f59e0b">Degr.</div>
-        <div class="stat-btn" onclick="bulkStatus('not-operational')" style="border-color:#ef4444;color:#ef4444">N/O</div>
-        <div class="stat-btn" onclick="bulkStatus('unknown-status')" style="border-color:#6b7280;color:#6b7280">Unk.</div>
+        <div class="stat-btn" onclick="bulkStatus('effective')" style="border-color:#22c55e;color:#22c55e">Effective</div>
+        <div class="stat-btn" onclick="bulkStatus('degraded')" style="border-color:#f59e0b;color:#f59e0b">Degraded</div>
+        <div class="stat-btn" onclick="bulkStatus('not-operational')" style="border-color:#ef4444;color:#ef4444">Non-Op</div>
+        <div class="stat-btn" onclick="bulkStatus('unknown-status')" style="border-color:#6b7280;color:#6b7280">Unknown</div>
       </div>
       <div class="fg"><label>Bulk: Echelon</label>
         <select id="bulk-echelon" onchange="bulkEchelon(this.value)">
@@ -248,8 +248,8 @@
         <button class="pb" style="margin:0;font-size:10px" onclick="alignNodes('hcenter')">Center</button>
         <button class="pb" style="margin:0;font-size:10px" onclick="alignNodes('right')">Right</button>
         <button class="pb" style="margin:0;font-size:10px" onclick="alignNodes('top')">Top</button>
-        <button class="pb" style="margin:0;font-size:10px" onclick="distributeH()">H-Dist</button>
-        <button class="pb" style="margin:0;font-size:10px" onclick="distributeV()">V-Dist</button>
+        <button class="pb" style="margin:0;font-size:10px" onclick="distributeH()">Space H</button>
+        <button class="pb" style="margin:0;font-size:10px" onclick="distributeV()">Space V</button>
       </div>
     </div>
   </div>
