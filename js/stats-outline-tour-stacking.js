@@ -561,13 +561,13 @@
     let ov=document.getElementById('outline-modal');
     if(!ov){
       ov=document.createElement('div'); ov.className='modal-ov'; ov.id='outline-modal';
-      ov.innerHTML=`<div class="modal-box" style="min-width:560px"><h2>Import From Text Outline <span class="modal-x">✕</span></h2><p style="font-size:12px;color:var(--text2);margin-bottom:10px">Use indentation for hierarchy. Example:<br><code>1 DIV<br>&nbsp;&nbsp;1 BDE<br>&nbsp;&nbsp;2 BDE<br>&nbsp;&nbsp;3 ARTY REGT</code></p><textarea id="outline-text"></textarea><div class="modal-acts"><button class="pb" id="outline-cancel" style="width:auto;margin:0">Cancel</button><button class="pb" id="outline-import-btn" style="width:auto;margin:0;border-color:var(--accent);color:var(--accent)">Import</button></div></div>`;
+      ov.innerHTML=`<div class="modal-box" style="min-width:560px"><h2>Import From Text Outline <span class="modal-x">✕</span></h2><p style="font-size:12px;color:var(--text2);margin-bottom:10px">Use indentation for hierarchy. Example:<br><code>1 DIV<br>&nbsp;&nbsp;1 BDE<br>&nbsp;&nbsp;2 BDE<br>&nbsp;&nbsp;3 ARTY REGT</code></p><textarea id="outline-text" placeholder="1 DIV&#10;  1 BDE&#10;  2 BDE&#10;  3 ARTY REGT"></textarea><div class="panel-help" style="margin:8px 0 10px">Paste an indented outline, then import to build units and parent-child links automatically.</div><div class="modal-acts"><button class="pb" id="outline-cancel" style="width:auto;margin:0">Cancel</button><button class="pb" id="outline-import-btn" style="width:auto;margin:0;border-color:var(--accent);color:var(--accent)">Import</button></div></div>`;
       document.body.appendChild(ov);
       ov.querySelector('.modal-x').onclick=()=>ov.classList.remove('open');
       ov.querySelector('#outline-cancel').onclick=()=>ov.classList.remove('open');
       ov.querySelector('#outline-import-btn').onclick=()=>{
         const txt=ov.querySelector('#outline-text').value;
-        if(!txt.trim()) return;
+        if(!txt.trim()){ showToast('Paste an indented outline first'); return; }
         const ids=parseOutline(txt);
         autoLayout(ids); saveState(); ov.classList.remove('open'); showToast(`Imported ${ids.length} units from outline`);
       };

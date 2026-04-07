@@ -290,7 +290,7 @@
 <div class="modal-ov" id="tpl-modal">
   <div class="modal-box" style="min-width:420px">
     <h2>Load Template <span class="modal-x" onclick="closeModal('tpl-modal')">&#10005;</span></h2>
-    <p style="font-size:11px;color:var(--text2);margin-bottom:10px">Load a pre-built ORBAT structure. Clears the current canvas.</p>
+    <p style="font-size:11px;color:var(--text2);margin-bottom:10px" id="tpl-help">Load a pre-built ORBAT structure. Clears the current canvas.</p>
     <div class="tpl-grid" id="tpl-grid"></div>
   </div>
 </div>

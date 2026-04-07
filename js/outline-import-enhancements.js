@@ -65,7 +65,7 @@
           e.preventDefault();
           e.stopImmediatePropagation();
           const txt=(ta?.value||'').replace(/\r/g,'');
-          if(!txt.trim()) return;
+          if(!txt.trim()){ showToastSafe('Paste an indented outline first'); return; }
           const clearExisting=ov.querySelector('#outline-clear-existing')?.checked;
           const promptMode=ov.querySelector('#outline-prompt-mode')?.checked;
           try{

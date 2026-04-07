@@ -25,7 +25,7 @@
     btn.onclick=function(){
       const list=document.getElementById('hist-list'); list.innerHTML='';
       const entries=(history||[]).map((_,i)=>i).reverse();
-      if(!entries.length){ list.innerHTML='<div style="font-size:11px;color:var(--text2)">No history yet</div>'; }
+      if(!entries.length){ list.innerHTML='<div style="font-size:11px;color:var(--text2)">No history yet. Make a change to create the first restore point.</div>'; }
       entries.forEach(i=>{
         const row=document.createElement('button');
         row.className='pb'; row.style.margin='0'; row.style.textAlign='left';
