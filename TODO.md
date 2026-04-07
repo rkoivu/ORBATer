@@ -7,6 +7,7 @@ This backlog collects high-value ideas for future work across product features, 
 - Added visible always-on toolbar state for layout mode, snap mode, link mode, and focus availability.
 - Added quick duplicate-as-sibling and duplicate-as-child actions in the properties panel and context menu.
 - Added toolbar actions and keyboard shortcuts for centering on the first hostile or neutral root.
+- Improved control labels, action toasts, and empty states so common actions read more clearly across the UI.
 
 ## Features
 
@@ -26,7 +27,6 @@ This backlog collects high-value ideas for future work across product features, 
 - Replace remaining text-encoding artifacts in labels and button copy with clean ASCII or intentional symbols.
 - Unify toolbar iconography and wording so controls read consistently across core and patch modules.
 - Improve command palette ranking, keyboard navigation, and grouping.
-- Add empty states for more modals and panels so blank views explain what to do next.
 - Refine mobile and narrow-width handling for the toolbar, tab strip, and side panels.
 - Improve tab overflow handling with scrolling cues or a tab list dropdown.
 - Add stronger visual distinction between selected, multi-selected, locked, and faded nodes.

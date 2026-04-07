@@ -825,7 +825,7 @@ function drawConnectors(){
 function toggleLinkMode(){
   linkMode=!linkMode;document.body.classList.toggle('link-mode',linkMode);
   document.getElementById('btn-link').classList.toggle('active',linkMode);
-  showToast(linkMode?'Link mode ON - drag -> from source to target':'Link mode OFF');
+  showToast(linkMode?'Link mode on. Drag from a unit to its new parent.':'Link mode off');
 }
 function startLink(e,id){
   if(!linkMode)return;e.stopPropagation();e.preventDefault();
@@ -1352,7 +1352,7 @@ function addTextboxNearUnit(unitId,side){
   selectTextbox(id);
   const input=document.querySelector('#tb-'+id+' .textbox-input');
   if(input)input.focus();
-  showToast(`Textbox added ${side}`);
+  showToast(`Text box added on the ${side}`);
 }
 function addRootUnit(){const id=createNode({x:snapV(200+Math.random()*200),y:80});selectNode(id);}
 function addChildNode(e,pId){
@@ -1385,7 +1385,7 @@ function duplicateAsChild(){
 function duplicateSelected(){
   const ids=multiSel.size>1?[...multiSel]:(selectedId?[selectedId]:[]);if(!ids.length)return;
   const newIds=ids.map(id=>createNode({...nodes[id],x:snapV(nodes[id].x+32),y:snapV(nodes[id].y+32),parentId:nodes[id].parentId}));
-  if(newIds.length===1)selectNode(newIds[0]);saveState();showToast('Duplicated');
+  if(newIds.length===1)selectNode(newIds[0]);saveState();showToast('Selection duplicated');
 }
 
 function deleteSelected(){
@@ -1429,7 +1429,7 @@ function promoteNode(){
 function demoteNode(){
   if(!selectedId)return;const n=nodes[selectedId];
   const siblings=Object.values(nodes).filter(s=>s.parentId===n.parentId&&s.id!==selectedId&&!isDescendant(s.id,selectedId));
-  if(!siblings.length){showToast('No valid sibling to demote under');return;}
+  if(!siblings.length){showToast('No sibling available to demote under');return;}
   const target=siblings[0];
   if(!canSetParent(selectedId,target.id)){showToast('Cannot demote into descendant');return;}
   n.parentId=target.id;drawConnectors();renderNode(selectedId);saveState();showToast('Demoted under '+nodes[target.id].name);
@@ -1587,7 +1587,7 @@ document.getElementById('file-input').addEventListener('change',e=>{
       const d=JSON.parse(ev.target.result);
       applyDocumentState(d,{trackHistory:true,preserveView:false});
       showToast(`ORBAT imported successfully${d.schemaVersion?` - schema v${d.schemaVersion}`:''}`);
-    }catch(err){showToast('Warning: Import error: '+err.message);}
+    }catch(err){showToast('Import error: '+err.message);}
   };r.readAsText(file);e.target.value='';
 });
 
