@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns="http://www.w3.org/2000/svg"
+   id="NATO Map Symbol"
+   height="400"
+   width="600">
+  <text
+     style="font-size:225px;font-family:sans-serif;text-align:center;text-anchor:middle;fill:#0000ff;stroke:none"
+     id="MAIN"
+     y="282"
+     x="300">TD</text>
+  <path
+     id="Friendly Frame"
+     d="M 5,5 H 595 V 395 H 5 Z"
+     style="fill:none;stroke:#0000ff;stroke-width:10;stroke-linejoin:miter;stroke-miterlimit:4" />
+</svg>
