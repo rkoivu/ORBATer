@@ -699,6 +699,24 @@
     prevAccessibleRenderTabs();
     cleanViewsUiText();
   };
+  function normalizeAccessibleLabels(){
+    const orgBtn = q('btn-org-toggle'); if(orgBtn) orgBtn.textContent = '≋ ORBAT';
+    const cmdHint = document.querySelector('#cmdk-modal .cmdk-hint');
+    if(cmdHint) cmdHint.textContent = 'Enter to run · Esc to close · Cmd/Ctrl+K to open';
+    document.querySelectorAll('#tab-bar .tab, #tab-bar .tab-dirty, #tab-bar .tab-close').forEach(el=>{
+      const text = el.textContent || '';
+      if(el.childNodes.length === 1 && (text.includes('Ã') || text.includes('â'))){
+        const looksLikeClose = text.includes('œ') || text.includes('—') || text.includes('×');
+        el.textContent = looksLikeClose ? '×' : '●';
+      }
+      if(el.title) el.title = el.title.replaceAll('Â·','·');
+    });
+  }
+  const prevNormalizedRenderTabs = renderTabs;
+  renderTabs = function(){
+    prevNormalizedRenderTabs();
+    normalizeAccessibleLabels();
+  };
 
   // init
   setTimeout(()=>{ 
@@ -714,5 +732,6 @@
     }
     renderTabs();
     cleanViewsUiText();
+    normalizeAccessibleLabels();
   }, 120);
 })();

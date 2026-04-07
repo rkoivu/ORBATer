@@ -12,6 +12,7 @@ This backlog is grouped by estimated implementation effort so the next work can 
 - Cleaned up more visible action labels and empty-state copy in the link and attachments UI.
 - Improved tabs and saved-view access with cleaner labels, Enter-to-save support, and clearer feedback toasts.
 - Added a zero-dependency local automation setup with `npm` scripts for validation, static builds, and local serving.
+- Tightened the local serve flow and tab/view text cleanup so common commands fail more clearly and render with cleaner labels.
 
 ## Small
 
