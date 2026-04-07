@@ -635,6 +635,71 @@
   });
   setTimeout(()=>{ q('cmdk-input')?.addEventListener('input',e=>renderCmdk(e.target.value)); q('cmdk-input')?.addEventListener('keydown',e=>{ if(e.key==='Enter'){ const btn=document.querySelector('#cmdk-list [data-cmd-idx]'); if(btn) btn.click(); }}); }, 100);
 
+  const prevDeleteView = window.__deleteView;
+  if(prevDeleteView){
+    window.__deleteView = function(id){
+      prevDeleteView(id);
+      toast('View deleted');
+    };
+  }
+  const prevDeleteSnap = window.__deleteSnap;
+  if(prevDeleteSnap){
+    window.__deleteSnap = function(id){
+      prevDeleteSnap(id);
+      toast('Snapshot deleted');
+    };
+  }
+  const prevDuplicateTab = window.__duplicateTab;
+  if(prevDuplicateTab){
+    window.__duplicateTab = function(id = currentTabId){
+      const sourceTab = tabs.find(t=>t.id===id);
+      prevDuplicateTab(id);
+      const newestTab = tabs[tabs.length-1];
+      toast(`Duplicated tab: ${(newestTab?.name || sourceTab?.name || 'Tab')}`);
+    };
+  }
+  const prevNewTab = window.__newTab;
+  if(prevNewTab){
+    window.__newTab = function(){
+      const nextName = 'Tab ' + (tabs.length + 1);
+      prevNewTab();
+      toast(`Opened ${nextName}`);
+    };
+  }
+  const prevCloseTab = window.__closeTab;
+  if(prevCloseTab){
+    window.__closeTab = function(id){
+      const tabName = tabs.find(t=>t.id===id)?.name || 'Tab';
+      prevCloseTab(id);
+      if(id !== 'default') toast(`Closed tab: ${tabName}`);
+    };
+  }
+  function cleanViewsUiText(){
+    const orgBtn = q('btn-org-toggle'); if(orgBtn) orgBtn.textContent = '≋ ORBAT';
+    const viewsBtn = q('btn-views'); if(viewsBtn) viewsBtn.textContent = 'Views';
+    const snapsBtn = q('btn-snapshots'); if(snapsBtn) snapsBtn.textContent = 'Snaps';
+    const pdfBtn = q('btn-export-pdf'); if(pdfBtn) pdfBtn.textContent = 'PDF';
+    const cmdBtn = q('btn-cmdk'); if(cmdBtn) cmdBtn.textContent = 'Cmd';
+    const cmdInput = q('cmdk-input'); if(cmdInput) cmdInput.placeholder = 'Type a command...';
+    const cmdHint = document.querySelector('#cmdk-modal .cmdk-hint');
+    if(cmdHint) cmdHint.textContent = 'Enter to run · Esc to close · Cmd/Ctrl+K to open';
+    const viewInput = q('view-name-input');
+    if(viewInput && viewInput.dataset.enterBound !== '1'){
+      viewInput.dataset.enterBound = '1';
+      viewInput.addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); q('save-view-btn')?.click(); } });
+    }
+    document.querySelectorAll('#tab-bar .tab, #tab-bar .tab-dirty, #tab-bar .tab-close').forEach(el=>{
+      if(el.childNodes.length === 1 && el.textContent === 'â—') el.textContent = '●';
+      if(el.childNodes.length === 1 && (el.textContent === 'âœ•' || el.textContent === 'Ã—')) el.textContent = '×';
+      if(el.title) el.title = el.title.replaceAll('Â·','·');
+    });
+  }
+  const prevAccessibleRenderTabs = renderTabs;
+  renderTabs = function(){
+    prevAccessibleRenderTabs();
+    cleanViewsUiText();
+  };
+
   // init
   setTimeout(()=>{ 
     ensureViewsUI(); 
@@ -648,5 +713,6 @@
       saveTabs();
     }
     renderTabs();
+    cleanViewsUiText();
   }, 120);
 })();
