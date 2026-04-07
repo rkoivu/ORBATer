@@ -205,14 +205,20 @@
     }
     if(e.key==='Home'){
       e.preventDefault();
-      if(window.centerOnRoot) window.centerOnRoot();
+      if(e.shiftKey && window.centerOnHostileRoot) window.centerOnHostileRoot();
+      else if(e.altKey && window.centerOnNeutralRoot) window.centerOnNeutralRoot();
+      else if(window.centerOnRoot) window.centerOnRoot();
     }
   }, true);
 
   // More descriptive topbar tooltips
   const extraTitles={
+    'btn-auto-layout':'Auto-layout current ORBAT (L)',
     'btn-focus':'Focus selection (Alt+F)',
     'btn-snap':'Cycle grid/snap (G)',
+    'btn-link':'Toggle link mode (Esc to cancel)',
+    'btn-hostile-root':'Center on first hostile root (Shift+Home)',
+    'btn-neutral-root':'Center on first neutral root (Alt+Home)',
     'btn-zoom-in':'Zoom in',
     'btn-zoom-out':'Zoom out',
     'btn-collapse-all':'Collapse all subtrees',

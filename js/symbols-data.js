@@ -1361,6 +1361,27 @@ function addChildNode(e,pId){
 }
 function addChildToSelected(){if(!selectedId)return;addChildNode({stopPropagation:()=>{}},selectedId);}
 
+function nextDuplicateName(name='Unit'){
+  const base=String(name||'Unit').trim()||'Unit';
+  const match=base.match(/^(.*?)(?: Copy(?: (\d+))?)?$/);
+  const stem=(match&&match[1]?match[1]:base).trim()||'Unit';
+  const copyNum=match&&match[2]?Number(match[2]):(base.endsWith(' Copy')?1:0);
+  return copyNum>0?`${stem} Copy ${copyNum+1}`:`${stem} Copy`;
+}
+function duplicateAsSibling(){
+  if(!selectedId||!nodes[selectedId])return;
+  const src=nodes[selectedId];
+  const id=createNode({...src,parentId:src.parentId||null,x:snapV(src.x+36),y:snapV(src.y+36),name:nextDuplicateName(src.name)});
+  selectNode(id);showToast('Duplicated as sibling');
+}
+function duplicateAsChild(){
+  if(!selectedId||!nodes[selectedId])return;
+  const src=nodes[selectedId];
+  src.collapsed=false;
+  const id=createNode({...src,parentId:selectedId,x:snapV(src.x+24),y:snapV(src.y+140),name:nextDuplicateName(src.name)});
+  renderNode(selectedId);drawConnectors();selectNode(id);showToast('Duplicated as child');
+}
+
 function duplicateSelected(){
   const ids=multiSel.size>1?[...multiSel]:(selectedId?[selectedId]:[]);if(!ids.length)return;
   const newIds=ids.map(id=>createNode({...nodes[id],x:snapV(nodes[id].x+32),y:snapV(nodes[id].y+32),parentId:nodes[id].parentId}));
