@@ -8,6 +8,7 @@ This backlog collects high-value ideas for future work across product features, 
 - Added quick duplicate-as-sibling and duplicate-as-child actions in the properties panel and context menu.
 - Added toolbar actions and keyboard shortcuts for centering on the first hostile or neutral root.
 - Improved control labels, action toasts, and empty states so common actions read more clearly across the UI.
+- Fixed tab switching and new-tab restore paths to use full document state instead of drifting `window.*` tab snapshots.
 
 ## Features
 
