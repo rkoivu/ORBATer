@@ -1,6 +1,8 @@
 (function(){
   const focusBtn=document.getElementById('btn-focus');
   const tagBtn=document.getElementById('btn-tag-highlight');
+  const hostileRootBtn=document.getElementById('btn-hostile-root');
+  const neutralRootBtn=document.getElementById('btn-neutral-root');
   let tagHighlightEnabled=false;
 
   function affBorder(n){
@@ -18,6 +20,45 @@
     return parts.join('\n');
   }
   function syncTagBtn(){ tagBtn?.classList.toggle('soft-active', tagHighlightEnabled); }
+  function hasSelection(){ return !!selectedId || ((multiSel?.size||0)>0); }
+  function rootForAffiliations(affils){
+    const wanted=new Set(affils);
+    return Object.values(nodes||{})
+      .filter(n=>!n.parentId && wanted.has(n.affil))
+      .sort((a,b)=>(a.y-b.y)||(a.x-b.x))[0] || null;
+  }
+  function centerOnNodeData(node, label){
+    if(!node) return false;
+    const el=document.getElementById('el-'+node.id);
+    if(!el) return false;
+    const rect=canvasWrap.getBoundingClientRect();
+    panX=rect.width/2 - (node.x + el.offsetWidth/2)*zoom;
+    panY=rect.height/2 - (node.y + el.offsetHeight/2)*zoom;
+    applyTransform();
+    if(label) showToast(label);
+    return true;
+  }
+  function syncFocusBtn(){
+    const enabled=hasSelection();
+    focusBtn?.classList.toggle('soft-active', enabled);
+    if(focusBtn){
+      focusBtn.title=enabled?'Focus selection (Alt+F)':'Select a unit to focus';
+      focusBtn.setAttribute('aria-disabled', enabled?'false':'true');
+    }
+  }
+  function syncRootButtons(){
+    const hostileReady=!!rootForAffiliations(['hostile']);
+    const neutralReady=!!rootForAffiliations(['neutral']);
+    hostileRootBtn?.classList.toggle('soft-active', hostileReady);
+    neutralRootBtn?.classList.toggle('soft-active', neutralReady);
+    if(hostileRootBtn) hostileRootBtn.title=hostileReady?'Center on first hostile root (Shift+Home)':'No hostile root';
+    if(neutralRootBtn) neutralRootBtn.title=neutralReady?'Center on first neutral root (Alt+Home)':'No neutral root';
+  }
+  function syncToolbarState(){
+    syncTagBtn();
+    syncFocusBtn();
+    syncRootButtons();
+  }
   window.toggleTagHighlight=function(){ tagHighlightEnabled=!tagHighlightEnabled; syncTagBtn(); Object.keys(nodes).forEach(renderNode); try{saveState();}catch(e){} };
   window.focusSelection=function(){
     const ids=selectedId?[selectedId]:Array.from(multiSel||[]);
@@ -51,11 +92,19 @@
     applyTransform();
     showToast('Centered on root');
   };
+  window.centerOnHostileRoot=function(){
+    if(centerOnNodeData(rootForAffiliations(['hostile']),'Centered on hostile root')) return;
+    showToast('No hostile root found');
+  };
+  window.centerOnNeutralRoot=function(){
+    if(centerOnNodeData(rootForAffiliations(['neutral']),'Centered on neutral root')) return;
+    showToast('No neutral root found');
+  };
 
   const prevSerialize=serializeDocument;
   serializeDocument=function(){ const d=prevSerialize(); d.tagHighlightEnabled=tagHighlightEnabled; return d; };
   const prevApplyDoc=applyDocumentState;
-  applyDocumentState=function(doc,opts){ prevApplyDoc(doc,opts); tagHighlightEnabled=doc.tagHighlightEnabled===true; syncTagBtn(); /* renderNode loop removed: applyDocumentState already renders all nodes */ };
+  applyDocumentState=function(doc,opts){ prevApplyDoc(doc,opts); tagHighlightEnabled=doc.tagHighlightEnabled===true; syncToolbarState(); /* renderNode loop removed: applyDocumentState already renders all nodes */ };
 
   const prevRender=renderNode;
   renderNode=function(id){
@@ -75,8 +124,13 @@
     if(act==='qa-inf' && ctxTarget){ hideCtx(); createNode({parentId:ctxTarget,typeId:'infantry',name:'Infantry',echelon:'company',x:nodes[ctxTarget].x,y:nodes[ctxTarget].y+120}); drawConnectors(); saveState(); return; }
     if(act==='qa-arm' && ctxTarget){ hideCtx(); createNode({parentId:ctxTarget,typeId:'armour',name:'Armour',echelon:'company',x:nodes[ctxTarget].x,y:nodes[ctxTarget].y+120}); drawConnectors(); saveState(); return; }
     if(act==='qa-arty' && ctxTarget){ hideCtx(); createNode({parentId:ctxTarget,typeId:'artillery',name:'Artillery',echelon:'company',x:nodes[ctxTarget].x,y:nodes[ctxTarget].y+120}); drawConnectors(); saveState(); return; }
+    if(act==='dup-sibling' && ctxTarget){ hideCtx(); selectNode(ctxTarget); duplicateAsSibling(); return; }
+    if(act==='dup-child' && ctxTarget){ hideCtx(); selectNode(ctxTarget); duplicateAsChild(); return; }
     return prevCtx(act);
   };
+
+  const prevUpdSelUI=updSelUI;
+  updSelUI=function(){ const r=prevUpdSelUI.apply(this, arguments); syncToolbarState(); return r; };
 
   document.addEventListener('keydown',e=>{
     const tag=(e.target&&e.target.tagName)||'';
@@ -84,6 +138,6 @@
     // F key handled by capture-phase listener (fitScreen / Alt+F=focusSelection)
   });
 
-  syncTagBtn();
+  syncToolbarState();
   Object.keys(nodes).forEach(renderNode);
 })();

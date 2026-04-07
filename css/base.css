@@ -7,6 +7,7 @@ button,select{cursor:pointer}
 select{appearance:none;background:var(--control-bg);border:1px solid var(--control-border);border-radius:var(--control-radius-sm);color:var(--text);padding:7px 34px 7px 11px;outline:none;box-shadow:none;background-image:linear-gradient(45deg,transparent 50%,var(--text2) 50%),linear-gradient(135deg,var(--text2) 50%,transparent 50%);background-position:calc(100% - 16px) calc(50% - 1px),calc(100% - 11px) calc(50% - 1px);background-size:5px 5px,5px 5px;background-repeat:no-repeat;transition:border-color .15s,box-shadow .15s,transform .15s,background .15s}
 select:hover{border-color:var(--control-border-strong);background:var(--control-bg-hover)}
 select:focus{border-color:var(--accent);box-shadow:var(--control-ring),var(--control-shadow-hover);transform:translateY(-1px)}
+select.active{border-color:rgba(96,165,250,.62);background:color-mix(in srgb,var(--accent) 14%,var(--surface2));color:#eff6ff}
 button{background:transparent;border:none}
 #topbar{display:flex;align-items:center;gap:8px;padding:0 12px;height:54px;background:var(--topbar-bg);border-bottom:1px solid color-mix(in srgb,var(--border) 46%,transparent);box-shadow:none;flex-shrink:0;z-index:300;overflow-x:auto;overflow-y:visible;position:relative;scrollbar-width:thin;backdrop-filter:none}
 .logo{position:relative}
@@ -16,6 +17,7 @@ button{background:transparent;border:none}
 .tb-btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:34px;padding:7px 12px;background:var(--control-bg);border:1px solid var(--control-border);border-radius:var(--control-radius);color:var(--text);font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:.75px;text-transform:uppercase;cursor:pointer;transition:background .15s,border-color .15s,color .15s,transform .15s,box-shadow .15s;white-space:nowrap;flex-shrink:0;box-shadow:none}
 .tb-btn:hover{background:var(--control-bg-hover);border-color:rgba(96,165,250,.42);color:#f4f8fb;transform:none;box-shadow:none}
 .tb-btn.active,.tb-btn.soft-active{background:color-mix(in srgb,var(--accent) 14%,var(--surface2));border-color:rgba(96,165,250,.62);color:#eff6ff;box-shadow:none}
+.tb-btn[aria-disabled="true"]{opacity:.68}
 .tb-btn.danger{border-color:rgba(239,68,68,.45);color:#fca5a5}
 .tb-btn.danger:hover{background:rgba(127,29,29,.24);border-color:rgba(248,113,113,.72);color:#fee2e2}
 .tb-spacer{flex:1;min-width:4px}

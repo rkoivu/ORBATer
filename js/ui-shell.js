@@ -7,7 +7,7 @@
   <input id="op-name-input" value="OPERATION IRONGATE" title="Click to rename">
   <div class="tb-sep"></div>
   <button class="tb-btn" onclick="addRootUnit()">&#65291; Root</button>
-  <button class="tb-btn" onclick="autoLayout()">&#8862; Layout</button>
+  <button class="tb-btn" id="btn-auto-layout" onclick="autoLayout()">&#8862; Layout</button>
   <select id="layout-mode-sel" onchange="setLayoutMode(this.value)" title="Layout mode" style="margin-left:4px">
     <option value="tree">Tree</option>
     <option value="indented">Indented List</option>
@@ -16,6 +16,8 @@
   </select>
   <button class="tb-btn" id="btn-snap" onclick="toggleSnap()">&#8999; Snap</button>
   <button class="tb-btn" id="btn-link" onclick="toggleLinkMode()">&#10530; Link</button>
+  <button class="tb-btn" id="btn-hostile-root" onclick="centerOnHostileRoot()">Hostile</button>
+  <button class="tb-btn" id="btn-neutral-root" onclick="centerOnNeutralRoot()">Neutral</button>
   <button class="tb-btn" onclick="fitScreen()">&#8596; Fit</button>
   <div class="tb-sep"></div>
   <button class="tb-btn" onclick="undo()" title="Ctrl+Z">&#8617; Undo</button>
@@ -191,7 +193,11 @@
       </div>
       <div class="psec">Actions</div>
       <button class="panel-btn" onclick="addChildToSelected()">&#65291; Add Subordinate</button>
-      <button class="panel-btn" onclick="duplicateSelected()">&#10633; Duplicate</button>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:4px">
+        <button class="panel-btn" onclick="duplicateSelected()">&#10633; Duplicate</button>
+        <button class="panel-btn" onclick="duplicateAsSibling()">Sibling Copy</button>
+      </div>
+      <button class="panel-btn" onclick="duplicateAsChild()">Child Copy</button>
       <button class="panel-btn" onclick="copySubtree()">&#8853; Copy Subtree</button>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:4px">
         <button class="panel-btn" onclick="promoteNode()">&#8593; Promote</button>
@@ -269,6 +275,8 @@
   <div class="ctx-item" onclick="ctxAct('qa-arm')">&#65291; Armour Child</div>
   <div class="ctx-item" onclick="ctxAct('qa-arty')">&#65291; Artillery Child</div>
   <div class="ctx-item" onclick="ctxAct('dup')">&#10633; Duplicate</div>
+  <div class="ctx-item" onclick="ctxAct('dup-sibling')">Sibling Copy</div>
+  <div class="ctx-item" onclick="ctxAct('dup-child')">Child Copy</div>
   <div class="ctx-item" onclick="ctxAct('copy-subtree')">&#8853; Copy Subtree</div>
   <div class="ctx-item" onclick="ctxAct('sel-tree')">Select Subtree</div>
   <div class="ctx-item" onclick="ctxAct('collapse')">Collapse / Expand</div>
@@ -302,6 +310,9 @@
       <tr><td><kbd>F</kbd></td><td>Fit to screen</td></tr>
       <tr><td><kbd>G</kbd></td><td>Cycle grid style</td></tr>
       <tr><td><kbd>M</kbd></td><td>Toggle minimap</td></tr>
+      <tr><td><kbd>Home</kbd></td><td>Center on first root</td></tr>
+      <tr><td><kbd>Shift+Home</kbd></td><td>Center on first hostile root</td></tr>
+      <tr><td><kbd>Alt+Home</kbd></td><td>Center on first neutral root</td></tr>
       <tr><td><kbd>Shift+Click</kbd></td><td>Add/remove from multi-select</td></tr>
       <tr><td><kbd>Drag on canvas</kbd></td><td>Lasso / rubber-band select</td></tr>
       <tr><td><kbd>Shift+Drag node</kbd></td><td>Reparent (drop onto new parent)</td></tr>

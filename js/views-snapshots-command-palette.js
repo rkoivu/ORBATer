@@ -48,8 +48,19 @@
 
   // Layout mode
   window.layoutMode = localStorage.getItem('orbat_layout_mode') || 'tree';
-  window.setLayoutMode = function(mode){ window.layoutMode = mode; try{ localStorage.setItem('orbat_layout_mode', mode); }catch(e){ console.warn('Failed to save layout mode:', e); } };
-  setTimeout(() => { const sel = q('layout-mode-sel'); if(sel) sel.value = window.layoutMode; }, 100);
+  function syncLayoutModeUI(){
+    const sel = q('layout-mode-sel');
+    if(!sel) return;
+    sel.value = window.layoutMode;
+    sel.classList.toggle('active', window.layoutMode !== 'tree');
+    sel.title = `Layout mode: ${window.layoutMode}`;
+  }
+  window.setLayoutMode = function(mode){
+    window.layoutMode = mode;
+    try{ localStorage.setItem('orbat_layout_mode', mode); }catch(e){ console.warn('Failed to save layout mode:', e); }
+    syncLayoutModeUI();
+  };
+  setTimeout(syncLayoutModeUI, 100);
 
   function toast(msg){ try{ (window.showToast||function(){})(msg); }catch(e){} }
   function q(id){ return document.getElementById(id); }
@@ -550,6 +561,8 @@
     {name:'Auto layout', run:()=>window.autoLayout&&window.autoLayout()},
     {name:'Fit screen', run:()=>window.fitScreen&&window.fitScreen()},
     {name:'Center on root', run:()=>window.centerOnRoot&&window.centerOnRoot()},
+    {name:'Center on hostile root', run:()=>window.centerOnHostileRoot&&window.centerOnHostileRoot()},
+    {name:'Center on neutral root', run:()=>window.centerOnNeutralRoot&&window.centerOnNeutralRoot()},
     {name:'Zoom to selection', run:()=>window.focusSelection&&window.focusSelection()},
     {name:'Rename current tab', run:()=>window.__renameTabPrompt&&window.__renameTabPrompt(currentTabId)},
     {name:'Duplicate current tab', run:()=>window.__duplicateTab&&window.__duplicateTab(currentTabId)},

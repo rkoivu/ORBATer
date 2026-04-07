@@ -2,6 +2,12 @@
 
 This backlog collects high-value ideas for future work across product features, UI/UX, quality-of-life improvements, and bug-fix hardening.
 
+## Recently Completed
+
+- Added visible always-on toolbar state for layout mode, snap mode, link mode, and focus availability.
+- Added quick duplicate-as-sibling and duplicate-as-child actions in the properties panel and context menu.
+- Added toolbar actions and keyboard shortcuts for centering on the first hostile or neutral root.
+
 ## Features
 
 - Add connector labels that can be edited directly on-canvas instead of only through panel state.
@@ -19,7 +25,6 @@ This backlog collects high-value ideas for future work across product features, 
 
 - Replace remaining text-encoding artifacts in labels and button copy with clean ASCII or intentional symbols.
 - Unify toolbar iconography and wording so controls read consistently across core and patch modules.
-- Add visible active state for layout mode, snap mode, focus mode, and connector mode at all times.
 - Improve command palette ranking, keyboard navigation, and grouping.
 - Add empty states for more modals and panels so blank views explain what to do next.
 - Refine mobile and narrow-width handling for the toolbar, tab strip, and side panels.
@@ -31,12 +36,10 @@ This backlog collects high-value ideas for future work across product features, 
 ## Quality of Life
 
 - Add recent files / recent diagrams support on top of current localStorage persistence.
-- Add quick duplicate-as-sibling and duplicate-as-child actions.
 - Add a clipboard preview or paste target indicator before large paste operations.
 - Add inline validation hints for malformed imports and unsupported schemas before apply.
 - Add optional autosave status details showing last saved time and storage pressure.
 - Add a recovery modal when storage quota is close to being exceeded.
-- Add a shortcut and toolbar action for centering on the first hostile or neutral root, not just the primary root.
 - Add minimap viewport framing so users can see the current camera bounds inside the overview.
 
 ## Bug Fixes
