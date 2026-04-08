@@ -164,10 +164,11 @@
   }, true);
 
   // richer tooltips for topbar buttons
+  const mojibakeLeadRE=/[\u00C2\u00C3\u00E2]/;
   const tt={
-    '＋ Root':'Add root unit','⊞ Layout':'Auto-layout (L)','⌗ Snap':'Cycle grid/snap (G)','⤢ Link':'Toggle link mode','↔ Fit':'Fit to screen (F)',
-    '↩ Undo':'Undo (Ctrl+Z)','↪ Redo':'Redo (Ctrl+Y)','⧉ Copy':'Copy selected (Ctrl+C)','⊡ Paste':'Paste (Ctrl+V)',
-    '🖼 Icons':'Toggle image icons','🎯 Focus':'Focus selection','🏷 Tags':'Toggle tag highlight','🎲 Random':'Random ORBAT','⊕ Templates':'Load template','? Keys':'Keyboard shortcuts','✕ Clear':'Clear all'
+    '\uFF0B Root':'Add root unit','\u229E Layout':'Auto-layout (L)','\u2317 Snap':'Cycle grid/snap (G)','\u2922 Link':'Toggle link mode','\u2194 Fit':'Fit to screen (F)',
+    '\u21A9 Undo':'Undo (Ctrl+Z)','\u21AA Redo':'Redo (Ctrl+Y)','\u29C9 Copy':'Copy selected (Ctrl+C)','\u22A1 Paste':'Paste (Ctrl+V)',
+    '\uD83D\uDDBC Icons':'Toggle image icons','\uD83C\uDFAF Focus':'Focus selection','\uD83C\uDFF7 Tags':'Toggle tag highlight','\uD83C\uDFB2 Random':'Random ORBAT','\u2295 Templates':'Load template','? Keys':'Keyboard shortcuts','\u2715 Clear':'Clear all'
   };
   topbar.querySelectorAll('.tb-btn').forEach(btn=>{ if(!btn.title) btn.title=tt[btn.textContent.trim()]||btn.textContent.trim(); });
 
@@ -176,16 +177,16 @@
     const zoomIn=document.getElementById('btn-zoom-in'); if(zoomIn) zoomIn.textContent='Zoom +';
     const foldAll=document.getElementById('btn-collapse-all'); if(foldAll) foldAll.textContent='Fold All';
     const openAll=document.getElementById('btn-expand-all'); if(openAll) openAll.textContent='Open All';
-    const echelons=document.getElementById('sb-echelons'); if(echelons && /Ã|â/.test(echelons.textContent||'')) echelons.textContent='-';
-    const breadcrumb=document.getElementById('sb-breadcrumb'); if(breadcrumb && /Ã|â/.test(breadcrumb.textContent||'')) breadcrumb.textContent='-';
+    const echelons=document.getElementById('sb-echelons'); if(echelons && mojibakeLeadRE.test(echelons.textContent||'')) echelons.textContent='-';
+    const breadcrumb=document.getElementById('sb-breadcrumb'); if(breadcrumb && mojibakeLeadRE.test(breadcrumb.textContent||'')) breadcrumb.textContent='-';
   }
   const prevReadableUpdSB=updSB;
   updSB=function(){
     prevReadableUpdSB();
     const echelons=document.getElementById('sb-echelons');
-    if(echelons) echelons.textContent=(echelons.textContent||'').replaceAll('Ã—','x ').replaceAll('â€”','-');
+    if(echelons) echelons.textContent=(echelons.textContent||'').replaceAll('\u00C3\u0192\u00E2\u20AC\u201D','x ').replaceAll('\u00C3\u00A2\u00E2\u201A\u00AC\u00E2\u20AC\u009D','-');
     const breadcrumb=document.getElementById('sb-breadcrumb');
-    if(breadcrumb) breadcrumb.textContent=(breadcrumb.textContent||'').replaceAll('â†’',' > ').replaceAll('â€”','-');
+    if(breadcrumb) breadcrumb.textContent=(breadcrumb.textContent||'').replaceAll('\u00C3\u00A2\u00E2\u20AC\u00A0\u00E2\u20AC\u2122',' > ').replaceAll('\u00C3\u00A2\u00E2\u201A\u00AC\u00E2\u20AC\u009D','-');
     normalizeZoomUiText();
   };
 
