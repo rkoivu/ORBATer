@@ -4,6 +4,9 @@ This backlog is grouped by estimated implementation effort so the next work can 
 
 ## Recently Completed
 
+- Added grouped keyboard-shortcuts help by workflow instead of keeping a flat reference list.
+- Improved tab overflow handling with a tab-list dropdown and overflow fade cues.
+- Added stronger visual distinction between selected, multi-selected, locked, and faded nodes.
 - Replaced toolbar/button mojibake, aligned control wording, and cleaned more visible labels to read consistently across the shell and patch modules.
 - Added a startup launcher with recent diagrams, plus stronger saved-view, snapshot, and command-palette guidance when those lists are empty.
 - Added import preflight review for JSON files and inline validation hints for outline imports before apply.
@@ -31,10 +34,8 @@ This backlog is grouped by estimated implementation effort so the next work can 
 
 ## Tier 2
 
-- Add stronger visual distinction between selected, multi-selected, locked, and faded nodes.
 - Add full keyboard-only navigation across the canvas, palette, modals, and edit panel.
 - Refine mobile and narrow-width handling for the toolbar, tab strip, and side panels.
-- Improve tab overflow handling with scrolling cues or a tab list dropdown.
 - Add connector labels that can be edited directly on-canvas instead of only through panel state.
 - Add smarter connector routing so lines avoid overlapping nodes and stay readable in dense layouts.
 - Add a text-to-ORBAT parser that can turn freeform structured text into an initial hierarchy, beyond the current indented outline import.
@@ -65,7 +66,6 @@ This backlog is grouped by estimated implementation effort so the next work can 
 - Standardize modal creation and button wiring helpers so patches do not clone logic.
 - Add export presets for briefing slide, A4 print, and wide-screen command post formats.
 - Add a dedicated diagnostics modal for storage usage, schema version, feature flags, and autosave health.
-- Add keyboard shortcuts help grouped by workflow instead of a flat reference list.
 - Add bulk rename patterns for selected nodes, such as prefix, suffix, and sequential numbering.
 - Add duplicate-subtree and mirror-layout actions for faster ORBAT construction.
 - Add alternate views such as flat table view, equipment summary view, and command-chain view.

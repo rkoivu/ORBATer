@@ -7,5 +7,9 @@
 #cmdk-input{width:100%;background:var(--control-bg-soft);border:1px solid var(--control-border);border-radius:8px;color:var(--text);padding:10px 12px;font-size:13px;margin-bottom:10px;box-shadow:none}
 #cmdk-input:focus{border-color:var(--accent);box-shadow:var(--control-ring)}
 .cmdk-hint{font-size:10px;color:var(--text2);margin-top:8px;text-transform:uppercase;letter-spacing:.75px;font-family:'Barlow Condensed',sans-serif}
+.cmdk-row.active{border-color:rgba(96,165,250,.55);background:color-mix(in srgb,var(--accent) 10%,var(--surface2))}
 .tb-btn.org-mode-on{background:rgba(249,115,22,.18);border-color:rgba(251,146,60,.56);color:#ffedd5;box-shadow:none}
 .diff-pill{display:inline-flex;align-items:center;gap:4px;font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--text2);padding:2px 7px;border:1px solid rgba(148,163,184,.16);border-radius:999px;background:rgba(255,255,255,.03)}
+#tab-list-modal .tab-list-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;border:1px solid rgba(148,163,184,.14);border-radius:10px;background:var(--surface2);margin-bottom:8px}
+#tab-list-modal .tab-list-row.active{border-color:rgba(96,165,250,.45);background:color-mix(in srgb,var(--accent) 10%,var(--surface2))}
+#tab-list-modal .tab-list-meta{font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:.6px}

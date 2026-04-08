@@ -182,6 +182,60 @@
     ov.innerHTML=`<div class="modal-box"><h2>${title} <span class="modal-x" onclick="closeModal('${id}')">✕</span></h2>${inner}</div>`;
     document.body.appendChild(ov); return ov;
   }
+  function ensureTabOverflowUI(){
+    const bar=q('tab-bar');
+    if(!bar) return;
+    if(!q('tab-overflow-left')){
+      const left=document.createElement('div');
+      left.id='tab-overflow-left';
+      left.className='tab-overflow-fade left';
+      bar.appendChild(left);
+    }
+    if(!q('tab-overflow-right')){
+      const right=document.createElement('div');
+      right.id='tab-overflow-right';
+      right.className='tab-overflow-fade right';
+      bar.appendChild(right);
+    }
+    if(!q('btn-tab-list')){
+      const btn=document.createElement('button');
+      btn.className='tb-btn tab-overflow-btn';
+      btn.id='btn-tab-list';
+      btn.textContent='Tabs';
+      btn.title='Open tab list';
+      btn.addEventListener('click',()=>{ renderTabListModal(); open('tab-list-modal'); });
+      bar.appendChild(btn);
+    }
+    ensureModal('tab-list-modal','Tab List',`<div class="panel-help" style="margin-bottom:10px">Use this list when the tab strip is crowded or partially off-screen.</div><div id="tab-list-rows"></div>`);
+  }
+  function renderTabListModal(){
+    const host=q('tab-list-rows');
+    if(!host) return;
+    host.innerHTML=tabs.map(tab=>{
+      const dirty=tabDirtyStates[tab.id] ? 'Unsaved' : 'Saved';
+      const active=tab.id===currentTabId ? 'active' : '';
+      return `<div class="tab-list-row ${active}"><div><div style="font-weight:700">${esc(tab.name)}</div><div class="tab-list-meta">${dirty} | ${countNodes(tab.doc)} unit(s)</div></div><div style="display:flex;gap:6px"><button class="pb" style="width:auto;margin:0" onclick="window.__switchTab('${tab.id}');close('tab-list-modal');">Open</button></div></div>`;
+    }).join('');
+  }
+  function syncTabOverflowUI(){
+    const bar=q('tab-bar');
+    const left=q('tab-overflow-left');
+    const right=q('tab-overflow-right');
+    const listBtn=q('btn-tab-list');
+    if(!bar || !left || !right || !listBtn) return;
+    const hasOverflow=bar.scrollWidth > bar.clientWidth + 12;
+    bar.classList.toggle('has-overflow', hasOverflow);
+    listBtn.style.display=(hasOverflow || tabs.length > 6) ? 'inline-flex' : 'none';
+    left.classList.toggle('show', hasOverflow && bar.scrollLeft > 8);
+    right.classList.toggle('show', hasOverflow && (bar.scrollLeft + bar.clientWidth) < (bar.scrollWidth - 8));
+  }
+  setTimeout(()=>{
+    const bar=q('tab-bar');
+    if(!bar || bar.dataset.overflowBound==='1') return;
+    bar.dataset.overflowBound='1';
+    bar.addEventListener('scroll', syncTabOverflowUI, {passive:true});
+    window.addEventListener('resize', syncTabOverflowUI);
+  }, 160);
   function ensureTabMenu(){
     let menu = q('tab-context-menu');
     if(menu) return menu;
@@ -431,6 +485,7 @@
   const prevEnsureViewsUI = ensureViewsUI;
   ensureViewsUI = function(){
     prevEnsureViewsUI();
+    ensureTabOverflowUI();
     const orgBtn = q('btn-org-toggle'); if(orgBtn) orgBtn.textContent = 'Mode';
     const viewsBtn = q('btn-views'); if(viewsBtn) viewsBtn.textContent = 'Views';
     const snapsBtn = q('btn-snapshots'); if(snapsBtn) snapsBtn.textContent = 'Snapshots';
@@ -471,6 +526,7 @@
       }, true);
     }
     renderStartupLauncher();
+    syncTabOverflowUI();
   };
   let tabDirtyStates = {}; // Track dirty state per tab
   
@@ -971,6 +1027,9 @@
   renderTabs = function(){
     prevNormalizedRenderTabs();
     normalizeAccessibleLabels();
+    ensureTabOverflowUI();
+    renderTabListModal();
+    syncTabOverflowUI();
   };
   cleanViewsUiText = function(){
     const orgBtn = q('btn-org-toggle'); if(orgBtn) orgBtn.textContent = 'Mode';
