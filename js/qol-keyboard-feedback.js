@@ -85,6 +85,70 @@
     setTimeout(addHelpButton, 100);
   }
   
+  const upgradeKeyboardHelp = () => {
+    const modal = document.getElementById('help-modal');
+    if (!modal) return;
+    const shortcutGroups = [
+      {
+        title: 'Canvas',
+        items: [
+          { key: 'Shift+N', desc: 'Add root unit' },
+          { key: 'L', desc: 'Auto layout' },
+          { key: 'G', desc: 'Cycle grid mode' },
+          { key: 'M', desc: 'Toggle minimap' },
+          { key: 'Home', desc: 'Center on root' },
+          { key: 'Alt+F', desc: 'Zoom to selection' },
+          { key: 'Delete', desc: 'Delete selected unit(s)' }
+        ]
+      },
+      {
+        title: 'Selection and Edit',
+        items: [
+          { key: 'Ctrl+C / Cmd+C', desc: 'Copy selected' },
+          { key: 'Ctrl+V / Cmd+V', desc: 'Paste' },
+          { key: 'Ctrl+D / Cmd+D', desc: 'Duplicate' },
+          { key: 'Ctrl+Z / Cmd+Z', desc: 'Undo' },
+          { key: 'Ctrl+Y / Cmd+Y', desc: 'Redo' }
+        ]
+      },
+      {
+        title: 'Tabs and Commanding',
+        items: [
+          { key: 'Ctrl+K / Cmd+K', desc: 'Command palette' },
+          { key: 'F2', desc: 'Rename current tab' },
+          { key: 'Ctrl+Shift+D / Cmd+Shift+D', desc: 'Duplicate current tab' },
+          { key: 'Ctrl+W / Cmd+W', desc: 'Close current tab' }
+        ]
+      },
+      {
+        title: 'Search and Panels',
+        items: [
+          { key: '/', desc: 'Focus unit search' },
+          { key: 'Enter (in search)', desc: 'Next search result' },
+          { key: 'Shift+Enter (in search)', desc: 'Previous search result' },
+          { key: '[', desc: 'Toggle palette sidebar' },
+          { key: ']', desc: 'Toggle properties panel' }
+        ]
+      }
+    ];
+    let html = '<div class="modal-box" style="min-width:540px;max-width:760px"><h2>Keyboard Shortcuts <span class="modal-x" onclick="closeModal(\'help-modal\')">✕</span></h2><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-top:12px">';
+    shortcutGroups.forEach(group => {
+      html += '<div style="border:1px solid var(--border);border-radius:10px;padding:12px;background:var(--surface2)">' +
+              '<div class="psec" style="margin:0 0 10px;padding-bottom:6px">' + group.title + '</div>';
+      group.items.forEach(item => {
+        html += '<div style="display:flex;gap:12px;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid rgba(148,163,184,.12)">' +
+                '<code style="min-width:132px;font-family:monospace;font-size:11px;color:var(--accent);font-weight:600">' + item.key + '</code>' +
+                '<span style="color:var(--text2);font-size:12px">' + item.desc + '</span></div>';
+      });
+      html += '</div>';
+    });
+    html += '</div><div style="margin-top:16px;padding-top:12px;border-top:1px solid var(--border);color:var(--text2);font-size:11px">Tip: Toolbar buttons and tab actions expose extra shortcuts on hover or right-click.</div></div>';
+    modal.innerHTML = html;
+    const helpBtn = document.getElementById('btn-keyboard-help');
+    if (helpBtn) helpBtn.textContent = 'Shortcuts';
+  };
+  setTimeout(upgradeKeyboardHelp, 140);
+  
   // Enhance error messages for imports
   const enhanceImports = () => {
     if (typeof window.reviewImportPayload === 'function') return;
