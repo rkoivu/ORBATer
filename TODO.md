@@ -4,6 +4,13 @@ This backlog is grouped by estimated implementation effort so the next work can 
 
 ## Recently Completed
 
+- Replaced toolbar/button mojibake, aligned control wording, and cleaned more visible labels to read consistently across the shell and patch modules.
+- Added a startup launcher with recent diagrams, plus stronger saved-view, snapshot, and command-palette guidance when those lists are empty.
+- Added import preflight review for JSON files and inline validation hints for outline imports before apply.
+- Added clearer empty-state guidance for attachments, templates, outline import, and recent/startup recovery flows.
+- Added grouped command-palette sections with arrow-key navigation and cleaner action labels.
+- Added more palette-ready unit variants including cyber, deception, rail transport, and drone swarm options.
+- Refreshed README architecture notes with the current CSS/script load order and module ownership.
 - Added visible always-on toolbar state for layout mode, snap mode, link mode, and focus availability.
 - Added quick duplicate-as-sibling and duplicate-as-child actions in the properties panel and context menu.
 - Added toolbar actions and keyboard shortcuts for centering on the first hostile or neutral root.
@@ -20,16 +27,7 @@ This backlog is grouped by estimated implementation effort so the next work can 
 
 ## Tier 1
 
-- Replace remaining text-encoding artifacts in labels and button copy with clean ASCII or intentional symbols.
-- Unify toolbar iconography and wording so controls read consistently across core and patch modules.
-- Add empty states for more modals and panels so blank views explain what to do next.
-- Add inline validation hints for malformed imports and unsupported schemas before apply.
-- Add a recent-files style launcher on startup, not only restore actions inside the views modal.
-- Fix stale documentation references whenever architecture or loaded files change.
-- Add clearer empty-state guidance to attachments, templates, and outline import flows.
-- Add success/error toasts for view save, tab duplicate, and tab close actions where feedback is currently silent.
-- Add more unit types and icon variants to the palette so doctrine-specific structures need less manual reuse.
-- Add richer keyboard navigation and grouping to the command palette beyond ranking improvements.
+- Tier 1 backlog is currently clear.
 
 ## Tier 2
 

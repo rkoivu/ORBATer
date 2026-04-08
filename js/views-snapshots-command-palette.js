@@ -59,6 +59,8 @@
   }})();
   let currentTabId = 'default';
   let activeTabMenuId = null;
+  let cmdkMatches = [];
+  let cmdkActiveIndex = 0;
 
   function saveTabs(){ try{ localStorage.setItem('orbat_tabs_v1', JSON.stringify(tabs)); }catch(e){ console.warn('Failed to save tabs:', e); toast('Tabs could not be saved. Check browser storage availability.'); } }
   function cloneTabDoc(tab){
@@ -73,6 +75,14 @@
       candidate = `${baseName} Copy ${idx++}`;
     }
     return candidate;
+  }
+  function countNodes(doc){
+    return Object.keys(doc?.nodes || {}).length;
+  }
+  function isFreshLauncherCandidate(doc){
+    if(!doc) return true;
+    const name = String(doc.opName || '').trim();
+    return countNodes(doc) <= 1 && (!name || name === 'OPERATION' || name === 'OPERATION IRONGATE');
   }
 
   // Check for readonly mode
@@ -135,7 +145,7 @@
     if(!box) return;
     const items=getRecentDocs();
     if(!items.length){
-      box.innerHTML='<div class="panel-help">No recent diagrams yet. Saved work will appear here for quick restore.</div>';
+      box.innerHTML='<div class="panel-help">No recent diagrams yet. Your last saved or restored work will appear here for quick startup access.</div>';
       return;
     }
     box.innerHTML=items.map(item=>`<div class="view-row"><div><div style="font-weight:700">${esc(item.name)}</div><div class="panel-help">${new Date(item.ts).toLocaleString()} · ${item.units||0} unit(s)</div></div><div style="display:flex;gap:6px"><button class="pb" onclick="window.__restoreRecentDoc('${item.id}')">Restore</button></div></div>`).join('');
@@ -329,6 +339,75 @@
     toast('Recent diagram restored');
   };
 
+  renderRecentDocs = function(){
+    const box=q('recent-doc-list');
+    if(!box) return;
+    const items=getRecentDocs();
+    if(!items.length){
+      box.innerHTML='<div class="panel-help">No recent diagrams yet. Your last saved or restored work will appear here for quick startup access.</div>';
+      return;
+    }
+    box.innerHTML=items.map(item=>`<div class="view-row"><div><div style="font-weight:700">${esc(item.name)}</div><div class="panel-help">${new Date(item.ts).toLocaleString()} | ${item.units||0} unit(s)</div></div><div style="display:flex;gap:6px"><button class="pb" onclick="window.__restoreRecentDoc('${item.id}')">Restore</button></div></div>`).join('');
+  };
+  renderViews = function(){
+    const box=q('view-list');
+    if(!box) return;
+    const views=getViews();
+    renderRecentDocs();
+    if(!views.length){
+      box.innerHTML='<div class="panel-help">No saved views yet. Save the current camera position to reopen the same frame, or use Recent Diagrams below to resume a whole document.</div>';
+      return;
+    }
+    box.innerHTML=views.map(v=>`<div class="view-row"><div><div style="font-weight:700">${esc(v.name)}</div><div class="panel-help">Scale ${Math.round((v.transform?.scale||1)*100)}%</div></div><div style="display:flex;gap:6px"><button class="pb" onclick="window.__loadView('${v.id}')">Load</button><button class="pb" onclick="window.__shareView('${v.id}')">Share</button><button class="pb del" onclick="window.__deleteView('${v.id}')">Delete</button></div></div>`).join('');
+  };
+  renderSnapshots = function(){
+    const box=q('snapshot-list');
+    if(!box) return;
+    const snaps=getSnaps();
+    if(!snaps.length){
+      box.innerHTML='<div class="panel-help">No snapshots yet. Create one before a major edit, import, or layout pass so you can restore the exact document and camera state later.</div>';
+      return;
+    }
+    box.innerHTML=snaps.map(s=>`<div class="snap-row"><div><div style="font-weight:700">${esc(s.reason)}</div><div class="panel-help">${new Date(s.ts).toLocaleString()} | <span class="diff-pill">+${s.diff?.added||0} / -${s.diff?.removed||0} / delta ${s.diff?.changed||0}</span></div></div><div style="display:flex;gap:6px"><button class="pb" onclick="window.__restoreSnap('${s.id}')">Restore</button><button class="pb" onclick="window.__loadSnapView('${s.id}')">View</button><button class="pb del" onclick="window.__deleteSnap('${s.id}')">Delete</button></div></div>`).join('');
+    const slider = q('phase-slider');
+    if(slider) {
+      slider.max = snaps.length - 1;
+      slider.value = 0;
+      updatePhaseLabel(0);
+      slider.oninput = () => {
+        updatePhaseLabel(slider.value);
+        const currentSnaps=getSnaps();
+        if(currentSnaps[slider.value]) window.__loadPhaseSnap(currentSnaps[slider.value].id);
+      };
+    }
+  };
+  window.__restoreRecentDoc=function(id){
+    const doc=getRecentDocs().find(item=>item.id===id)?.state;
+    if(!doc || typeof window.applyDocumentState!=='function') return;
+    window.applyDocumentState(doc,{trackHistory:true,preserveView:false});
+    close('view-modal');
+    close('startup-modal');
+    toast('Recent diagram restored');
+  };
+  function renderStartupLauncher(){
+    const box=q('startup-recent-list');
+    if(!box) return;
+    const items=getRecentDocs();
+    if(!items.length){
+      box.innerHTML='<div class="panel-help">No recent diagrams yet. Start a new ORBAT, load a doctrinal template, or import JSON to populate this launcher.</div>';
+      return;
+    }
+    box.innerHTML=items.map(item=>`<div class="view-row"><div><div style="font-weight:700">${esc(item.name)}</div><div class="panel-help">${new Date(item.ts).toLocaleString()} | ${item.units||0} unit(s)</div></div><div style="display:flex;gap:6px"><button class="pb" onclick="window.__restoreRecentDoc('${item.id}')">Open</button></div></div>`).join('');
+  }
+  function maybeOpenStartupLauncher(){
+    if(readonly || sharedViewId) return;
+    const tab=tabs.find(t=>t.id===currentTabId) || tabs[0];
+    const liveDoc=(typeof window.serializeDocument==='function') ? window.serializeDocument() : tab?.doc;
+    if(!isFreshLauncherCandidate(liveDoc)) return;
+    renderStartupLauncher();
+    open('startup-modal');
+  }
+
   function ensureViewsUI(){
     // Add tab bar
     if (!q('tab-bar')) {
@@ -349,6 +428,50 @@
     q('snap-now-btn')?.addEventListener('click',()=>{ snapshotNow('Manual snapshot'); toast('Snapshot created'); });
     updateOrgBtn(); renderViews(); renderSnapshots(); renderRecentDocs(); setReadonlyBanner();
   }
+  const prevEnsureViewsUI = ensureViewsUI;
+  ensureViewsUI = function(){
+    prevEnsureViewsUI();
+    const orgBtn = q('btn-org-toggle'); if(orgBtn) orgBtn.textContent = 'Mode';
+    const viewsBtn = q('btn-views'); if(viewsBtn) viewsBtn.textContent = 'Views';
+    const snapsBtn = q('btn-snapshots'); if(snapsBtn) snapsBtn.textContent = 'Snapshots';
+    const pdfBtn = q('btn-export-pdf'); if(pdfBtn) pdfBtn.textContent = 'Export PDF';
+    const cmdBtn = q('btn-cmdk'); if(cmdBtn) cmdBtn.textContent = 'Commands';
+    if(!q('btn-launcher')) ensureBtn('btn-launcher','Open','Open the startup launcher',()=>{ renderStartupLauncher(); open('startup-modal'); },'btn-views');
+    ensureModal('startup-modal','Open Diagram',`<div class="panel-help" style="margin-bottom:12px">Resume a recent ORBAT, start clean, or jump into import and template flows.</div><div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap"><button class="pb" id="startup-new-btn" style="width:auto;margin:0">New Diagram</button><button class="pb" id="startup-template-btn" style="width:auto;margin:0">Templates</button><button class="pb" id="startup-import-btn" style="width:auto;margin:0">Import JSON</button></div><div class="psec">Recent Diagrams</div><div id="startup-recent-list"></div>`);
+    const startupNew = q('startup-new-btn');
+    if(startupNew && startupNew.dataset.bound !== '1'){
+      startupNew.dataset.bound = '1';
+      startupNew.addEventListener('click',()=>{
+        close('startup-modal');
+        if(typeof window.clearAll === 'function') window.clearAll();
+        toast('Started a new diagram');
+      });
+    }
+    const startupTpl = q('startup-template-btn');
+    if(startupTpl && startupTpl.dataset.bound !== '1'){
+      startupTpl.dataset.bound = '1';
+      startupTpl.addEventListener('click',()=>{ close('startup-modal'); if(typeof window.openTplModal==='function') window.openTplModal(); });
+    }
+    const startupImport = q('startup-import-btn');
+    if(startupImport && startupImport.dataset.bound !== '1'){
+      startupImport.dataset.bound = '1';
+      startupImport.addEventListener('click',()=>{ close('startup-modal'); if(typeof window.importJSON==='function') window.importJSON(); });
+    }
+    const viewInput = q('view-name-input');
+    if(viewInput && viewInput.dataset.enterBound !== '1'){
+      viewInput.dataset.enterBound = '1';
+      viewInput.addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); q('save-view-btn')?.click(); } });
+    }
+    const saveBtn = q('save-view-btn');
+    if(saveBtn && saveBtn.dataset.validationBound !== '1'){
+      saveBtn.dataset.validationBound = '1';
+      saveBtn.addEventListener('click',()=>{
+        if(q('view-name-input')?.value.trim()) return;
+        toast('Name the view before saving');
+      }, true);
+    }
+    renderStartupLauncher();
+  };
   let tabDirtyStates = {}; // Track dirty state per tab
   
   function renderTabs(){
@@ -544,7 +667,6 @@
     tabDirtyStates[newId] = false;
     saveTabs();
     window.__switchTab(newId);
-    toast('Tab duplicated');
   };
   window.__newTab = function(){
     const newId = Date.now() + Math.random().toString(16).slice(2);
@@ -684,7 +806,89 @@
     if((e.metaKey||e.ctrlKey) && e.shiftKey && e.key.toLowerCase() === 'd'){ e.preventDefault(); window.__duplicateTab(currentTabId); return; }
     if((e.metaKey||e.ctrlKey) && e.key.toLowerCase() === 'w'){ e.preventDefault(); window.__closeTab(currentTabId); }
   });
-  setTimeout(()=>{ q('cmdk-input')?.addEventListener('input',e=>renderCmdk(e.target.value)); q('cmdk-input')?.addEventListener('keydown',e=>{ if(e.key==='Enter'){ const btn=document.querySelector('#cmdk-list [data-cmd-idx]'); if(btn) btn.click(); }}); }, 100);
+  setTimeout(()=>{ q('cmdk-input')?.addEventListener('input',e=>renderCmdk(e.target.value)); }, 100);
+
+  const commandSectionFor = name => {
+    if(name.includes('tab')) return 'Tabs';
+    if(name.includes('view') || name.includes('snapshot')) return 'Views and Snapshots';
+    if(name.includes('import') || name.includes('export')) return 'Import and Export';
+    return 'Canvas';
+  };
+  function setCmdkActive(nextIndex){
+    const rows=[...document.querySelectorAll('#cmdk-list [data-cmd-match-idx]')];
+    if(!rows.length){
+      cmdkActiveIndex = 0;
+      return;
+    }
+    cmdkActiveIndex = (nextIndex + rows.length) % rows.length;
+    rows.forEach((row, idx)=>row.classList.toggle('active', idx===cmdkActiveIndex));
+    rows[cmdkActiveIndex]?.scrollIntoView({block:'nearest'});
+  }
+  renderCmdk = function(filter=''){
+    const box=q('cmdk-list');
+    if(!box) return;
+    const term=filter.trim().toLowerCase();
+    cmdkMatches = commands
+      .map(command => ({...command, section:command.section || commandSectionFor(command.name.toLowerCase())}))
+      .filter(command=>!term||command.name.toLowerCase().includes(term))
+      .sort((a,b)=>{
+        const ai=a.name.toLowerCase();
+        const bi=b.name.toLowerCase();
+        const aStarts=term&&ai.startsWith(term);
+        const bStarts=term&&bi.startsWith(term);
+        if(a.section!==b.section) return a.section.localeCompare(b.section);
+        if(aStarts!==bStarts) return aStarts?-1:1;
+        return ai.localeCompare(bi);
+      });
+    if(!cmdkMatches.length){
+      box.innerHTML='<div class="panel-help">No commands match that search. Try a shorter term.</div>';
+      cmdkActiveIndex = 0;
+      return;
+    }
+    let matchIndex = 0;
+    const sections = [];
+    cmdkMatches.forEach(command => {
+      let section = sections.find(entry=>entry.name===command.section);
+      if(!section){
+        section = {name:command.section, items:[]};
+        sections.push(section);
+      }
+      section.items.push({...command, matchIndex:matchIndex++});
+    });
+    box.innerHTML = sections.map(section => [
+      `<div class="psec">${esc(section.name)}</div>`,
+      ...section.items.map(command=>`<div class="cmdk-row" data-cmd-match-idx="${command.matchIndex}"><div>${esc(command.name)}</div><button class="pb" data-cmd-match-run="${command.matchIndex}" style="width:auto;margin:0">Run</button></div>`)
+    ].join('')).join('');
+    box.querySelectorAll('[data-cmd-match-idx]').forEach(row=>{
+      row.addEventListener('click',()=>{ const idx=Number(row.dataset.cmdMatchIdx); cmdkMatches[idx]?.run(); close('cmdk-modal'); });
+    });
+    box.querySelectorAll('[data-cmd-match-run]').forEach(btn=>{
+      btn.addEventListener('click',ev=>{
+        ev.stopPropagation();
+        const idx=Number(btn.dataset.cmdMatchRun);
+        cmdkMatches[idx]?.run();
+        close('cmdk-modal');
+      });
+    });
+    setCmdkActive(0);
+  };
+  window.openCommandPalette=function(){
+    renderCmdk('');
+    open('cmdk-modal');
+    setTimeout(()=>q('cmdk-input')?.focus(),30);
+  };
+  setTimeout(()=>{
+    const cmdkInput=q('cmdk-input');
+    if(!cmdkInput || cmdkInput.dataset.navBound==='1') return;
+    cmdkInput.dataset.navBound='1';
+    cmdkInput.placeholder='Search commands';
+    cmdkInput.addEventListener('input',e=>renderCmdk(e.target.value));
+    cmdkInput.addEventListener('keydown',e=>{
+      if(e.key==='ArrowDown'){ e.preventDefault(); setCmdkActive(cmdkActiveIndex+1); return; }
+      if(e.key==='ArrowUp'){ e.preventDefault(); setCmdkActive(cmdkActiveIndex-1); return; }
+      if(e.key==='Enter'){ e.preventDefault(); cmdkMatches[cmdkActiveIndex]?.run(); close('cmdk-modal'); }
+    });
+  }, 140);
 
   const prevDeleteView = window.__deleteView;
   if(prevDeleteView){
@@ -768,6 +972,29 @@
     prevNormalizedRenderTabs();
     normalizeAccessibleLabels();
   };
+  cleanViewsUiText = function(){
+    const orgBtn = q('btn-org-toggle'); if(orgBtn) orgBtn.textContent = 'Mode';
+    const launcherBtn = q('btn-launcher'); if(launcherBtn) launcherBtn.textContent = 'Open';
+    const viewsBtn = q('btn-views'); if(viewsBtn) viewsBtn.textContent = 'Views';
+    const snapsBtn = q('btn-snapshots'); if(snapsBtn) snapsBtn.textContent = 'Snapshots';
+    const pdfBtn = q('btn-export-pdf'); if(pdfBtn) pdfBtn.textContent = 'Export PDF';
+    const cmdBtn = q('btn-cmdk'); if(cmdBtn) cmdBtn.textContent = 'Commands';
+    const cmdInput = q('cmdk-input'); if(cmdInput) cmdInput.placeholder = 'Search commands';
+    const cmdHint = document.querySelector('#cmdk-modal .cmdk-hint');
+    if(cmdHint) cmdHint.textContent = 'Arrow keys to move | Enter to run | Esc to close | Ctrl/Cmd+K to open';
+    const histBtn = q('btn-history'); if(histBtn) histBtn.textContent = 'History';
+  };
+  normalizeAccessibleLabels = function(){
+    document.querySelectorAll('#tab-bar .tab, #tab-bar .tab-dirty').forEach(el=>{
+      if(el.childNodes.length === 1 && /Ã|â/.test(el.textContent || '')) el.textContent = '●';
+    });
+    document.querySelectorAll('#tab-bar .tab-close').forEach(el=>{
+      if(/Ã|â/.test(el.textContent || '')) el.textContent = '×';
+    });
+    document.querySelectorAll('#tab-bar .tab').forEach(el=>{
+      if(el.title) el.title = el.title.replaceAll('Â·','·');
+    });
+  };
 
   // init
   setTimeout(()=>{ 
@@ -784,5 +1011,6 @@
     renderTabs();
     cleanViewsUiText();
     normalizeAccessibleLabels();
+    maybeOpenStartupLauncher();
   }, 120);
 })();

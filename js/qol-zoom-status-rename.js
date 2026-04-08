@@ -171,6 +171,25 @@
   };
   topbar.querySelectorAll('.tb-btn').forEach(btn=>{ if(!btn.title) btn.title=tt[btn.textContent.trim()]||btn.textContent.trim(); });
 
+  function normalizeZoomUiText(){
+    const zoomOut=document.getElementById('btn-zoom-out'); if(zoomOut) zoomOut.textContent='Zoom -';
+    const zoomIn=document.getElementById('btn-zoom-in'); if(zoomIn) zoomIn.textContent='Zoom +';
+    const foldAll=document.getElementById('btn-collapse-all'); if(foldAll) foldAll.textContent='Fold All';
+    const openAll=document.getElementById('btn-expand-all'); if(openAll) openAll.textContent='Open All';
+    const echelons=document.getElementById('sb-echelons'); if(echelons && /Ã|â/.test(echelons.textContent||'')) echelons.textContent='-';
+    const breadcrumb=document.getElementById('sb-breadcrumb'); if(breadcrumb && /Ã|â/.test(breadcrumb.textContent||'')) breadcrumb.textContent='-';
+  }
+  const prevReadableUpdSB=updSB;
+  updSB=function(){
+    prevReadableUpdSB();
+    const echelons=document.getElementById('sb-echelons');
+    if(echelons) echelons.textContent=(echelons.textContent||'').replaceAll('Ã—','x ').replaceAll('â€”','-');
+    const breadcrumb=document.getElementById('sb-breadcrumb');
+    if(breadcrumb) breadcrumb.textContent=(breadcrumb.textContent||'').replaceAll('â†’',' > ').replaceAll('â€”','-');
+    normalizeZoomUiText();
+  };
+
   buildPalette();
   updSB();
+  normalizeZoomUiText();
 })();

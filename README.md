@@ -299,6 +299,11 @@ This means script order matters: later modules patch or augment functions define
 
 When debugging, assume late-loaded files may intentionally wrap earlier globals such as `renderTabs`, `selectNode`, `updSelUI`, or `applyDocumentState` rather than replacing them from scratch.
 
+### Current Loaded Files
+- CSS load order: `css/base.css`, `css/interaction-overlays.css`, `css/toolbar-menus-import.css`, `css/views-command-history.css`
+- Script load order after `js/symbols-data.js`: `js/identity-search-insignia.js`, `js/custom-icon-pack.js`, `js/selection-focus-highlights.js`, `js/qol-zoom-status-rename.js`, `js/dirty-state-navigation.js`, `js/print-tooltips-shortcuts.js`, `js/themes-locks-search-background.js`, `js/compat-fixes-statusbar.js`, `js/history-search-connectors.js`, `js/tooltips-resize-minimap.js`, `js/stats-outline-tour-stacking.js`, `js/toolbar-menus-auto-organise.js`, `js/outline-import-enhancements.js`, `js/views-snapshots-command-palette.js`, `js/qol-keyboard-feedback.js`
+- Active responsibility split: `js/views-snapshots-command-palette.js` owns tabs, saved views, snapshots, the startup launcher, and command palette behavior; `js/outline-import-enhancements.js` owns outline validation and indentation helpers; `js/custom-icon-pack.js` owns structured notes, attachments, and doctrinal template extensions.
+
 ### Recent UI Evolution
 1. The runtime shell is split between a thin `index.html`, generated UI markup in `js/ui-shell.js`, base layout in `css/base.css`, and late-stage enhancement modules that progressively refine menus, tabs, overlays, and interaction affordances.
 2. Sidebar scrolling and minimap placement are enforced both structurally and at the final QOL layer so later feature modules do not break the workspace layout.
