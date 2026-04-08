@@ -6,24 +6,24 @@
   <div class="logo">&#9672; ORBAT</div>
   <input id="op-name-input" value="OPERATION IRONGATE" title="Click to rename">
   <div class="tb-sep"></div>
-  <button class="tb-btn" onclick="addRootUnit()">&#65291; Root</button>
-  <button class="tb-btn" id="btn-auto-layout" onclick="autoLayout()">&#8862; Layout</button>
+  <button class="tb-btn" onclick="addRootUnit()">Add Root</button>
+  <button class="tb-btn" id="btn-auto-layout" onclick="autoLayout()">Layout</button>
   <select id="layout-mode-sel" onchange="setLayoutMode(this.value)" title="Layout mode" style="margin-left:4px">
     <option value="tree">Tree</option>
     <option value="indented">Indented List</option>
     <option value="radial">Radial</option>
     <option value="force">Force</option>
   </select>
-  <button class="tb-btn" id="btn-snap" onclick="toggleSnap()">&#8999; Snap</button>
-  <button class="tb-btn" id="btn-link" onclick="toggleLinkMode()">&#10530; Link</button>
+  <button class="tb-btn" id="btn-snap" onclick="toggleSnap()">Grid</button>
+  <button class="tb-btn" id="btn-link" onclick="toggleLinkMode()">Link</button>
   <button class="tb-btn" id="btn-hostile-root" onclick="centerOnHostileRoot()">Hostile</button>
   <button class="tb-btn" id="btn-neutral-root" onclick="centerOnNeutralRoot()">Neutral</button>
-  <button class="tb-btn" onclick="fitScreen()">&#8596; Fit</button>
+  <button class="tb-btn" onclick="fitScreen()">Fit</button>
   <div class="tb-sep"></div>
-  <button class="tb-btn" onclick="undo()" title="Ctrl+Z">&#8617; Undo</button>
-  <button class="tb-btn" onclick="redo()" title="Ctrl+Y">&#8618; Redo</button>
-  <button class="tb-btn" onclick="copySelected()" title="Ctrl+C - copy node(s)">&#10633; Copy</button>
-  <button class="tb-btn" onclick="pasteNodes()" title="Ctrl+V - paste">&#8865; Paste</button>
+  <button class="tb-btn" onclick="undo()" title="Ctrl+Z">Undo</button>
+  <button class="tb-btn" onclick="redo()" title="Ctrl+Y">Redo</button>
+  <button class="tb-btn" onclick="copySelected()" title="Ctrl+C - copy node(s)">Copy</button>
+  <button class="tb-btn" onclick="pasteNodes()" title="Ctrl+V - paste">Paste</button>
   <div class="tb-sep"></div>
   <select id="conn-style-sel" onchange="drawConnectors()" title="Connector style">
     <option value="bezier">Bezier</option>
@@ -32,20 +32,20 @@
   </select>
   <button class="tb-btn" id="btn-rel-labels" onclick="toggleRelLabels()">Rel Labels</button>
   <button class="tb-btn" id="btn-smart-labels">Smart Labels</button>
-  <button class="tb-btn" id="btn-focus" onclick="focusSelection()">&#127919; Focus</button>
-  <button class="tb-btn" id="btn-tag-highlight" onclick="toggleTagHighlight()">&#127991; Tags</button>
+  <button class="tb-btn" id="btn-focus" onclick="focusSelection()">Focus</button>
+  <button class="tb-btn" id="btn-tag-highlight" onclick="toggleTagHighlight()">Tags</button>
   <input id="unit-search-input" placeholder="Search /" title="Search units">
   <input id="tag-filter-input" placeholder="Tag filter" title="Filter by tag">
   <div class="tb-sep"></div>
-  <button class="tb-btn" onclick="exportJSON()">&#10515; JSON</button>
-  <button class="tb-btn" onclick="importJSON()">&#10514; Import</button>
-  <button class="tb-btn" onclick="exportSVG()">&#10515; SVG</button>
-  <button class="tb-btn" onclick="exportPNG()">&#10515; PNG</button>
-  <button class="tb-btn" onclick="window.print()">&#9113; Print</button>
+  <button class="tb-btn" onclick="exportJSON()">Export JSON</button>
+  <button class="tb-btn" onclick="importJSON()">Import</button>
+  <button class="tb-btn" onclick="exportSVG()">Export SVG</button>
+  <button class="tb-btn" onclick="exportPNG()">Export PNG</button>
+  <button class="tb-btn" onclick="window.print()">Print</button>
   <div class="tb-sep"></div>
-  <button class="tb-btn" id="btn-random-orbat">&#127922; Random</button>
-  <button class="tb-btn" onclick="openTplModal()">&#8853; Templates</button>
-  <button class="tb-btn" onclick="openScModal()">Keys</button>
+  <button class="tb-btn" id="btn-random-orbat">Random</button>
+  <button class="tb-btn" onclick="openTplModal()">Templates</button>
+  <button class="tb-btn" onclick="openScModal()">Shortcuts</button>
   <div class="tb-spacer"></div>
   <button class="tb-btn danger" onclick="clearAll()">Clear</button>
 </div>
@@ -58,7 +58,7 @@
   <div id="sidebar">
     <div id="sidebar-header">
       <span>Unit Palette</span>
-      <button class="tb-btn" style="padding:2px 7px;font-size:9px" onclick="openModal('ci-modal')">&#65291; Custom</button>
+      <button class="tb-btn" style="padding:2px 7px;font-size:9px" onclick="openModal('ci-modal')">Add Custom</button>
     </div>
     <div id="sidebar-scroll"></div>
   </div>
@@ -67,13 +67,13 @@
     <svg id="link-svg"></svg>
     <div id="canvas">
       <div id="empty-hint" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none">
-        <div style="font-size:44px;margin-bottom:10px">&#129689;</div>
-        <p style="font-family:'Barlow Condensed',sans-serif;font-size:13px;color:var(--text2);letter-spacing:1px">Drag a unit from the palette<br>or click <b>&#65291; Root</b> to begin</p>
+        <div style="font-size:44px;margin-bottom:10px">+</div>
+        <p style="font-family:'Barlow Condensed',sans-serif;font-size:13px;color:var(--text2);letter-spacing:1px">Drag a unit from the palette<br>or click <b>Add Root</b> to begin</p>
       </div>
     </div>
     <div id="lasso"></div>
     <div id="drag-preview-ghost" style="display:none"></div>
-    <button class="tb-btn" id="mm-toggle" style="font-size:9px;padding:3px 8px" onclick="toggleMinimap()">&#8861; Map</button>
+    <button class="tb-btn" id="mm-toggle" style="font-size:9px;padding:3px 8px" onclick="toggleMinimap()">Map</button>
     <div id="minimap">
       <canvas id="mm-canvas" width="158" height="98"></canvas>
       <div class="mm-label">OVERVIEW</div>
@@ -194,19 +194,19 @@
         </div>
       </div>
       <div class="psec">Actions</div>
-      <button class="panel-btn" onclick="addChildToSelected()">&#65291; Add Subordinate</button>
+      <button class="panel-btn" onclick="addChildToSelected()">Add Subordinate</button>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:4px">
-        <button class="panel-btn" onclick="duplicateSelected()">&#10633; Duplicate</button>
+        <button class="panel-btn" onclick="duplicateSelected()">Duplicate</button>
         <button class="panel-btn" onclick="duplicateAsSibling()">Sibling Copy</button>
       </div>
       <button class="panel-btn" onclick="duplicateAsChild()">Child Copy</button>
-      <button class="panel-btn" onclick="copySubtree()">&#8853; Copy Subtree</button>
+      <button class="panel-btn" onclick="copySubtree()">Copy Subtree</button>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:4px">
-        <button class="panel-btn" onclick="promoteNode()">&#8593; Promote</button>
-        <button class="panel-btn" onclick="demoteNode()">&#8595; Demote</button>
+        <button class="panel-btn" onclick="promoteNode()">Promote</button>
+        <button class="panel-btn" onclick="demoteNode()">Demote</button>
       </div>
-      <button class="panel-btn warn" onclick="detachNode()">&#10530; Detach from Parent</button>
-      <button class="panel-btn delete" onclick="deleteSelected()">&#10005; Delete Unit</button>
+      <button class="panel-btn warn" onclick="detachNode()">Detach from Parent</button>
+      <button class="panel-btn delete" onclick="deleteSelected()">Delete Unit</button>
     </div>
     <div id="mp-inner" style="display:none">
       <h3>MULTI-SELECT <span style="cursor:pointer;color:var(--text2);font-size:14px" onclick="deselectAll()">&#10005;</span></h3>
@@ -236,9 +236,9 @@
       </div>
       <div class="fg"><label>Bulk: Colour Tint</label><div class="swatch-row" id="mp-swatches"></div></div>
       <div class="psec">Actions</div>
-      <button class="pb" onclick="autoLayoutSel()">&#8862; Layout Selection</button>
-      <button class="pb warn" onclick="unlinkSel()">&#10530; Unlink from Parents</button>
-      <button class="pb del" onclick="deleteMultiSel()">&#10005; Delete Selected</button>
+      <button class="pb" onclick="autoLayoutSel()">Layout Selection</button>
+      <button class="pb warn" onclick="unlinkSel()">Unlink from Parents</button>
+      <button class="pb del" onclick="deleteMultiSel()">Delete Selected</button>
       <div class="psec">Bulk: Frame Status</div>
       <div class="status-row" style="margin-bottom:10px">
         <div class="status-btn" onclick="bulkFrame('present')">Present (solid)</div>
@@ -261,33 +261,33 @@
   <span>Selected: <b id="sb-sel">&#8212;</b></span>
   <span>Zoom: <b id="sb-zoom">100%</b></span>
   <span>History: <b id="sb-hist">0/0</b></span>
-  <span class="hint">Shift+click multi-select · Drag canvas lasso · Ctrl+Z/Y undo/redo · Ctrl+D duplicate · Del delete · L layout · Right-click menu</span>
+  <span class="hint">Shift+click multi-select | Drag canvas lasso | Ctrl+Z/Y undo/redo | Ctrl+D duplicate | Del delete | L layout | Right-click menu</span>
 </div>`;
   }
 
   function overlaysHtml() {
     return `
 <div id="ctx-menu" style="position:fixed;background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:3px 0;z-index:9999;display:none;min-width:160px;box-shadow:0 8px 24px rgba(0,0,0,.55)">
-  <div class="ctx-item" onclick="ctxAct('add-child')">&#65291; Add Subordinate</div>
+  <div class="ctx-item" onclick="ctxAct('add-child')">Add Subordinate</div>
   <div class="ctx-item" onclick="ctxAct('add-textbox-left')">Text Box Left</div>
   <div class="ctx-item" onclick="ctxAct('add-textbox-right')">Text Box Right</div>
   <div class="ctx-item" onclick="ctxAct('add-textbox-above')">Text Box Above</div>
   <div class="ctx-item" onclick="ctxAct('add-textbox-below')">Text Box Below</div>
-  <div class="ctx-item" onclick="ctxAct('qa-inf')">&#65291; Infantry Child</div>
-  <div class="ctx-item" onclick="ctxAct('qa-arm')">&#65291; Armour Child</div>
-  <div class="ctx-item" onclick="ctxAct('qa-arty')">&#65291; Artillery Child</div>
-  <div class="ctx-item" onclick="ctxAct('dup')">&#10633; Duplicate</div>
+  <div class="ctx-item" onclick="ctxAct('qa-inf')">Infantry Child</div>
+  <div class="ctx-item" onclick="ctxAct('qa-arm')">Armour Child</div>
+  <div class="ctx-item" onclick="ctxAct('qa-arty')">Artillery Child</div>
+  <div class="ctx-item" onclick="ctxAct('dup')">Duplicate</div>
   <div class="ctx-item" onclick="ctxAct('dup-sibling')">Sibling Copy</div>
   <div class="ctx-item" onclick="ctxAct('dup-child')">Child Copy</div>
-  <div class="ctx-item" onclick="ctxAct('copy-subtree')">&#8853; Copy Subtree</div>
+  <div class="ctx-item" onclick="ctxAct('copy-subtree')">Copy Subtree</div>
   <div class="ctx-item" onclick="ctxAct('sel-tree')">Select Subtree</div>
   <div class="ctx-item" onclick="ctxAct('collapse')">Collapse / Expand</div>
   <div class="ctx-sep" style="height:1px;background:var(--border);margin:2px 0"></div>
-  <div class="ctx-item" onclick="ctxAct('promote')">&#8593; Promote</div>
-  <div class="ctx-item" onclick="ctxAct('demote')">&#8595; Demote</div>
-  <div class="ctx-item" onclick="ctxAct('detach')">&#10530; Detach from Parent</div>
+  <div class="ctx-item" onclick="ctxAct('promote')">Promote</div>
+  <div class="ctx-item" onclick="ctxAct('demote')">Demote</div>
+  <div class="ctx-item" onclick="ctxAct('detach')">Detach from Parent</div>
   <div class="ctx-sep" style="height:1px;background:var(--border);margin:2px 0"></div>
-  <div class="ctx-item danger" onclick="ctxAct('del')">&#10005; Delete Unit</div>
+  <div class="ctx-item danger" onclick="ctxAct('del')">Delete Unit</div>
 </div>
 <div class="modal-ov" id="tpl-modal">
   <div class="modal-box" style="min-width:420px">

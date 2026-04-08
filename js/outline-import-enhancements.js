@@ -4,10 +4,35 @@
   function enhanceOutlineModal(){
     const orig=window.openOutlineModal;
     if(!orig || orig._v12Enhanced) return;
+    function analyseOutlineText(text, promptMode){
+      if(promptMode) return {errors:[], warnings:[]};
+      const raw=String(text||'').replace(/\r/g,'');
+      const lines=raw.split('\n').filter(line=>line.trim());
+      const errors=[];
+      const warnings=[];
+      if(!lines.length) return {errors:['Paste an indented outline first.'], warnings};
+      if(lines[0].match(/^\s+/)) errors.push('The first non-empty line cannot be indented.');
+      let prevDepth=0;
+      let sawTabs=false;
+      let sawSpaces=false;
+      lines.forEach((line, idx)=>{
+        const indent=(line.match(/^\s*/) || [''])[0];
+        if(indent.includes('\t')) sawTabs=true;
+        if(indent.includes(' ')) sawSpaces=true;
+        if(/ \t|\t /.test(indent)) warnings.push(`Line ${idx+1} mixes tabs and spaces in the same indent.`);
+        if(indent.length % 2 !== 0 && !indent.includes('\t')) warnings.push(`Line ${idx+1} uses an odd number of spaces; two spaces per level reads best.`);
+        const depth=indent.includes('\t') ? indent.length : Math.floor(indent.length/2);
+        if(depth > prevDepth + 1) errors.push(`Line ${idx+1} jumps from depth ${prevDepth} to ${depth}. Add the missing parent level.`);
+        prevDepth=depth;
+      });
+      if(sawTabs && sawSpaces) warnings.push('Both tabs and spaces are present. Pick one indentation style to avoid surprises.');
+      return {errors:[...new Set(errors)], warnings:[...new Set(warnings)]};
+    }
     function bindModal(ov){
       if(!ov) return;
       const ta=ov.querySelector('#outline-text');
       const acts=ov.querySelector('.modal-acts');
+      const importBtn=ov.querySelector('#outline-import-btn');
       if(acts && !ov.querySelector('#outline-clear-existing')){
         const opts=document.createElement('div');
         opts.className='opt-row';
@@ -17,7 +42,29 @@
         note.className='subtle';
         note.textContent='Tip: Tab indents, Shift+Tab outdents selected lines.';
         acts.parentNode.insertBefore(note, acts);
+        const validation=document.createElement('div');
+        validation.id='outline-validation';
+        validation.className='panel-help';
+        validation.style.margin='8px 0 10px';
+        validation.textContent='Paste an indented outline. Validation notes will appear here before import.';
+        acts.parentNode.insertBefore(validation, acts);
       }
+      const validationBox=ov.querySelector('#outline-validation');
+      const syncValidation=()=>{
+        if(!validationBox) return;
+        const promptMode=ov.querySelector('#outline-prompt-mode')?.checked;
+        const result=analyseOutlineText(ta?.value||'', promptMode);
+        if(!String(ta?.value||'').trim()){
+          validationBox.textContent='Paste an indented outline. Validation notes will appear here before import.';
+        } else if(result.errors.length){
+          validationBox.innerHTML=result.errors.map(msg=>`<div>Error: ${msg}</div>`).join('') + result.warnings.map(msg=>`<div>Note: ${msg}</div>`).join('');
+        } else if(result.warnings.length){
+          validationBox.innerHTML=result.warnings.map(msg=>`<div>Note: ${msg}</div>`).join('');
+        } else {
+          validationBox.textContent='Outline looks valid. Import will create units from the current indentation levels.';
+        }
+        if(importBtn) importBtn.disabled=result.errors.length>0;
+      };
       if(ta && !ta.dataset.v12TabBound){
         ta.dataset.v12TabBound='1';
         ta.addEventListener('keydown', function(e){
@@ -57,8 +104,9 @@
             this.selectionStart=this.selectionEnd=start+2;
           }
         });
+        ta.addEventListener('input', syncValidation);
       }
-      const importBtn=ov.querySelector('#outline-import-btn');
+      ov.querySelector('#outline-prompt-mode')?.addEventListener('change', syncValidation);
       if(importBtn && !importBtn.dataset.v12Bound){
         importBtn.dataset.v12Bound='1';
         importBtn.addEventListener('click', function(e){
@@ -68,6 +116,12 @@
           if(!txt.trim()){ showToastSafe('Paste an indented outline first'); return; }
           const clearExisting=ov.querySelector('#outline-clear-existing')?.checked;
           const promptMode=ov.querySelector('#outline-prompt-mode')?.checked;
+          const validation=analyseOutlineText(txt, promptMode);
+          if(validation.errors.length){
+            syncValidation();
+            showToastSafe('Outline import blocked until the validation errors are fixed');
+            return;
+          }
           try{
             if(clearExisting && window.nodes){
               Object.keys(window.nodes).forEach(id=>{
@@ -88,6 +142,7 @@
           }catch(err){ console.error(err); showToastSafe('Text import failed'); }
         }, true);
       }
+      syncValidation();
     }
     window.openOutlineModal=function(){
       const r=orig.apply(this, arguments);

@@ -87,6 +87,7 @@
   
   // Enhance error messages for imports
   const enhanceImports = () => {
+    if (typeof window.reviewImportPayload === 'function') return;
     const fileInput = document.getElementById('file-input');
     if (!fileInput) return;
     
@@ -465,6 +466,18 @@
     }
   }
 
+  function normalizeQolText() {
+    const helpBtn = document.getElementById('btn-keyboard-help');
+    if (helpBtn) helpBtn.textContent = 'Shortcuts';
+    const emptyHint = document.getElementById('empty-hint');
+    if (emptyHint && emptyHint.dataset.enhanced === '1') {
+      const hero = emptyHint.querySelector('.eh-hero');
+      if (hero) hero.textContent = '+';
+      const copy = emptyHint.querySelector('.eh-copy');
+      if (copy) copy.innerHTML = 'Drag a unit from the palette, click <b>Add Root</b>, or double-click the canvas to drop your first unit.';
+    }
+  }
+
   setTimeout(enhanceEmptyState, 120);
   setTimeout(addQuickCanvasActions, 150);
   setTimeout(improveSearchInputs, 180);
@@ -472,6 +485,7 @@
   setTimeout(setupPaletteControls, 260);
   setTimeout(setupPanelShortcuts, 300);
   setTimeout(enforceLayoutFixes, 400);
+  setTimeout(normalizeQolText, 420);
   window.addEventListener('resize', enforceLayoutFixes);
   document.addEventListener('click', () => setTimeout(enforceLayoutFixes, 0), true);
   

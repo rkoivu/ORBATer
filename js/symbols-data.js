@@ -190,6 +190,10 @@ const UT=[
   {cat:'Other',subcat:'Other',id:'security_force_assistance',label:'Security Force Assistance',icon:c=>`<text x="25" y="20" text-anchor="middle" font-size="8" font-weight="bold" fill="${c.stroke}">SFA</text>`},
   {cat:'Other',subcat:'Other',id:'civil_affairs',label:'Civil Affairs',icon:c=>`<text x="25" y="20" text-anchor="middle" font-size="8" font-weight="bold" fill="${c.stroke}">CA</text>`},
   {cat:'Other',subcat:'Other',id:'information_operations',label:'Information Operations',icon:c=>`<text x="25" y="20" text-anchor="middle" font-size="8" font-weight="bold" fill="${c.stroke}">IO</text>`},
+  {cat:'Other',subcat:'Other',id:'cyber',label:'Cyber Operations',icon:c=>`<text x="25" y="20" text-anchor="middle" font-size="8" font-weight="bold" fill="${c.stroke}">CYBER</text>`},
+  {cat:'Other',subcat:'Other',id:'deception',label:'Deception',icon:c=>`<text x="25" y="20" text-anchor="middle" font-size="8" font-weight="bold" fill="${c.stroke}">DEC</text>`},
+  {cat:'Other',subcat:'Other',id:'rail_transport',label:'Rail Transport',icon:c=>`<line x1="8" y1="23" x2="42" y2="23" stroke="${c.stroke}" stroke-width="2"/><rect x="14" y="12" width="22" height="8" rx="1.5" fill="none" stroke="${c.stroke}" stroke-width="1.8"/><circle cx="19" cy="24.5" r="1.5" fill="${c.stroke}"/><circle cx="31" cy="24.5" r="1.5" fill="${c.stroke}"/>`},
+  {cat:'Other',subcat:'Other',id:'drone_swarm',label:'Drone Swarm',icon:c=>`<circle cx="17" cy="15" r="2" fill="none" stroke="${c.stroke}" stroke-width="1.5"/><circle cx="25" cy="11" r="2" fill="none" stroke="${c.stroke}" stroke-width="1.5"/><circle cx="33" cy="16" r="2" fill="none" stroke="${c.stroke}" stroke-width="1.5"/><path d="M17,18 L25,23 L33,18" fill="none" stroke="${c.stroke}" stroke-width="1.5"/>`},
 ];
 let customTypes=[];
 
@@ -1548,9 +1552,9 @@ const TEMPLATES=[
 function openTplModal(){
   const grid=document.getElementById('tpl-grid');grid.innerHTML='';
   const help=document.getElementById('tpl-help');
-  if(help) help.textContent='Choose a doctrinal starter to replace the current ORBAT with a ready-made structure.';
+  if(help) help.textContent='Choose a doctrinal starter to replace the current ORBAT with a ready-made structure, or open the startup launcher to restore a recent diagram instead.';
   if(!TEMPLATES.length){
-    grid.innerHTML='<div class="panel-help">No templates available yet. Add or load template definitions first.</div>';
+    grid.innerHTML='<div class="panel-help">No templates available yet. Import JSON, restore a recent diagram, or add template definitions to populate this picker.</div>';
     openModal('tpl-modal');
     return;
   }
@@ -1643,6 +1647,97 @@ document.getElementById('file-input').addEventListener('change',e=>{
     }catch(err){showToast('Import error: '+err.message+' Try a current ORBAT JSON export or the outline importer for plain text.');}
   };r.readAsText(file);e.target.value='';
 });
+function analyseImportCandidate(doc){
+  const errors=[];
+  const warnings=[];
+  if(!doc || typeof doc !== 'object'){
+    errors.push('File content is not a JSON object.');
+    return {errors,warnings,nodeCount:0,textboxCount:0,schemaVersion:null};
+  }
+  const schemaVersion=Number.isFinite(Number(doc.schemaVersion)) ? Number(doc.schemaVersion) : null;
+  if(schemaVersion == null){
+    warnings.push('Schema version is missing. ORBATer will treat this as an older export.');
+  } else if(schemaVersion > APP_SCHEMA_VERSION){
+    errors.push(`Schema v${schemaVersion} is newer than this build supports (current v${APP_SCHEMA_VERSION}).`);
+  } else if(schemaVersion < APP_SCHEMA_VERSION){
+    warnings.push(`Schema v${schemaVersion} is older than the current v${APP_SCHEMA_VERSION}. Some fields may be normalized during import.`);
+  }
+  if(!doc.nodes || typeof doc.nodes !== 'object' || Array.isArray(doc.nodes)){
+    errors.push('Missing "nodes" object.');
+  }
+  const nodeCount=doc.nodes && typeof doc.nodes === 'object' && !Array.isArray(doc.nodes) ? Object.keys(doc.nodes).length : 0;
+  const textboxCount=doc.textboxes && typeof doc.textboxes === 'object' && !Array.isArray(doc.textboxes) ? Object.keys(doc.textboxes).length : 0;
+  if(doc.nodes && typeof doc.nodes === 'object' && !Array.isArray(doc.nodes)){
+    const nodeEntries=Object.entries(doc.nodes);
+    const orphanCount=nodeEntries.filter(([,node])=>node?.parentId && !doc.nodes[node.parentId]).length;
+    if(orphanCount) warnings.push(`${orphanCount} node(s) reference a missing parent and will be re-rooted.`);
+    const malformedCount=nodeEntries.filter(([,node])=>!node || typeof node !== 'object').length;
+    if(malformedCount) errors.push(`${malformedCount} node record(s) are malformed.`);
+  }
+  return {errors,warnings,nodeCount,textboxCount,schemaVersion};
+}
+function ensureImportReviewModal(){
+  let modal=document.getElementById('import-review-modal');
+  if(modal) return modal;
+  modal=document.createElement('div');
+  modal.className='modal-ov';
+  modal.id='import-review-modal';
+  modal.innerHTML=`<div class="modal-box" style="min-width:520px"><h2>Review Import <span class="modal-x" onclick="closeModal('import-review-modal')">&#10005;</span></h2><div id="import-review-summary" class="panel-help" style="margin-bottom:10px"></div><div id="import-review-issues" class="panel-help" style="margin-bottom:12px"></div><div class="modal-acts"><button class="pb" id="import-review-cancel" style="width:auto;margin:0">Cancel</button><button class="pb" id="import-review-apply" style="width:auto;margin:0;border-color:var(--accent);color:var(--accent)">Apply Import</button></div></div>`;
+  document.body.appendChild(modal);
+  modal.querySelector('#import-review-cancel').addEventListener('click',()=>closeModal('import-review-modal'));
+  return modal;
+}
+function reviewImportPayload(doc,fileName='Import'){
+  const modal=ensureImportReviewModal();
+  const analysis=analyseImportCandidate(doc);
+  const summary=document.getElementById('import-review-summary');
+  const issues=document.getElementById('import-review-issues');
+  const applyBtn=document.getElementById('import-review-apply');
+  if(summary) summary.textContent=`${fileName}: ${analysis.nodeCount} unit(s), ${analysis.textboxCount} text box(es), schema ${analysis.schemaVersion ?? 'unknown'}.`;
+  const messages=[
+    ...analysis.errors.map(msg=>`Error: ${msg}`),
+    ...analysis.warnings.map(msg=>`Note: ${msg}`)
+  ];
+  if(issues) issues.innerHTML=messages.length ? messages.map(msg=>`<div style="margin-bottom:6px">${escXml(msg)}</div>`).join('') : 'No issues detected. The document is ready to import.';
+  if(applyBtn){
+    applyBtn.disabled=analysis.errors.length>0;
+    applyBtn.onclick=()=>{
+      if(analysis.errors.length) return;
+      applyDocumentState(doc,{trackHistory:true,preserveView:false});
+      closeModal('import-review-modal');
+      showToast(`Imported ${analysis.nodeCount} unit(s)${analysis.schemaVersion?` from schema v${analysis.schemaVersion}`:''}`);
+    };
+  }
+  openModal('import-review-modal');
+}
+function bindImportInputWithReview(){
+  const current=document.getElementById('file-input');
+  if(!current) return;
+  const clone=current.cloneNode(true);
+  current.replaceWith(clone);
+  clone.addEventListener('change',e=>{
+    const file=e.target.files[0];
+    if(!file) return;
+    const reader=new FileReader();
+    reader.onerror=()=>showToast('Import failed: could not read file');
+    reader.onload=ev=>{
+      try{
+        const text=String(ev.target.result||'');
+        if(!text.trim()){
+          showToast('Import failed: file is empty');
+          return;
+        }
+        const doc=JSON.parse(text);
+        reviewImportPayload(doc,file.name||'Import');
+      }catch(err){
+        showToast('Import failed: invalid JSON or unsupported structure');
+      }
+    };
+    reader.readAsText(file);
+    e.target.value='';
+  });
+}
+bindImportInputWithReview();
 
 function exportPNG(){
   showToast('Generating PNG...');if(!Object.keys(nodes).length){showToast('Nothing to export');return;}
