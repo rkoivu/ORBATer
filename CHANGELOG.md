@@ -5,22 +5,22 @@ All notable changes to the ORBATer project are documented here. The format follo
 ## [Unreleased]
 
 ### Added
-- **Startup Launcher & Recent Diagram Entry Point** â€” Added a startup modal for resuming work before opening the views stack
+- **Startup Launcher & Recent Diagram Entry Point** — Added a startup modal for resuming work before opening the views stack
   - Recent diagrams can now be restored from a launcher on startup, not only from inside the Saved Views modal
   - Launcher actions include starting a new diagram, opening doctrinal templates, or importing JSON
   - Gives empty or first-run sessions a clearer recovery path into real work
 
-- **Import Preflight & Outline Validation** â€” Added earlier validation feedback before import state is applied
+- **Import Preflight & Outline Validation** — Added earlier validation feedback before import state is applied
   - JSON imports now open a review modal with schema/version notes, record counts, and blocking errors before apply
   - Outline imports now show inline validation hints for indentation jumps, mixed whitespace, and malformed structure
   - Prevents unsupported or malformed payloads from mutating document state silently
 
-- **Grouped Command Palette Navigation** â€” Expanded command palette structure beyond ranking-only improvements
+- **Grouped Command Palette Navigation** — Expanded command palette structure beyond ranking-only improvements
   - Commands are grouped into workflow sections such as canvas, tabs, views/snapshots, and import/export
   - Arrow keys now move through command results, with Enter executing the highlighted action
   - Empty states now explain when no command matches the current search
 
-- **Additional Palette Unit Variants** â€” Added more doctrine-friendly unit options to reduce manual reuse
+- **Additional Palette Unit Variants** — Added more doctrine-friendly unit options to reduce manual reuse
   - New palette entries include cyber operations, deception, rail transport, and drone swarm variants
   - Expands the built-in icon set for non-standard but recurring planning structures
 - **Indented List Layout Mode** — Added a fourth ORBAT layout style optimized for outline-style reading

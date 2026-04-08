@@ -985,24 +985,25 @@
       if(id !== 'default') toast(`Closed tab: ${tabName}`);
     };
   }
+  const mojibakeLeadRE = /[\u00C2\u00C3\u00E2]/;
   function cleanViewsUiText(){
-    const orgBtn = q('btn-org-toggle'); if(orgBtn) orgBtn.textContent = '≋ ORBAT';
+    const orgBtn = q('btn-org-toggle'); if(orgBtn) orgBtn.textContent = '\u224B ORBAT';
     const viewsBtn = q('btn-views'); if(viewsBtn) viewsBtn.textContent = 'Views';
     const snapsBtn = q('btn-snapshots'); if(snapsBtn) snapsBtn.textContent = 'Snaps';
     const pdfBtn = q('btn-export-pdf'); if(pdfBtn) pdfBtn.textContent = 'PDF';
     const cmdBtn = q('btn-cmdk'); if(cmdBtn) cmdBtn.textContent = 'Cmd';
     const cmdInput = q('cmdk-input'); if(cmdInput) cmdInput.placeholder = 'Type a command...';
     const cmdHint = document.querySelector('#cmdk-modal .cmdk-hint');
-    if(cmdHint) cmdHint.textContent = 'Enter to run · Esc to close · Cmd/Ctrl+K to open';
+    if(cmdHint) cmdHint.textContent = 'Enter to run \u00B7 Esc to close \u00B7 Cmd/Ctrl+K to open';
     const viewInput = q('view-name-input');
     if(viewInput && viewInput.dataset.enterBound !== '1'){
       viewInput.dataset.enterBound = '1';
       viewInput.addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); q('save-view-btn')?.click(); } });
     }
     document.querySelectorAll('#tab-bar .tab, #tab-bar .tab-dirty, #tab-bar .tab-close').forEach(el=>{
-      if(el.childNodes.length === 1 && el.textContent === 'â—') el.textContent = '●';
-      if(el.childNodes.length === 1 && (el.textContent === 'âœ•' || el.textContent === 'Ã—')) el.textContent = '×';
-      if(el.title) el.title = el.title.replaceAll('Â·','·');
+      if(el.classList.contains('tab-dirty') && el.childNodes.length === 1 && mojibakeLeadRE.test(el.textContent || '')) el.textContent = '\u25CF';
+      if(el.classList.contains('tab-close') && el.childNodes.length === 1 && mojibakeLeadRE.test(el.textContent || '')) el.textContent = '\u00D7';
+      if(el.title) el.title = el.title.replaceAll('\u00C2\u00B7','\u00B7');
     });
   }
   const prevAccessibleRenderTabs = renderTabs;
@@ -1011,16 +1012,14 @@
     cleanViewsUiText();
   };
   function normalizeAccessibleLabels(){
-    const orgBtn = q('btn-org-toggle'); if(orgBtn) orgBtn.textContent = '≋ ORBAT';
+    const orgBtn = q('btn-org-toggle'); if(orgBtn) orgBtn.textContent = '\u224B ORBAT';
     const cmdHint = document.querySelector('#cmdk-modal .cmdk-hint');
-    if(cmdHint) cmdHint.textContent = 'Enter to run · Esc to close · Cmd/Ctrl+K to open';
+    if(cmdHint) cmdHint.textContent = 'Enter to run \u00B7 Esc to close \u00B7 Cmd/Ctrl+K to open';
     document.querySelectorAll('#tab-bar .tab, #tab-bar .tab-dirty, #tab-bar .tab-close').forEach(el=>{
-      const text = el.textContent || '';
-      if(el.childNodes.length === 1 && (text.includes('Ã') || text.includes('â'))){
-        const looksLikeClose = text.includes('œ') || text.includes('—') || text.includes('×');
-        el.textContent = looksLikeClose ? '×' : '●';
-      }
-      if(el.title) el.title = el.title.replaceAll('Â·','·');
+      if(!mojibakeLeadRE.test(el.textContent || '')) return;
+      if(el.classList.contains('tab-close')) el.textContent = '\u00D7';
+      else if(el.childNodes.length === 1) el.textContent = '\u25CF';
+      if(el.title) el.title = el.title.replaceAll('\u00C2\u00B7','\u00B7');
     });
   }
   const prevNormalizedRenderTabs = renderTabs;
@@ -1045,13 +1044,13 @@
   };
   normalizeAccessibleLabels = function(){
     document.querySelectorAll('#tab-bar .tab, #tab-bar .tab-dirty').forEach(el=>{
-      if(el.childNodes.length === 1 && /Ã|â/.test(el.textContent || '')) el.textContent = '●';
+      if(el.childNodes.length === 1 && mojibakeLeadRE.test(el.textContent || '')) el.textContent = '\u25CF';
     });
     document.querySelectorAll('#tab-bar .tab-close').forEach(el=>{
-      if(/Ã|â/.test(el.textContent || '')) el.textContent = '×';
+      if(mojibakeLeadRE.test(el.textContent || '')) el.textContent = '\u00D7';
     });
     document.querySelectorAll('#tab-bar .tab').forEach(el=>{
-      if(el.title) el.title = el.title.replaceAll('Â·','·');
+      if(el.title) el.title = el.title.replaceAll('\u00C2\u00B7','\u00B7');
     });
   };
 
