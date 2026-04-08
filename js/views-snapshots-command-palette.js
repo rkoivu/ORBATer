@@ -31,8 +31,14 @@
       minimapVisible: true
     };
   }
+  function createDefaultTabView(){
+    return {scale:1, panX:24, panY:24, selected:null, multi:[], mode:orbatMode};
+  }
   function normalizeTab(tab, idx=0){
     const baseDoc = tab?.doc ? JSON.parse(JSON.stringify(tab.doc)) : createEmptyTabDoc();
+    const baseView = tab?.view && typeof tab.view === 'object'
+      ? {...createDefaultTabView(), ...JSON.parse(JSON.stringify(tab.view))}
+      : createDefaultTabView();
     if(!tab?.doc && tab?.nodes) baseDoc.nodes = JSON.parse(JSON.stringify(tab.nodes));
     if(!tab?.doc && tab?.nodeIdC != null) baseDoc.nodeIdC = tab.nodeIdC;
     if(!tab?.doc && tab?.opName) baseDoc.opName = tab.opName;
@@ -43,6 +49,7 @@
       id: tab?.id || (idx === 0 ? 'default' : Date.now() + Math.random().toString(16).slice(2)),
       name: tab?.name || (idx === 0 ? 'Main' : `Tab ${idx + 1}`),
       doc: baseDoc,
+      view: baseView,
       selectedId: tab?.selectedId || null,
       multiSel: Array.isArray(tab?.multiSel) ? [...tab.multiSel] : [],
       nodeIdC: baseDoc.nodeIdC || 1
@@ -65,6 +72,9 @@
   function saveTabs(){ try{ localStorage.setItem('orbat_tabs_v1', JSON.stringify(tabs)); }catch(e){ console.warn('Failed to save tabs:', e); toast('Tabs could not be saved. Check browser storage availability.'); } }
   function cloneTabDoc(tab){
     return normalizeTab(tab).doc;
+  }
+  function cloneTabView(tab){
+    return normalizeTab(tab).view;
   }
   function nextTabName(baseName='Tab'){
     const existing = new Set(tabs.map(t => String(t.name || '').toLowerCase()));
@@ -639,6 +649,7 @@
         currTab.selectedId = readSelectedId();
         currTab.multiSel = readMultiSelection();
         currTab.nodeIdC = currTab.doc?.nodeIdC || currTab.nodeIdC || 1;
+        currTab.view = {...currentTransform(), selected:currTab.selectedId, multi:[...currTab.multiSel]};
         rememberRecentDoc(currTab.doc);
         renderRecentDocs();
         saveTabs();
@@ -662,41 +673,50 @@
   const markDirtyListener = () => markTabDirty(currentTabId);
   document.addEventListener('input', markDirtyListener, true);
   document.addEventListener('change', markDirtyListener, true);
+  function persistTabState(tab,{rememberRecent=true}={}){
+    if(!tab) return;
+    if(typeof window.serializeDocument==='function'){
+      tab.doc = JSON.parse(JSON.stringify(window.serializeDocument()));
+      tab.selectedId = readSelectedId();
+      tab.multiSel = readMultiSelection();
+      tab.nodeIdC = tab.doc?.nodeIdC || tab.nodeIdC || 1;
+      tab.view = {...currentTransform(), selected:tab.selectedId, multi:[...tab.multiSel]};
+      if(rememberRecent){
+        rememberRecentDoc(tab.doc);
+        renderRecentDocs();
+      }
+    }
+  }
+  function activateTab(tab){
+    if(!tab || typeof window.applyDocumentState!=='function') return;
+    currentTabId = tab.id;
+    tab.doc = cloneTabDoc(tab);
+    const nextView = cloneTabView(tab);
+    window.applyDocumentState(tab.doc,{trackHistory:false,preserveView:false});
+    applyTransformState(nextView);
+    restoreTabSelectionState(tab);
+    clearTabDirty(tab.id);
+    renderTabs();
+    saveTabs();
+  }
   window.__switchTab = function(id){
     if(id === currentTabId) return;
-    // Save current state to current tab
     const currTab = tabs.find(t=>t.id===currentTabId);
-    if(currTab && typeof window.serializeDocument==='function'){
-      currTab.doc = JSON.parse(JSON.stringify(window.serializeDocument()));
-      currTab.selectedId = readSelectedId();
-      currTab.multiSel = readMultiSelection();
-      currTab.nodeIdC = currTab.doc?.nodeIdC || currTab.nodeIdC || 1;
-      rememberRecentDoc(currTab.doc);
-      renderRecentDocs();
-      saveTabs();
-    }
-    // Load new tab state
+    persistTabState(currTab);
+    saveTabs();
     const tab = tabs.find(t=>t.id===id);
-    if(tab){
-      currentTabId = id;
-      tab.doc = cloneTabDoc(tab);
-      applyDocumentState(tab.doc,{trackHistory:false,preserveView:true});
-      restoreTabSelectionState(tab);
-      clearTabDirty(id);
-      renderTabs();
-      saveTabs();
-    }
+    if(tab) activateTab(tab);
   };
   window.__closeTab = function(id){
     if(id === 'default' || tabs.length <= 1) return;
     hideTabMenu();
     const idx = tabs.findIndex(t=>t.id===id);
     if(idx > -1){
+      const nextTab = currentTabId === id ? (tabs[idx+1] || tabs[idx-1] || tabs[0]) : null;
       tabs.splice(idx, 1);
       saveTabs();
       if(currentTabId === id){
-        const nextId = tabs[0].id;
-        window.__switchTab(nextId);
+        if(nextTab) activateTab(nextTab);
       } else {
         renderTabs();
       }
@@ -715,6 +735,7 @@
       id: newId,
       name: nextTabName(sourceTab.name || 'Tab'),
       doc: liveDoc,
+      view: id === currentTabId ? {...currentTransform(), selected:liveSelected, multi:[...liveMultiSel]} : cloneTabView(sourceTab),
       selectedId: liveSelected,
       multiSel: liveMultiSel,
       nodeIdC: sourceTab.nodeIdC || 1
@@ -722,14 +743,15 @@
     tabs.push(dup);
     tabDirtyStates[newId] = false;
     saveTabs();
-    window.__switchTab(newId);
+    activateTab(dup);
   };
   window.__newTab = function(){
     const newId = Date.now() + Math.random().toString(16).slice(2);
     const newName = 'Tab ' + (tabs.length + 1);
-    tabs.push({id: newId, name: newName, doc: createEmptyTabDoc(), selectedId: null, multiSel: [], nodeIdC: 1});
+    const freshTab = normalizeTab({id: newId, name: newName, doc: createEmptyTabDoc(), view: createDefaultTabView(), selectedId: null, multiSel: [], nodeIdC: 1}, tabs.length);
+    tabs.push(freshTab);
     saveTabs();
-    window.__switchTab(newId);
+    activateTab(freshTab);
   };
   function loadTab(id){ /* placeholder */ }
 
@@ -1064,6 +1086,7 @@
       tabs[0].selectedId = readSelectedId();
       tabs[0].multiSel = readMultiSelection();
       tabs[0].nodeIdC = tabs[0].doc?.nodeIdC || 1;
+      tabs[0].view = {...currentTransform(), selected:tabs[0].selectedId, multi:[...tabs[0].multiSel]};
       saveTabs();
     }
     renderTabs();
