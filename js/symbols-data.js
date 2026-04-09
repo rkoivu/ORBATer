@@ -398,46 +398,83 @@ function buildSwatches(containerId,cb){
 /* ========================================
    PALETTE
 ======================================== */
+let paletteBuildToken=0;
 function buildPalette(){
-  const scroll=document.getElementById('sidebar-scroll');scroll.innerHTML='';
+  const scroll=document.getElementById('sidebar-scroll');if(!scroll)return;
+  const buildToken=++paletteBuildToken;
+  scroll.innerHTML='<div class="panel-help" style="padding:10px 12px">Loading unit palette...</div>';
   const all=[...UT,...customTypes];
   const cats=[...new Set(all.map(u=>u.cat))];
-  cats.forEach(cat=>{
+  const sections=cats.map(cat=>{
     const sec=document.createElement('div');sec.className='palette-section';
     const title=document.createElement('div');title.className='palette-section-title';
     title.innerHTML=`${cat} <span class="caret">v</span>`;
     const grid=document.createElement('div');grid.className='palette-grid';
     title.onclick=()=>{title.classList.toggle('collapsed');grid.classList.toggle('hidden')};
-    
-    // Group by subcategory
+    sec.appendChild(title);sec.appendChild(grid);
     const subcats=[...new Set(all.filter(u=>u.cat===cat).map(u=>u.subcat||u.cat))];
+    const items=[];
     subcats.forEach(subcat=>{
       const subItems=all.filter(u=>u.cat===cat&&(u.subcat||u.cat)===subcat);
-      if(subcats.length>1){
-        const subtitle=document.createElement('div');subtitle.className='palette-subcat-title';
-        subtitle.textContent=subcat;grid.appendChild(subtitle);
-      }
-      subItems.forEach(ut=>{
-        const item=document.createElement('div');item.className='pal-item';item.draggable=true;item.dataset.typeId=ut.id;
-        if(ut.tip)item.setAttribute('data-tip',ut.tip);
-        try{
-          if(ut.dataUrl){
-            const img=document.createElement('img');img.className='pal-custom-icon';img.src=ut.dataUrl;
-            img.onerror=()=>{img.style.display='none'};item.appendChild(img);
-          } else {
-            const fullSym=(window.getSym||getSym)(ut.id,'friendly','battalion');
-            item.innerHTML=fullSym;
-          }
-          const span=document.createElement('span');span.textContent=ut.label;item.appendChild(span);
-        }catch(e){
-          console.warn(`Failed to render palette item for ${ut.id}:`,e);
-          item.innerHTML=`<div style="padding:8px;text-align:center;color:#999"><small>${ut.label}</small></div>`;
-        }
-        item.addEventListener('dragstart',onPalDrag);grid.appendChild(item);
-      });
+      if(subcats.length>1) items.push({kind:'subtitle',label:subcat});
+      subItems.forEach(ut=>items.push({kind:'item',ut}));
     });
-    sec.appendChild(title);sec.appendChild(grid);scroll.appendChild(sec);
+    return {sec,grid,items};
   });
+  scroll.innerHTML='';
+  const frag=document.createDocumentFragment();
+  sections.forEach(({sec})=>frag.appendChild(sec));
+  scroll.appendChild(frag);
+
+  let sectionIndex=0;
+  let itemIndex=0;
+  function pumpPalette(deadline){
+    if(buildToken!==paletteBuildToken) return;
+    let budget=0;
+    while(sectionIndex<sections.length){
+      const section=sections[sectionIndex];
+      while(itemIndex<section.items.length){
+        const entry=section.items[itemIndex++];
+        if(entry.kind==='subtitle'){
+          const subtitle=document.createElement('div');subtitle.className='palette-subcat-title';
+          subtitle.textContent=entry.label;section.grid.appendChild(subtitle);
+        }else{
+          const ut=entry.ut;
+          const item=document.createElement('div');item.className='pal-item';item.draggable=true;item.dataset.typeId=ut.id;
+          if(ut.tip)item.setAttribute('data-tip',ut.tip);
+          try{
+            if(ut.dataUrl){
+              const img=document.createElement('img');img.className='pal-custom-icon';img.src=ut.dataUrl;
+              img.onerror=()=>{img.style.display='none'};item.appendChild(img);
+            } else {
+              const fullSym=(window.getSym||getSym)(ut.id,'friendly','battalion');
+              item.innerHTML=fullSym;
+            }
+            const span=document.createElement('span');span.textContent=ut.label;item.appendChild(span);
+          }catch(e){
+            console.warn(`Failed to render palette item for ${ut.id}:`,e);
+            item.innerHTML=`<div style="padding:8px;text-align:center;color:#999"><small>${ut.label}</small></div>`;
+          }
+          item.addEventListener('dragstart',onPalDrag);section.grid.appendChild(item);
+        }
+        budget++;
+        if((deadline&&deadline.timeRemaining&&deadline.timeRemaining()<4)||budget>=18){
+          schedulePalettePump();
+          return;
+        }
+      }
+      sectionIndex++;
+      itemIndex=0;
+    }
+  }
+  function schedulePalettePump(){
+    if('requestIdleCallback' in window){
+      window.requestIdleCallback(pumpPalette,{timeout:120});
+    }else{
+      setTimeout(()=>pumpPalette(),0);
+    }
+  }
+  schedulePalettePump();
 }
 function buildTypeSelect(){
   const sel=document.getElementById('ep-type');sel.innerHTML='';
