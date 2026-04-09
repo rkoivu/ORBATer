@@ -78,28 +78,38 @@
     }, { passive: false });
   }
 
+  let syncQueued = false;
+  function scheduleSync() {
+    if (syncQueued) return;
+    syncQueued = true;
+    requestAnimationFrame(() => {
+      syncQueued = false;
+      syncControls();
+    });
+  }
+
   function init() {
     const bar = ensureControls();
     if (!bar || bar.dataset.topbarOverflowBound === '1') return;
     bar.dataset.topbarOverflowBound = '1';
 
     bindWheel(bar);
-    bar.addEventListener('scroll', syncControls, { passive: true });
-    window.addEventListener('resize', syncControls);
+    bar.addEventListener('scroll', scheduleSync, { passive: true });
+    window.addEventListener('resize', scheduleSync);
 
     if (window.ResizeObserver) {
-      const resizeObserver = new ResizeObserver(syncControls);
+      const resizeObserver = new ResizeObserver(scheduleSync);
       resizeObserver.observe(bar);
     }
 
     if (window.MutationObserver) {
-      const mutationObserver = new MutationObserver(syncControls);
-      mutationObserver.observe(bar, { childList: true, subtree: true, attributes: true });
+      const mutationObserver = new MutationObserver(scheduleSync);
+      mutationObserver.observe(bar, { childList: true });
     }
 
-    syncControls();
-    setTimeout(syncControls, 120);
-    setTimeout(syncControls, 400);
+    scheduleSync();
+    setTimeout(scheduleSync, 120);
+    setTimeout(scheduleSync, 400);
   }
 
   if (document.readyState === 'loading') {
