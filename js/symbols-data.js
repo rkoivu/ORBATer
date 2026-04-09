@@ -196,6 +196,7 @@ const UT=[
   {cat:'Other',subcat:'Other',id:'drone_swarm',label:'Drone Swarm',icon:c=>`<circle cx="17" cy="15" r="2" fill="none" stroke="${c.stroke}" stroke-width="1.5"/><circle cx="25" cy="11" r="2" fill="none" stroke="${c.stroke}" stroke-width="1.5"/><circle cx="33" cy="16" r="2" fill="none" stroke="${c.stroke}" stroke-width="1.5"/><path d="M17,18 L25,23 L33,18" fill="none" stroke="${c.stroke}" stroke-width="1.5"/>`},
 ];
 let customTypes=[];
+let typeSelectBuilt=false;
 
 function getSym(typeId,affil,echelon,planned=false){
   const c=AC[affil]||AC.friendly;const ech=EM[echelon]||'';
@@ -296,7 +297,7 @@ function applyDocumentState(doc,{trackHistory=true,preserveView=true}={}){
   syncRelLabelBtn();
   syncIconModeBtn();
   syncMinimapVisibility();
-  buildPalette();buildTypeSelect();Object.keys(nodes).forEach(id=>renderNode(id));Object.keys(textboxes).forEach(id=>renderTextbox(id));
+  buildPalette();typeSelectBuilt=false;Object.keys(nodes).forEach(id=>renderNode(id));Object.keys(textboxes).forEach(id=>renderTextbox(id));
   drawConnectors();updSB();updEmpty();deselectAll();
   if(preserveView){zoom=view.zoom;panX=view.panX;panY=view.panY;applyTransform();}
   if(trackHistory)saveState();
@@ -484,6 +485,11 @@ function buildTypeSelect(){
     const opt=document.createElement('option');opt.value=ut.id;opt.textContent=ut.label;sel.appendChild(opt);
   });
   sel.onchange=applyEP;
+  typeSelectBuilt=true;
+}
+function ensureTypeSelectBuilt(){
+  if(typeSelectBuilt) return;
+  buildTypeSelect();
 }
 
 /* ========================================
@@ -725,6 +731,7 @@ function selSubtree(root){
 function populateEditPanel(id){
   const n=nodes[id];
   if(!n){console.warn('populateEditPanel: node '+id+' not found');return;}
+  ensureTypeSelectBuilt();
   document.getElementById('ep-name').value=n.name;
   document.getElementById('ep-desig').value=n.designation;
   document.getElementById('ep-cmd').value=n.commander;
@@ -810,7 +817,7 @@ function addCiToPalette(){
   const cat=document.getElementById('ci-cat').value.trim()||'Custom';
   if(!ciDataUrl){showToast('Please select an image file');return}
   customTypes.push({id:'ci_'+Date.now(),label:name,cat,dataUrl:ciDataUrl});
-  buildPalette();buildTypeSelect();closeModal('ci-modal');saveState();showToast('Custom icon added to palette');
+  buildPalette();typeSelectBuilt=false;buildTypeSelect();closeModal('ci-modal');saveState();showToast('Custom icon added to palette');
 }
 
 /* ========================================
@@ -1836,6 +1843,14 @@ function updSB(){
 function updEmpty(){document.getElementById('empty-hint').style.display=Object.keys(nodes).length===0?'block':'none';}
 function showToast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200);}
 
+function scheduleNonCriticalInit(task, timeout=300){
+  if('requestIdleCallback' in window){
+    window.requestIdleCallback(task,{timeout});
+  }else{
+    setTimeout(task,0);
+  }
+}
+
 /* ========================================
    KEYBOARD SHORTCUTS
 ======================================== */
@@ -1869,8 +1884,6 @@ document.addEventListener('keydown',e=>{
 /* ========================================
    INIT
 ======================================== */
-buildPalette();
-buildTypeSelect();
 buildSwatches('ep-swatches',col=>{if(!selectedId)return;nodes[selectedId].tint=col;renderNode(selectedId);saveState();});
 buildSwatches('mp-swatches',col=>{multiSel.forEach(id=>{nodes[id].tint=col;renderNode(id);});saveState();});
 updEmpty();updSB();syncRelLabelBtn();
@@ -1879,10 +1892,7 @@ canvasWrap.className='snap-on';document.getElementById('btn-snap').textContent='
 
 syncMinimapVisibility();
 
-// Restore autosave or seed starter
-setTimeout(()=>{
-  loadAutosave();
-  if(Object.keys(nodes).length===0){
-    createNode({typeId:'hq',name:'1st Division',designation:'1 DIV',echelon:'division',x:snapV(300),y:snapV(72)});
-  }
-},150);
+requestAnimationFrame(()=>{
+  scheduleNonCriticalInit(()=>buildPalette(),200);
+  scheduleNonCriticalInit(()=>loadAutosave(),1200);
+});
