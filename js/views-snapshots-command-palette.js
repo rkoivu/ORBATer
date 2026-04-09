@@ -813,7 +813,8 @@
   window.exportPDF=async function(){
     try{
       const target=q('canvas-wrap');
-      const cv=await html2canvas(target,{backgroundColor:'#ffffff',scale:2,useCORS:true});
+      const renderCanvas=await window.loadHtml2canvas();
+      const cv=await renderCanvas(target,{backgroundColor:'#ffffff',scale:2,useCORS:true});
       const img=cv.toDataURL('image/jpeg',0.92);
       const bin=atob(img.split(',')[1]);
       const bytes=new Uint8Array(bin.length); for(let i=0;i<bin.length;i++) bytes[i]=bin.charCodeAt(i);
