@@ -1749,7 +1749,7 @@ function bindImportInputWithReview(){
 }
 bindImportInputWithReview();
 
-function exportPNG(){
+async function exportPNG(){
   showToast('Generating PNG...');if(!Object.keys(nodes).length){showToast('Nothing to export');return;}
   const wrap=document.getElementById('canvas-wrap');
   const canvas=document.getElementById('canvas');
@@ -1773,13 +1773,10 @@ function exportPNG(){
     Object.assign(linkSvg.style,{transform:prev.linkTransform});
   };
   try{
-    Promise.resolve(html2canvas(wrap,{backgroundColor:'#0d1117',scale:2,useCORS:true,logging:false,width, height, x:0, y:0, scrollX:0, scrollY:0})).then(c=>{
-      restoreExportState();
-      const a=document.createElement('a');a.href=c.toDataURL('image/png');a.download='orbat.png';a.click();showToast('PNG saved');
-    }).catch(()=>{
-      restoreExportState();
-      showToast('PNG export failed');
-    });
+    const renderCanvas = await window.loadHtml2canvas();
+    const c = await renderCanvas(wrap,{backgroundColor:'#0d1117',scale:2,useCORS:true,logging:false,width, height, x:0, y:0, scrollX:0, scrollY:0});
+    restoreExportState();
+    const a=document.createElement('a');a.href=c.toDataURL('image/png');a.download='orbat.png';a.click();showToast('PNG saved');
   }catch(_){
     restoreExportState();
     showToast('PNG export failed');
