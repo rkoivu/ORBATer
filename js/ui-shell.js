@@ -282,7 +282,7 @@
   <span>Selected: <b id="sb-sel">&#8212;</b></span>
   <span>Zoom: <b id="sb-zoom">100%</b></span>
   <span>History: <b id="sb-hist">0/0</b></span>
-  <span class="hint">Shift+click multi-select | Drag canvas lasso | Ctrl+Z/Y undo/redo | Ctrl+D duplicate | Del delete | L layout | Right-click menu</span>
+  <span class="hint">Drag canvas to pan | Shift+drag for lasso | Shift+click multi-select | Ctrl+Z/Y undo/redo | Ctrl+D duplicate | Del delete</span>
 </div>`;
   }
 
@@ -337,7 +337,8 @@
       <tr><td><kbd>Shift+Home</kbd></td><td>Center on first hostile root</td></tr>
       <tr><td><kbd>Alt+Home</kbd></td><td>Center on first neutral root</td></tr>
       <tr><td><kbd>Shift+Click</kbd></td><td>Add/remove from multi-select</td></tr>
-      <tr><td><kbd>Drag on canvas</kbd></td><td>Lasso / rubber-band select</td></tr>
+      <tr><td><kbd>Drag on canvas</kbd></td><td>Pan the canvas view</td></tr>
+      <tr><td><kbd>Shift + Drag on canvas</kbd></td><td>Lasso / rubber-band select</td></tr>
       <tr><td><kbd>Shift+Drag node</kbd></td><td>Reparent (drop onto new parent)</td></tr>
       <tr><td><kbd>Scroll</kbd></td><td>Zoom in/out</td></tr>
       <tr><td><kbd>Right-click node</kbd></td><td>Context menu</td></tr>
