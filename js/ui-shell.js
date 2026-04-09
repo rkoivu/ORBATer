@@ -2,50 +2,62 @@
   function topbarHtml() {
     return `
 <div id="topbar">
-  <button class="tb-btn" id="btn-sb" onclick="toggleSidebar()">&#9776;</button>
-  <div class="logo">&#9672; ORBAT</div>
+  <div class="tb-group tb-group-brand">
+    <button class="tb-btn" id="btn-sb" onclick="toggleSidebar()">&#9776;</button>
+    <div class="logo"><span class="logo-mark">&#9672;</span><span class="logo-word">ORBAT</span></div>
+  </div>
   <input id="op-name-input" value="OPERATION IRONGATE" title="Click to rename">
   <div class="tb-sep"></div>
-  <button class="tb-btn" onclick="addRootUnit()">Add Root</button>
-  <button class="tb-btn" id="btn-auto-layout" onclick="autoLayout()">Layout</button>
-  <select id="layout-mode-sel" onchange="setLayoutMode(this.value)" title="Layout mode" style="margin-left:4px">
-    <option value="tree">Tree</option>
-    <option value="indented">Indented List</option>
-    <option value="radial">Radial</option>
-    <option value="force">Force</option>
-  </select>
-  <button class="tb-btn" id="btn-snap" onclick="toggleSnap()">Grid</button>
-  <button class="tb-btn" id="btn-link" onclick="toggleLinkMode()">Link</button>
-  <button class="tb-btn" id="btn-hostile-root" onclick="centerOnHostileRoot()">Hostile</button>
-  <button class="tb-btn" id="btn-neutral-root" onclick="centerOnNeutralRoot()">Neutral</button>
-  <button class="tb-btn" onclick="fitScreen()">Fit</button>
+  <div class="tb-group">
+    <button class="tb-btn" onclick="addRootUnit()">Add Root</button>
+    <button class="tb-btn" id="btn-auto-layout" onclick="autoLayout()">Layout</button>
+    <select id="layout-mode-sel" onchange="setLayoutMode(this.value)" title="Layout mode">
+      <option value="tree">Tree</option>
+      <option value="indented">Indented List</option>
+      <option value="radial">Radial</option>
+      <option value="force">Force</option>
+    </select>
+    <button class="tb-btn" id="btn-snap" onclick="toggleSnap()">Grid</button>
+    <button class="tb-btn" id="btn-link" onclick="toggleLinkMode()">Link</button>
+    <button class="tb-btn" id="btn-hostile-root" onclick="centerOnHostileRoot()">Hostile</button>
+    <button class="tb-btn" id="btn-neutral-root" onclick="centerOnNeutralRoot()">Neutral</button>
+    <button class="tb-btn" onclick="fitScreen()">Fit</button>
+  </div>
   <div class="tb-sep"></div>
-  <button class="tb-btn" onclick="undo()" title="Ctrl+Z">Undo</button>
-  <button class="tb-btn" onclick="redo()" title="Ctrl+Y">Redo</button>
-  <button class="tb-btn" onclick="copySelected()" title="Ctrl+C - copy node(s)">Copy</button>
-  <button class="tb-btn" onclick="pasteNodes()" title="Ctrl+V - paste">Paste</button>
+  <div class="tb-group">
+    <button class="tb-btn" onclick="undo()" title="Ctrl+Z">Undo</button>
+    <button class="tb-btn" onclick="redo()" title="Ctrl+Y">Redo</button>
+    <button class="tb-btn" onclick="copySelected()" title="Ctrl+C - copy node(s)">Copy</button>
+    <button class="tb-btn" onclick="pasteNodes()" title="Ctrl+V - paste">Paste</button>
+  </div>
   <div class="tb-sep"></div>
-  <select id="conn-style-sel" onchange="drawConnectors()" title="Connector style">
-    <option value="bezier">Bezier</option>
-    <option value="elbow" selected="selected">Elbow</option>
-    <option value="straight">Straight</option>
-  </select>
-  <button class="tb-btn" id="btn-rel-labels" onclick="toggleRelLabels()">Rel Labels</button>
-  <button class="tb-btn" id="btn-smart-labels">Smart Labels</button>
-  <button class="tb-btn" id="btn-focus" onclick="focusSelection()">Focus</button>
-  <button class="tb-btn" id="btn-tag-highlight" onclick="toggleTagHighlight()">Tags</button>
-  <input id="unit-search-input" placeholder="Search /" title="Search units">
-  <input id="tag-filter-input" placeholder="Tag filter" title="Filter by tag">
+  <div class="tb-group">
+    <select id="conn-style-sel" onchange="drawConnectors()" title="Connector style">
+      <option value="bezier">Bezier</option>
+      <option value="elbow" selected="selected">Elbow</option>
+      <option value="straight">Straight</option>
+    </select>
+    <button class="tb-btn" id="btn-rel-labels" onclick="toggleRelLabels()">Rel Labels</button>
+    <button class="tb-btn" id="btn-smart-labels">Smart Labels</button>
+    <button class="tb-btn" id="btn-focus" onclick="focusSelection()">Focus</button>
+    <button class="tb-btn" id="btn-tag-highlight" onclick="toggleTagHighlight()">Tags</button>
+    <input id="unit-search-input" placeholder="Search /" title="Search units">
+    <input id="tag-filter-input" placeholder="Tag filter" title="Filter by tag">
+  </div>
   <div class="tb-sep"></div>
-  <button class="tb-btn" onclick="exportJSON()">Export JSON</button>
-  <button class="tb-btn" onclick="importJSON()">Import</button>
-  <button class="tb-btn" onclick="exportSVG()">Export SVG</button>
-  <button class="tb-btn" onclick="exportPNG()">Export PNG</button>
-  <button class="tb-btn" onclick="window.print()">Print</button>
+  <div class="tb-group">
+    <button class="tb-btn" onclick="exportJSON()">Export JSON</button>
+    <button class="tb-btn" onclick="importJSON()">Import</button>
+    <button class="tb-btn" onclick="exportSVG()">Export SVG</button>
+    <button class="tb-btn" onclick="exportPNG()">Export PNG</button>
+    <button class="tb-btn" onclick="window.print()">Print</button>
+  </div>
   <div class="tb-sep"></div>
-  <button class="tb-btn" id="btn-random-orbat">Random</button>
-  <button class="tb-btn" onclick="openTplModal()">Templates</button>
-  <button class="tb-btn" onclick="openScModal()">Shortcuts</button>
+  <div class="tb-group">
+    <button class="tb-btn" id="btn-random-orbat">Random</button>
+    <button class="tb-btn" onclick="openTplModal()">Templates</button>
+    <button class="tb-btn" onclick="openScModal()">Shortcuts</button>
+  </div>
   <div class="tb-spacer"></div>
   <button class="tb-btn danger" onclick="clearAll()">Clear</button>
 </div>
@@ -57,7 +69,10 @@
 <div id="main">
   <div id="sidebar">
     <div id="sidebar-header">
-      <span>Unit Palette</span>
+      <div class="sidebar-heading">
+        <span>Unit Palette</span>
+        <small>Drag symbols to build the ORBAT</small>
+      </div>
       <button class="tb-btn" style="padding:2px 7px;font-size:9px" onclick="openModal('ci-modal')">Add Custom</button>
     </div>
     <div id="sidebar-scroll"></div>
@@ -67,8 +82,14 @@
     <svg id="link-svg"></svg>
     <div id="canvas">
       <div id="empty-hint" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none">
-        <div style="font-size:44px;margin-bottom:10px">+</div>
-        <p style="font-family:'Barlow Condensed',sans-serif;font-size:13px;color:var(--text2);letter-spacing:1px">Drag a unit from the palette<br>or click <b>Add Root</b> to begin</p>
+        <div class="eh-hero">+</div>
+        <div class="eh-title">Build Your First Formation</div>
+        <p class="eh-copy">Drag a unit from the palette, click <b>Add Root</b>, or double-click the canvas to start a new ORBAT.</p>
+        <div class="eh-kbd-row">
+          <span><kbd>/</kbd> Search</span>
+          <span><kbd>L</kbd> Layout</span>
+          <span><kbd>Ctrl</kbd> + <kbd>K</kbd> Commands</span>
+        </div>
       </div>
     </div>
     <div id="lasso"></div>
