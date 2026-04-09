@@ -13,6 +13,11 @@
       panel.style.gap='8px';
     }
   }
+  function findToolbarItem(sel){
+    if(!sel) return null;
+    if(typeof sel!=='string') return sel;
+    return topbar.querySelector(sel) || document.querySelector(sel);
+  }
 
   // Auto organise button
   if(!document.getElementById('btn-auto-organise')){
@@ -71,6 +76,7 @@
     const btn=menu.querySelector('.tb-menu-btn');
     btn.onclick=(e)=>{
       e.stopPropagation();
+      populateMenus();
       document.querySelectorAll('.tb-menu.open').forEach(m=>{ if(m!==menu) setMenuOpen(m,false); });
       const willOpen=!menu.classList.contains('open');
       setMenuOpen(menu, willOpen);
@@ -86,7 +92,7 @@
   function moveToMenu(menu, selectors){
     const panel=document.getElementById(menu.dataset.panelId);
     selectors.forEach(sel=>{
-      const el=typeof sel==='string' ? topbar.querySelector(sel) : sel;
+      const el=findToolbarItem(sel);
       if(el && el!==menu && el.parentElement!==panel) panel.appendChild(el);
     });
   }
@@ -102,6 +108,20 @@
       if(!prev || !next || prev.classList?.contains('tb-sep') || next.classList?.contains('tb-sep')) child.remove();
     });
   }
+  function populateMenus(){
+    const insertMenu=document.getElementById('menu-insert');
+    const viewMenu=document.getElementById('menu-view');
+    const toolsMenu=document.getElementById('menu-tools');
+    const searchMenu=document.getElementById('menu-search');
+    const fileMenu=document.getElementById('menu-file');
+    if(!(insertMenu&&viewMenu&&toolsMenu&&searchMenu&&fileMenu)) return;
+    moveToMenu(insertMenu,['#btn-random-orbat','button[onclick="openTplModal()"]','#btn-outline-import','#btn-auto-organise']);
+    moveToMenu(viewMenu,['#btn-zoom-out-2','#btn-zoom-in-2','#btn-fit-plus','#btn-focus','#btn-hostile-root','#btn-neutral-root','#btn-toggle-statusbar','#btn-toggle-minimap','#btn-tag-highlight','#btn-rel-labels']);
+    moveToMenu(toolsMenu,['#btn-stack-same','#btn-conflicts','#btn-tour','button[onclick="openScModal()"]']);
+    moveToMenu(searchMenu,['#unit-search-input','#tag-filter-input','#search-meta','#btn-clear-unit-search','#btn-clear-tag-filter']);
+    moveToMenu(fileMenu,['button[onclick="exportJSON()"]','button[onclick="importJSON()"]','button[onclick="exportSVG()"]','button[onclick="exportPNG()"]','button[onclick="window.print()"]','#btn-export-pdf','#btn-export-outline']);
+    cleanupTopbarLayout();
+  }
   if(!document.getElementById('menu-file')){
     const insertMenu=makeMenu('menu-insert','Insert');
     const viewMenu=makeMenu('menu-view','View');
@@ -110,12 +130,7 @@
     const searchMenu=makeMenu('menu-search','Search');
     const spacer=topbar.querySelector('.tb-spacer');
     [insertMenu,viewMenu,toolsMenu,searchMenu,fileMenu].forEach(m=> topbar.insertBefore(m, spacer || dangerBtn || topbar.lastElementChild));
-    moveToMenu(insertMenu,['#btn-random-orbat','button[onclick="openTplModal()"]','#btn-outline-import','#btn-auto-organise']);
-    moveToMenu(viewMenu,['#btn-zoom-out-2','#btn-zoom-in-2','#btn-fit-plus','#btn-focus','#btn-hostile-root','#btn-neutral-root','#btn-toggle-statusbar','#btn-toggle-minimap','#btn-tag-highlight','#btn-rel-labels']);
-    moveToMenu(toolsMenu,['#btn-stack-same','#btn-conflicts','#btn-tour','button[onclick="openScModal()"]']);
-    moveToMenu(searchMenu,['#unit-search-input','#tag-filter-input']);
-    moveToMenu(fileMenu,['button[onclick="exportJSON()"]','button[onclick="importJSON()"]','button[onclick="exportSVG()"]','button[onclick="exportPNG()"]','button[onclick="window.print()"]']);
-    cleanupTopbarLayout();
+    populateMenus();
     document.addEventListener('click',()=>document.querySelectorAll('.tb-menu.open').forEach(m=>setMenuOpen(m,false)));
     document.addEventListener('keydown',e=>{ if(e.key==='Escape') document.querySelectorAll('.tb-menu.open').forEach(m=>setMenuOpen(m,false)); });
     const repositionOpenMenus=()=>{
@@ -128,6 +143,9 @@
     };
     window.addEventListener('resize', repositionOpenMenus);
     window.addEventListener('scroll', repositionOpenMenus, true);
+    window.addEventListener('load', populateMenus);
+    setTimeout(populateMenus, 250);
+    setTimeout(populateMenus, 800);
   }
 
   // Improve outline import modal: tab insertion + clear-all option + prompt handling
