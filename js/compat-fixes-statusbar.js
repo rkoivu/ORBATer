@@ -93,13 +93,16 @@
   if(typeof startLink==='function'){
     startLink = window.startLink = function(e,id){
       e.stopPropagation();
+      e.preventDefault();
       linkSrc=id;
       const svg=document.getElementById('link-svg');svg.innerHTML='';svg.style.width='100%';svg.style.height='100%';
       const wrap=document.getElementById('canvas-wrap').getBoundingClientRect();
-      const srcEl=document.getElementById('el-'+id)?.getBoundingClientRect();
-      if(!srcEl){ linkSrc=null; return; }
-      const sx=(srcEl.left+srcEl.width/2-wrap.left-panX)/zoom;
-      const sy=(srcEl.top+srcEl.height/2-wrap.top-panY)/zoom;
+      const srcNodeEl=document.getElementById('el-'+id);
+      if(!srcNodeEl){ linkSrc=null; return; }
+      const anchorEl=e.target?.closest?.('.node-link-btn') || srcNodeEl.querySelector('.node-link-btn') || srcNodeEl;
+      const anchorRect=anchorEl.getBoundingClientRect();
+      const sx=anchorRect.left+anchorRect.width/2-wrap.left;
+      const sy=anchorRect.top+anchorRect.height/2-wrap.top;
       const line=document.createElementNS('http://www.w3.org/2000/svg','line');
       line.setAttribute('stroke','#22c55e');line.setAttribute('stroke-width','2');line.setAttribute('stroke-dasharray','6,3');
       svg.appendChild(line);
@@ -110,7 +113,7 @@
         linkSrc=null;
       };
       function mv(ev){
-        const mx=(ev.clientX-wrap.left-panX)/zoom,my=(ev.clientY-wrap.top-panY)/zoom;
+        const mx=ev.clientX-wrap.left,my=ev.clientY-wrap.top;
         line.setAttribute('x1',sx);line.setAttribute('y1',sy);line.setAttribute('x2',mx);line.setAttribute('y2',my);
         document.querySelectorAll('.orbat-node').forEach(el=>{
           const r=el.getBoundingClientRect();
