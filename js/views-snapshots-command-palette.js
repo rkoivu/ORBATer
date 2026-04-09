@@ -17,6 +17,9 @@
   function readNodeMap(){
     return (typeof nodes!=='undefined' && nodes) ? nodes : (window.nodes || {});
   }
+  function readOpName(){
+    return document.getElementById('op-name-input')?.value?.trim() || 'orbat';
+  }
   function createEmptyTabDoc(){
     return {
       schemaVersion: typeof APP_SCHEMA_VERSION!=='undefined' ? APP_SCHEMA_VERSION : 1,
@@ -485,6 +488,7 @@
     ensureBtn('btn-snapshots','🗂 Snaps','Version snapshots',()=>{ renderSnapshots(); open('snapshot-modal'); },'btn-views');
     ensureBtn('btn-export-pdf','⤓ PDF','Export PDF',()=>window.exportPDF&&window.exportPDF(),'btn-random-orbat');
     ensureBtn('btn-cmdk','⌘K','Command palette',()=>window.openCommandPalette&&window.openCommandPalette(),'btn-export-pdf');
+    ensureBtn('btn-export-outline','Outline','Copy or download an indented text outline',()=>window.exportOutlineText&&window.exportOutlineText(),'btn-export-pdf');
     ensureModal('view-modal','Saved Views',`<div class="fg"><label>Save current view as</label><div style="display:flex;gap:8px"><input id="view-name-input" type="text" placeholder="e.g. Corps overview"><button class="pb" style="width:auto;margin:0" id="save-view-btn">Save</button></div></div><div class="psec">Saved Views</div><div id="view-list"></div><div class="psec">Recent Diagrams</div><div id="recent-doc-list"></div>`);
     ensureModal('snapshot-modal','Version Snapshots',`<div style="display:flex;gap:8px;margin-bottom:10px"><button class="pb" style="width:auto;margin:0" id="snap-now-btn">Create snapshot</button></div><div id="timeline-slider" style="margin-bottom:10px"><input type="range" id="phase-slider" min="0" max="0" value="0" style="width:100%"><div id="phase-label"></div></div><div id="snapshot-list"></div>`);
     ensureModal('cmdk-modal','Command Palette',`<input id="cmdk-input" placeholder="Type a command…"><div id="cmdk-list"></div><div class="cmdk-hint">Enter to run · Esc to close · Cmd/Ctrl+K to open</div>`);
@@ -499,6 +503,7 @@
     const orgBtn = q('btn-org-toggle'); if(orgBtn) orgBtn.textContent = 'Mode';
     const viewsBtn = q('btn-views'); if(viewsBtn) viewsBtn.textContent = 'Views';
     const snapsBtn = q('btn-snapshots'); if(snapsBtn) snapsBtn.textContent = 'Snapshots';
+    const outlineBtn = q('btn-export-outline'); if(outlineBtn) outlineBtn.textContent = 'Outline';
     const pdfBtn = q('btn-export-pdf'); if(pdfBtn) pdfBtn.textContent = 'Export PDF';
     const cmdBtn = q('btn-cmdk'); if(cmdBtn) cmdBtn.textContent = 'Commands';
     if(!q('btn-launcher')) ensureBtn('btn-launcher','Open','Open the startup launcher',()=>{ renderStartupLauncher(); open('startup-modal'); },'btn-views');
@@ -839,39 +844,114 @@
       toast('PDF exported');
     }catch(err){ console.error(err); toast('PDF export failed'); }
   };
+  function nodeOutlineLabel(node){
+    const parts=[String(node?.designation||'').trim(), String(node?.name||'').trim()].filter(Boolean);
+    const unique=[];
+    parts.forEach(part=>{ if(!unique.includes(part)) unique.push(part); });
+    return unique.join(' ').trim() || 'Unnamed Unit';
+  }
+  function sortedChildren(nodeId, source){
+    return Object.values(source)
+      .filter(node=>node.parentId===nodeId)
+      .sort((a,b)=>(a.y-b.y)||(a.x-b.x)||nodeOutlineLabel(a).localeCompare(nodeOutlineLabel(b)));
+  }
+  function buildOutlineLines(nodeId, source, depth, lines){
+    const node = source[nodeId];
+    if(!node) return;
+    lines.push(`${'  '.repeat(depth)}${nodeOutlineLabel(node)}`);
+    sortedChildren(nodeId, source).forEach(child=>buildOutlineLines(child.id, source, depth+1, lines));
+  }
+  function downloadTextFile(filename, text){
+    const blob=new Blob([text],{type:'text/plain;charset=utf-8'});
+    const a=document.createElement('a');
+    a.href=URL.createObjectURL(blob);
+    a.download=filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(()=>URL.revokeObjectURL(a.href),1200);
+  }
+  window.exportOutlineText=async function(){
+    const source = readNodeMap();
+    const selected = readSelectedId();
+    const roots = selected && source[selected]
+      ? [selected]
+      : Object.values(source)
+        .filter(node=>!node.parentId || !source[node.parentId])
+        .sort((a,b)=>(a.y-b.y)||(a.x-b.x)||nodeOutlineLabel(a).localeCompare(nodeOutlineLabel(b)))
+        .map(node=>node.id);
+    if(!roots.length){
+      toast('Nothing to export');
+      return;
+    }
+    const lines=[];
+    roots.forEach(rootId=>buildOutlineLines(rootId, source, 0, lines));
+    const text=lines.join('\n');
+    const baseName=readOpName().replace(/[^\w.-]+/g,'_').replace(/^_+|_+$/g,'') || 'orbat';
+    const copiedMsg = selected && source[selected] ? 'Selected branch outline copied' : 'Outline copied';
+    try{
+      if(navigator.clipboard?.writeText){
+        await navigator.clipboard.writeText(text);
+        toast(copiedMsg);
+        return;
+      }
+    }catch(err){
+      console.warn('Failed to copy outline to clipboard:', err);
+    }
+    downloadTextFile(`${baseName}-outline.txt`, text);
+    toast(selected && source[selected] ? 'Selected branch outline downloaded' : 'Outline downloaded');
+  };
+  function normalizeCmdkText(value=''){
+    return String(value).toLowerCase().replace(/[^a-z0-9]+/g,' ').trim().replace(/\s+/g,' ');
+  }
+  function commandSearchInfo(command){
+    const haystack = [command.name].concat(command.aliases || []).join(' ');
+    const normalized = normalizeCmdkText(haystack);
+    return { normalized, compact: normalized.replace(/\s+/g,'') };
+  }
+  function commandMatchScore(command, term){
+    if(!term) return 0;
+    const info = commandSearchInfo(command);
+    const compactTerm = term.replace(/\s+/g,'');
+    if(info.normalized.startsWith(term) || info.compact.startsWith(compactTerm)) return 0;
+    if(info.normalized.includes(term) || info.compact.includes(compactTerm)) return 1;
+    const tokens = term.split(' ').filter(Boolean);
+    if(tokens.length && tokens.every(token=>info.normalized.includes(token))) return 2;
+    return -1;
+  }
   // Command palette
   const commands=[
-    {name:'Add root unit', run:()=>window.addRootUnit&&window.addRootUnit()},
-    {name:'Auto layout', run:()=>window.autoLayout&&window.autoLayout()},
-    {name:'Fit screen', run:()=>window.fitScreen&&window.fitScreen()},
-    {name:'Center on root', run:()=>window.centerOnRoot&&window.centerOnRoot()},
-    {name:'Center on hostile root', run:()=>window.centerOnHostileRoot&&window.centerOnHostileRoot()},
-    {name:'Center on neutral root', run:()=>window.centerOnNeutralRoot&&window.centerOnNeutralRoot()},
-    {name:'Zoom to selection', run:()=>window.focusSelection&&window.focusSelection()},
-    {name:'Rename current tab', run:()=>window.__renameTabPrompt&&window.__renameTabPrompt(currentTabId)},
-    {name:'Duplicate current tab', run:()=>window.__duplicateTab&&window.__duplicateTab(currentTabId)},
-    {name:'Toggle ORBAT mode', run:()=>q('btn-org-toggle')?.click()},
-    {name:'Open saved views', run:()=>q('btn-views')?.click()},
-    {name:'Open snapshots', run:()=>q('btn-snapshots')?.click()},
-    {name:'Export PDF', run:()=>window.exportPDF&&window.exportPDF()},
-    {name:'Import text outline', run:()=>window.openOutlineModal&&window.openOutlineModal()},
-    {name:'Toggle minimap', run:()=>window.toggleMinimap&&window.toggleMinimap()},
-    {name:'Undo', run:()=>window.undo&&window.undo()},
-    {name:'Redo', run:()=>window.redo&&window.redo()},
-    {name:'Save snapshot', run:()=>snapshotNow('Manual snapshot')},
+    {name:'Add root unit', aliases:['new root','add unit','create root','root node'], run:()=>window.addRootUnit&&window.addRootUnit()},
+    {name:'Auto layout', aliases:['layout','arrange','organize','reflow'], run:()=>window.autoLayout&&window.autoLayout()},
+    {name:'Fit screen', aliases:['fit view','zoom fit','fit canvas'], run:()=>window.fitScreen&&window.fitScreen()},
+    {name:'Center on root', aliases:['center root','focus root','home root'], run:()=>window.centerOnRoot&&window.centerOnRoot()},
+    {name:'Center on hostile root', aliases:['enemy root','hostile root','red root'], run:()=>window.centerOnHostileRoot&&window.centerOnHostileRoot()},
+    {name:'Center on neutral root', aliases:['neutral root','green root'], run:()=>window.centerOnNeutralRoot&&window.centerOnNeutralRoot()},
+    {name:'Zoom to selection', aliases:['focus selection','selected units','frame selection'], run:()=>window.focusSelection&&window.focusSelection()},
+    {name:'Rename current tab', aliases:['rename tab','tab name'], run:()=>window.__renameTabPrompt&&window.__renameTabPrompt(currentTabId)},
+    {name:'Duplicate current tab', aliases:['copy tab','clone tab'], run:()=>window.__duplicateTab&&window.__duplicateTab(currentTabId)},
+    {name:'Toggle ORBAT mode', aliases:['task org','task organized','task organised','admin mode','orbat mode'], run:()=>q('btn-org-toggle')?.click()},
+    {name:'Open saved views', aliases:['views','camera views'], run:()=>q('btn-views')?.click()},
+    {name:'Open snapshots', aliases:['snaps','history','timeline'], run:()=>q('btn-snapshots')?.click()},
+    {name:'Export outline text', aliases:['copy outline','outline export','text outline','briefing notes','txt outline'], run:()=>window.exportOutlineText&&window.exportOutlineText()},
+    {name:'Export PDF', aliases:['pdf','print pdf'], run:()=>window.exportPDF&&window.exportPDF()},
+    {name:'Import text outline', aliases:['outline import','paste outline','text import'], run:()=>window.openOutlineModal&&window.openOutlineModal()},
+    {name:'Toggle minimap', aliases:['mini map','map overview'], run:()=>window.toggleMinimap&&window.toggleMinimap()},
+    {name:'Undo', aliases:['back'], run:()=>window.undo&&window.undo()},
+    {name:'Redo', aliases:['forward'], run:()=>window.redo&&window.redo()},
+    {name:'Save snapshot', aliases:['create snapshot','manual snapshot'], run:()=>snapshotNow('Manual snapshot')},
   ];
   function renderCmdk(filter=''){
-    const box=q('cmdk-list'); if(!box) return; const term=filter.trim().toLowerCase();
+    const box=q('cmdk-list'); if(!box) return; const term=normalizeCmdkText(filter);
     const items=commands
-      .filter(c=>!term||c.name.toLowerCase().includes(term))
+      .map(command=>({command, score:commandMatchScore(command, term)}))
+      .filter(entry=>!term||entry.score>=0)
       .sort((a,b)=>{
-        const ai=a.name.toLowerCase(), bi=b.name.toLowerCase();
-        const aStarts=term&&ai.startsWith(term), bStarts=term&&bi.startsWith(term);
-        if(aStarts!==bStarts) return aStarts?-1:1;
-        return ai.localeCompare(bi);
+        if(a.score!==b.score) return a.score-b.score;
+        return a.command.name.localeCompare(b.command.name);
       });
-    box.innerHTML=items.map((c,i)=>`<div class="cmdk-row"><div>${esc(c.name)}</div><button class="pb" data-cmd-idx="${i}" style="width:auto;margin:0">Run</button></div>`).join('') || '<div class="panel-help">No commands match that search. Try a shorter term.</div>';
-    [...box.querySelectorAll('[data-cmd-idx]')].forEach((btn,idx)=>btn.onclick=()=>{ items[idx].run(); close('cmdk-modal'); });
+    box.innerHTML=items.map((entry,i)=>`<div class="cmdk-row"><div>${esc(entry.command.name)}</div><button class="pb" data-cmd-idx="${i}" style="width:auto;margin:0">Run</button></div>`).join('') || '<div class="panel-help">No commands match that search. Try a shorter term.</div>';
+    [...box.querySelectorAll('[data-cmd-idx]')].forEach((btn,idx)=>btn.onclick=()=>{ items[idx].command.run(); close('cmdk-modal'); });
   }
   window.openCommandPalette=function(){ renderCmdk(''); open('cmdk-modal'); setTimeout(()=>q('cmdk-input')?.focus(),30); };
   document.addEventListener('keydown',e=>{
@@ -905,18 +985,15 @@
   renderCmdk = function(filter=''){
     const box=q('cmdk-list');
     if(!box) return;
-    const term=filter.trim().toLowerCase();
+    const term=normalizeCmdkText(filter);
     cmdkMatches = commands
       .map(command => ({...command, section:command.section || commandSectionFor(command.name.toLowerCase())}))
-      .filter(command=>!term||command.name.toLowerCase().includes(term))
+      .map(command=>({...command, _score:commandMatchScore(command, term)}))
+      .filter(command=>!term||command._score>=0)
       .sort((a,b)=>{
-        const ai=a.name.toLowerCase();
-        const bi=b.name.toLowerCase();
-        const aStarts=term&&ai.startsWith(term);
-        const bStarts=term&&bi.startsWith(term);
         if(a.section!==b.section) return a.section.localeCompare(b.section);
-        if(aStarts!==bStarts) return aStarts?-1:1;
-        return ai.localeCompare(bi);
+        if(a._score!==b._score) return a._score-b._score;
+        return a.name.localeCompare(b.name);
       });
     if(!cmdkMatches.length){
       box.innerHTML='<div class="panel-help">No commands match that search. Try a shorter term.</div>';
