@@ -3,6 +3,16 @@
   const statusbar=document.getElementById('statusbar');
   const dangerBtn=topbar.querySelector('.tb-btn.danger');
   function showToastSafe(msg){ (window.showToast||window.toast||function(){})(msg); }
+  function setMenuOpen(menu, open){
+    if(!menu) return;
+    const panel=document.getElementById(menu.dataset.panelId);
+    menu.classList.toggle('open', open);
+    if(panel){
+      panel.style.display=open?'flex':'none';
+      panel.style.flexDirection='column';
+      panel.style.gap='8px';
+    }
+  }
 
   // Auto organise button
   if(!document.getElementById('btn-auto-organise')){
@@ -48,15 +58,24 @@
   function makeMenu(id,label){
     let menu=document.getElementById(id); if(menu) return menu;
     menu=document.createElement('div'); menu.className='tb-menu'; menu.id=id;
-    menu.innerHTML='<button class="tb-btn tb-menu-btn" type="button">'+label+'</button><div class="tb-menu-panel"></div>';
+    const panelId=id+'-panel';
+    menu.dataset.panelId=panelId;
+    menu.innerHTML='<button class="tb-btn tb-menu-btn" type="button">'+label+'</button>';
+    const panel=document.createElement('div');
+    panel.className='tb-menu-panel';
+    panel.id=panelId;
+    panel.dataset.ownerMenu=id;
+    panel.style.display='none';
+    panel.addEventListener('click',e=>e.stopPropagation());
+    document.body.appendChild(panel);
     const btn=menu.querySelector('.tb-menu-btn');
     btn.onclick=(e)=>{
       e.stopPropagation();
-      document.querySelectorAll('.tb-menu.open').forEach(m=>{ if(m!==menu) m.classList.remove('open'); });
+      document.querySelectorAll('.tb-menu.open').forEach(m=>{ if(m!==menu) setMenuOpen(m,false); });
       const willOpen=!menu.classList.contains('open');
-      menu.classList.toggle('open');
+      setMenuOpen(menu, willOpen);
       if(willOpen){
-        const panel=menu.querySelector('.tb-menu-panel');
+        const panel=document.getElementById(menu.dataset.panelId);
         const r=btn.getBoundingClientRect();
         panel.style.left=Math.max(8, Math.min(r.left, window.innerWidth - Math.max(panel.offsetWidth||180,180) - 8))+'px';
         panel.style.top=(r.bottom + 6)+'px';
@@ -65,7 +84,7 @@
     return menu;
   }
   function moveToMenu(menu, selectors){
-    const panel=menu.querySelector('.tb-menu-panel');
+    const panel=document.getElementById(menu.dataset.panelId);
     selectors.forEach(sel=>{
       const el=typeof sel==='string' ? topbar.querySelector(sel) : sel;
       if(el && el!==menu && el.parentElement===topbar) panel.appendChild(el);
@@ -84,11 +103,11 @@
     moveToMenu(toolsMenu,['#btn-stack-same','#btn-conflicts','#btn-tour','button[onclick="openScModal()"]']);
     moveToMenu(searchMenu,['#unit-search-input','#tag-filter-input']);
     moveToMenu(fileMenu,['button[onclick="exportJSON()"]','button[onclick="importJSON()"]','button[onclick="exportSVG()"]','button[onclick="exportPNG()"]','button[onclick="window.print()"]']);
-    document.addEventListener('click',()=>document.querySelectorAll('.tb-menu.open').forEach(m=>m.classList.remove('open')));
-    document.addEventListener('keydown',e=>{ if(e.key==='Escape') document.querySelectorAll('.tb-menu.open').forEach(m=>m.classList.remove('open')); });
+    document.addEventListener('click',()=>document.querySelectorAll('.tb-menu.open').forEach(m=>setMenuOpen(m,false)));
+    document.addEventListener('keydown',e=>{ if(e.key==='Escape') document.querySelectorAll('.tb-menu.open').forEach(m=>setMenuOpen(m,false)); });
     const repositionOpenMenus=()=>{
       document.querySelectorAll('.tb-menu.open').forEach(menu=>{
-        const btn=menu.querySelector('.tb-menu-btn'); const panel=menu.querySelector('.tb-menu-panel');
+        const btn=menu.querySelector('.tb-menu-btn'); const panel=document.getElementById(menu.dataset.panelId);
         if(!btn||!panel) return; const r=btn.getBoundingClientRect();
         panel.style.left=Math.max(8, Math.min(r.left, window.innerWidth - Math.max(panel.offsetWidth||180,180) - 8))+'px';
         panel.style.top=(r.bottom + 6)+'px';
