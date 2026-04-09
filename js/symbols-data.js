@@ -980,8 +980,8 @@ let lassoActive=false,lassoStart={x:0,y:0};
 const lassoEl=document.getElementById('lasso');
 const canvasWrap=document.getElementById('canvas-wrap');
 canvasWrap.addEventListener('mousedown',e=>{
-  const isBase=e.target===canvasWrap||e.target===document.getElementById('canvas')||e.target===document.getElementById('connector-svg');
-  if(!isBase)return;
+  const blocked=e.target?.closest?.('.orbat-node,.orbat-textbox,#minimap,#ctx-menu,#edit-panel,#sidebar,#topbar,#tab-bar,.modal-ov,.tb-btn,input,select,textarea,button');
+  if(blocked)return;
   if(linkMode)return;
   if(e.button===0){
     if(e.shiftKey){
