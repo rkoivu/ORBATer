@@ -1,3 +1,4 @@
 .chrome-headless/
 edge-profile/
 dist/
+node_modules/
