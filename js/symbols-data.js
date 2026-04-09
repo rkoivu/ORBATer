@@ -984,11 +984,16 @@ canvasWrap.addEventListener('mousedown',e=>{
   if(!isBase)return;
   if(linkMode)return;
   if(e.button===0){
-    const rect=canvasWrap.getBoundingClientRect();
-    lassoStart={x:e.clientX-rect.left,y:e.clientY-rect.top};
-    lassoActive=true;lassoEl.style.left=lassoStart.x+'px';lassoEl.style.top=lassoStart.y+'px';
-    lassoEl.style.width='0';lassoEl.style.height='0';lassoEl.style.display='block';
-    if(!e.shiftKey){multiSel.clear();selectedId=null;deselectAll();}
+    if(e.shiftKey){
+      const rect=canvasWrap.getBoundingClientRect();
+      lassoStart={x:e.clientX-rect.left,y:e.clientY-rect.top};
+      lassoActive=true;lassoEl.style.left=lassoStart.x+'px';lassoEl.style.top=lassoStart.y+'px';
+      lassoEl.style.width='0';lassoEl.style.height='0';lassoEl.style.display='block';
+    }else{
+      isPanning=true;
+      panStart={x:e.clientX-panX,y:e.clientY-panY};
+      canvasWrap.style.cursor='grabbing';
+    }
   }
 });
 window.addEventListener('mousemove',e=>{
@@ -1008,7 +1013,11 @@ window.addEventListener('mousemove',e=>{
     updSelUI();
   }
 });
-window.addEventListener('mouseup',()=>{isPanning=false;if(lassoActive){lassoActive=false;lassoEl.style.display='none';}});
+window.addEventListener('mouseup',()=>{
+  isPanning=false;
+  canvasWrap.style.cursor='default';
+  if(lassoActive){lassoActive=false;lassoEl.style.display='none';}
+});
 canvasWrap.addEventListener('wheel',e=>{
   e.preventDefault();
   const d=e.deltaY>0?.9:1.1;

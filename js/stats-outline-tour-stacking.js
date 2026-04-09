@@ -582,7 +582,7 @@
   const tourSteps=[
     {el:'#topbar',      title:'Toolbar',    text:'Core actions live here: add units, auto-layout, zoom, export, and templates. Hover any button to see its keyboard shortcut.'},
     {el:'#sidebar',     title:'Unit Palette', text:'Drag any unit type from the palette onto the canvas to place it. Recently used types appear at the top.'},
-    {el:'#canvas-wrap', title:'Canvas',     text:'Build your ORBAT here. Drag units to move them, hold Shift+drag to reparent, scroll to zoom, and draw lasso boxes to multi-select.'},
+    {el:'#canvas-wrap', title:'Canvas',     text:'Build your ORBAT here. Drag empty canvas space to pan, drag units to move them, hold Shift+drag on canvas to lasso select, and hold Shift+drag on a unit to reparent.'},
     {el:'#edit-panel',  title:'Edit Panel', text:'Select any unit to edit its name, echelon, status, tags, and more. All changes save automatically.', setup:()=>{
       // Ensure the edit panel is visible for this step
       const ep=document.getElementById('edit-panel');
