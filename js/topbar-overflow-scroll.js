@@ -26,6 +26,7 @@
     if (!q('topbar-overflow-controls')) {
       const controls = document.createElement('div');
       controls.id = 'topbar-overflow-controls';
+      controls.className = 'hidden';
       controls.setAttribute('aria-label', 'Toolbar scroll controls');
       controls.innerHTML = [
         '<button class="tb-btn" id="btn-topbar-scroll-left" title="Scroll toolbar left" aria-label="Scroll toolbar left">&#9664;</button>',
@@ -59,7 +60,7 @@
     const atEnd = bar.scrollLeft >= maxScroll - 8;
 
     bar.classList.toggle('has-overflow-controls', hasOverflow);
-    controls.classList.toggle('show', hasOverflow);
+    controls.classList.toggle('hidden', !hasOverflow);
     leftFade.classList.toggle('show', hasOverflow && !atStart);
     rightFade.classList.toggle('show', hasOverflow && !atEnd);
     leftBtn.disabled = !hasOverflow || atStart;
