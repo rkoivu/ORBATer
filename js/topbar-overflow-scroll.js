@@ -1,11 +1,9 @@
 (function () {
-  const STEP = 280;
-
   function q(id) {
     return document.getElementById(id);
   }
 
-  function ensureControls() {
+  function ensureFades() {
     const bar = q('topbar');
     if (!bar) return null;
 
@@ -23,48 +21,22 @@
       bar.appendChild(rightFade);
     }
 
-    if (!q('topbar-overflow-controls')) {
-      const controls = document.createElement('div');
-      controls.id = 'topbar-overflow-controls';
-      controls.className = 'hidden';
-      controls.setAttribute('aria-label', 'Toolbar scroll controls');
-      controls.innerHTML = [
-        '<button class="tb-btn" id="btn-topbar-scroll-left" title="Scroll toolbar left" aria-label="Scroll toolbar left">&#9664;</button>',
-        '<button class="tb-btn" id="btn-topbar-scroll-right" title="Scroll toolbar right" aria-label="Scroll toolbar right">&#9654;</button>'
-      ].join('');
-      bar.appendChild(controls);
-
-      q('btn-topbar-scroll-left').addEventListener('click', () => {
-        bar.scrollBy({ left: -STEP, behavior: 'smooth' });
-      });
-      q('btn-topbar-scroll-right').addEventListener('click', () => {
-        bar.scrollBy({ left: STEP, behavior: 'smooth' });
-      });
-    }
-
     return bar;
   }
 
-  function syncControls() {
-    const bar = ensureControls();
+  function syncFades() {
+    const bar = q('topbar');
     const leftFade = q('topbar-overflow-left');
     const rightFade = q('topbar-overflow-right');
-    const controls = q('topbar-overflow-controls');
-    const leftBtn = q('btn-topbar-scroll-left');
-    const rightBtn = q('btn-topbar-scroll-right');
-    if (!bar || !leftFade || !rightFade || !controls || !leftBtn || !rightBtn) return;
+    if (!bar || !leftFade || !rightFade) return;
 
     const maxScroll = Math.max(0, bar.scrollWidth - bar.clientWidth);
     const hasOverflow = maxScroll > 8;
     const atStart = bar.scrollLeft <= 8;
     const atEnd = bar.scrollLeft >= maxScroll - 8;
 
-    bar.classList.toggle('has-overflow-controls', hasOverflow);
-    controls.classList.toggle('hidden', !hasOverflow);
     leftFade.classList.toggle('show', hasOverflow && !atStart);
     rightFade.classList.toggle('show', hasOverflow && !atEnd);
-    leftBtn.disabled = !hasOverflow || atStart;
-    rightBtn.disabled = !hasOverflow || atEnd;
   }
 
   function bindWheel(bar) {
@@ -84,12 +56,12 @@
     syncQueued = true;
     requestAnimationFrame(() => {
       syncQueued = false;
-      syncControls();
+      syncFades();
     });
   }
 
   function init() {
-    const bar = ensureControls();
+    const bar = ensureFades();
     if (!bar || bar.dataset.topbarOverflowBound === '1') return;
     bar.dataset.topbarOverflowBound = '1';
 
@@ -98,13 +70,11 @@
     window.addEventListener('resize', scheduleSync);
 
     if (window.ResizeObserver) {
-      const resizeObserver = new ResizeObserver(scheduleSync);
-      resizeObserver.observe(bar);
+      new ResizeObserver(scheduleSync).observe(bar);
     }
 
     if (window.MutationObserver) {
-      const mutationObserver = new MutationObserver(scheduleSync);
-      mutationObserver.observe(bar, { childList: true });
+      new MutationObserver(scheduleSync).observe(bar, { childList: true });
     }
 
     scheduleSync();
