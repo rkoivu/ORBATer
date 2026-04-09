@@ -87,7 +87,19 @@
     const panel=document.getElementById(menu.dataset.panelId);
     selectors.forEach(sel=>{
       const el=typeof sel==='string' ? topbar.querySelector(sel) : sel;
-      if(el && el!==menu && el.parentElement===topbar) panel.appendChild(el);
+      if(el && el!==menu && el.parentElement!==panel) panel.appendChild(el);
+    });
+  }
+  function cleanupTopbarLayout(){
+    topbar.querySelectorAll('.tb-group').forEach(group=>{
+      if(!group.querySelector('.tb-btn,select,input,textarea,button,.tb-menu')) group.remove();
+    });
+    const children=[...topbar.children];
+    children.forEach((child, index)=>{
+      if(!child.classList?.contains('tb-sep')) return;
+      const prev=children[index-1];
+      const next=children[index+1];
+      if(!prev || !next || prev.classList?.contains('tb-sep') || next.classList?.contains('tb-sep')) child.remove();
     });
   }
   if(!document.getElementById('menu-file')){
@@ -103,6 +115,7 @@
     moveToMenu(toolsMenu,['#btn-stack-same','#btn-conflicts','#btn-tour','button[onclick="openScModal()"]']);
     moveToMenu(searchMenu,['#unit-search-input','#tag-filter-input']);
     moveToMenu(fileMenu,['button[onclick="exportJSON()"]','button[onclick="importJSON()"]','button[onclick="exportSVG()"]','button[onclick="exportPNG()"]','button[onclick="window.print()"]']);
+    cleanupTopbarLayout();
     document.addEventListener('click',()=>document.querySelectorAll('.tb-menu.open').forEach(m=>setMenuOpen(m,false)));
     document.addEventListener('keydown',e=>{ if(e.key==='Escape') document.querySelectorAll('.tb-menu.open').forEach(m=>setMenuOpen(m,false)); });
     const repositionOpenMenus=()=>{
