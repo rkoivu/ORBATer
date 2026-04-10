@@ -15,7 +15,8 @@
     'js/outline-import-enhancements.js',
     'js/views-snapshots-command-palette.js',
     'js/qol-keyboard-feedback.js',
-    'js/topbar-overflow-scroll.js'
+    'js/topbar-overflow-scroll.js',
+    'js/ui-flow-polish.js'
   ];
 
   function loadScript(src) {
