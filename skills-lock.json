@@ -1,0 +1,130 @@
+{
+  "version": 1,
+  "skills": {
+    "adapt": {
+      "source": "pbakaus/impeccable",
+      "sourceType": "github",
+      "computedHash": "2284eed4ce24ab707b6716dde013998198ae7654b02b793b911acb0518611a0f"
+    },
+    "animate": {
+      "source": "pbakaus/impeccable",
+      "sourceType": "github",
+      "computedHash": "f9d491683c8ab76acb06f3c0b539bee16900a5a8ec3575b75137780e7378a108"
+    },
+    "audit": {
+      "source": "pbakaus/impeccable",
+      "sourceType": "github",
+      "computedHash": "e65aebcbc9e735ac3ca155b0004ad8f5202fbe3cce8a822ddff4672241b0c576"
+    },
+    "bolder": {
+      "source": "pbakaus/impeccable",
+      "sourceType": "github",
+      "computedHash": "aabbc80859fab2bf8a09bedeb58810d1ded29dc00fa56c5cdb961fbf7e5d8d44"
+    },
+    "clarify": {
+      "source": "pbakaus/impeccable",
+      "sourceType": "github",
+      "computedHash": "0422b8587d3d2aa6e338bdc01a6a55ac198527ed0cc0fb14c72097b14a8b5127"
+    },
+    "colorize": {
+      "source": "pbakaus/impeccable",
+      "sourceType": "github",
+      "computedHash": "f9f924e76e6bfd4afd800c90f5072e34822ff455487a65fa94843624df53d383"
+    },
+    "critique": {
+      "source": "pbakaus/impeccable",
+      "sourceType": "github",
+      "computedHash": "3885d017fa3d98a7aa6ffe1d3b2395f85cd28ec278ae9165a8e5a8647af50d1d"
+    },
+    "delight": {
+      "source": "pbakaus/impeccable",
+      "sourceType": "github",
+      "computedHash": "bdac5fe466b079338fa498fedadfe087e6c4daf02bee41834f53656cc632ff93"
+    },
+    "design-taste-frontend": {
+      "source": "Leonxlnx/taste-skill",
+      "sourceType": "github",
+      "computedHash": "d823593e24d7493ab740db8f082cbe3b148ed29af9e804d11f5302ad79e4b96d"
+    },
+    "distill": {
+      "source": "pbakaus/impeccable",
+      "sourceType": "github",
+      "computedHash": "1724ae01212447f78869c79702e7fd8e3c9c84c910e6e346ed8affc1cb62c872"
+    },
+    "emil-design-eng": {
+      "source": "emilkowalski/skill",
+      "sourceType": "github",
+      "computedHash": "ac3fc5b4e206488ffc408a2806f829bb2e5eaf518fded09be34790685c2b3a0d"
+    },
+    "full-output-enforcement": {
+      "source": "Leonxlnx/taste-skill",
+      "sourceType": "github",
+      "computedHash": "524f7c7950c3fde726101613f630140411c7d080e63be718687f4b38f919be81"
+    },
+    "high-end-visual-design": {
+      "source": "Leonxlnx/taste-skill",
+      "sourceType": "github",
+      "computedHash": "f730e4132775f13eea19e3dc39afc6bb453cfc0498872b127ad8f0d47cfd802d"
+    },
+    "impeccable": {
+      "source": "pbakaus/impeccable",
+      "sourceType": "github",
+      "computedHash": "4400fdc352e6e3875c9d70538c240ca2ded5d6b36d966ddb0d866f6fcd1c5b38"
+    },
+    "industrial-brutalist-ui": {
+      "source": "Leonxlnx/taste-skill",
+      "sourceType": "github",
+      "computedHash": "e66e5a2a8b73cef79ab6546459c665e8b983645689c5f3772f7eed8b9f1e8e0e"
+    },
+    "layout": {
+      "source": "pbakaus/impeccable",
+      "sourceType": "github",
+      "computedHash": "5ff8f3ff7cfc02f7e058fa4436f43795bd45415ee72a0aa7be1724c8c85eec27"
+    },
+    "minimalist-ui": {
+      "source": "Leonxlnx/taste-skill",
+      "sourceType": "github",
+      "computedHash": "7e88897e0371184e97a82b8d9ef080323c13f21eb067b58ef71eb05173a08ac2"
+    },
+    "optimize": {
+      "source": "pbakaus/impeccable",
+      "sourceType": "github",
+      "computedHash": "2bf9726227fcfc9fdaf14799574feb3c551994146eb50bb4fecae45ace425eff"
+    },
+    "overdrive": {
+      "source": "pbakaus/impeccable",
+      "sourceType": "github",
+      "computedHash": "00ae5e9912b02f5d92ebf4ca9f6326c8745e05acdac530646ba89e99f0012596"
+    },
+    "polish": {
+      "source": "pbakaus/impeccable",
+      "sourceType": "github",
+      "computedHash": "d57a9e7d1f12a2033f7be0666e804fd2668d8a03312584c56646940d342cde23"
+    },
+    "quieter": {
+      "source": "pbakaus/impeccable",
+      "sourceType": "github",
+      "computedHash": "ceca86a5a23739040d8b22089eae601640d450790f35d2f37496440255edfefb"
+    },
+    "redesign-existing-projects": {
+      "source": "Leonxlnx/taste-skill",
+      "sourceType": "github",
+      "computedHash": "47eced3e960a2c961d3cbee11fa1216264f589344b586a5cbd03967cd6b9c54b"
+    },
+    "shape": {
+      "source": "pbakaus/impeccable",
+      "sourceType": "github",
+      "computedHash": "206fd493bbfa549777ddf7bf47689430473f55eff3538016b1bb9bdb971ea7d4"
+    },
+    "stitch-design-taste": {
+      "source": "Leonxlnx/taste-skill",
+      "sourceType": "github",
+      "computedHash": "acf2921a7e50c06e637f072ba52e36a994cbb44ecbe6e31435bc113b894f5499"
+    },
+    "typeset": {
+      "source": "pbakaus/impeccable",
+      "sourceType": "github",
+      "computedHash": "6da676cb3587984da6564f34ba20a47b136b4bcadd5f9c8d24883d2ad49bd959"
+    }
+  }
+}

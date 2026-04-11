@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "serve-src",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "serve:src"],
+      "port": 4173
+    }
+  ]
+}
