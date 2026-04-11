@@ -4,7 +4,7 @@
 <div id="topbar">
   <div class="tb-group tb-group-brand">
     <button class="tb-btn" id="btn-sb" onclick="toggleSidebar()">&#9776;</button>
-    <div class="logo"><span class="logo-mark">&#9672;</span><span class="logo-word">ORBAT</span></div>
+    <div class="logo"><span class="logo-mark">&#9672;</span><span class="logo-word">ORBATer</span></div>
   </div>
   <input id="op-name-input" value="OPERATION IRONGATE" title="Click to rename">
   <div class="tb-sep"></div>
@@ -83,8 +83,8 @@
     <div id="canvas">
       <div id="empty-hint" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none">
         <div class="eh-hero">+</div>
-        <div class="eh-title">Build Your First Formation</div>
-        <p class="eh-copy">Drag a unit from the palette, click <b>Add Root</b>, or double-click the canvas to start a new ORBAT.</p>
+        <div class="eh-title">Shape the first formation</div>
+        <p class="eh-copy">Drag a unit from the palette, use <b>Add Root</b>, or double-click the canvas to establish the opening headquarters and build downward from there.</p>
         <div class="eh-kbd-row">
           <span><kbd>/</kbd> Search</span>
           <span><kbd>L</kbd> Layout</span>
