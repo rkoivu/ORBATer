@@ -9,29 +9,32 @@
 #view-modal .modal-box,#snapshot-modal .modal-box,#cmdk-modal .modal-box{box-shadow:var(--shadow-lg)}
 #cmdk-input{width:100%;background:var(--control-bg-soft);border:1px solid var(--control-border);border-radius:14px;color:var(--text);padding:12px 14px;font-size:13px;margin-bottom:12px;box-shadow:none}
 #cmdk-input:focus{border-color:var(--accent);box-shadow:var(--control-ring)}
-.cmdk-hint{font-size:10px;color:var(--text2);margin-top:10px;text-transform:uppercase;letter-spacing:.75px;font-family:'Barlow Condensed',sans-serif}
+.cmdk-hint{font-size:10px;color:var(--text2);margin-top:10px;text-transform:uppercase;letter-spacing:.75px;font-family:var(--font-display)}
 .cmdk-row.active{border-color:rgba(108,162,200,.55);background:linear-gradient(180deg,rgba(108,162,200,.08),transparent),color-mix(in srgb,var(--accent) 10%,var(--surface2))}
 .tb-btn.org-mode-on{background:rgba(249,115,22,.18);border-color:rgba(251,146,60,.56);color:#ffedd5;box-shadow:none}
-.diff-pill{display:inline-flex;align-items:center;gap:4px;font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--text2);padding:2px 7px;border:1px solid rgba(148,163,184,.16);border-radius:999px;background:rgba(255,255,255,.03)}
+.diff-pill{display:inline-flex;align-items:center;gap:4px;font-family:var(--font-mono);font-size:9px;color:var(--text2);padding:2px 7px;border:1px solid rgba(148,163,184,.16);border-radius:999px;background:rgba(255,255,255,.03)}
 #tab-list-modal .tab-list-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 13px;border:1px solid rgba(142,160,173,.14);border-radius:14px;background:linear-gradient(180deg,rgba(255,255,255,.04),transparent),var(--surface2);margin-bottom:8px}
 #tab-list-modal .tab-list-row.active{border-color:rgba(108,162,200,.45);background:linear-gradient(180deg,rgba(108,162,200,.08),transparent),color-mix(in srgb,var(--accent) 10%,var(--surface2))}
 #tab-list-modal .tab-list-meta{font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:.6px}
 #startup-modal .modal-box{min-width:min(720px,calc(100vw - 40px));max-width:820px}
 .startup-shell{display:flex;flex-direction:column;gap:16px}
 .startup-hero{display:flex;justify-content:space-between;gap:18px;padding:20px 22px;border:1px solid rgba(142,160,173,.14);border-radius:22px;background:linear-gradient(135deg,rgba(108,162,200,.14),rgba(108,162,200,.03) 58%),var(--surface2);align-items:flex-start;box-shadow:0 18px 34px rgba(3,8,13,.1)}
-.startup-kicker{font:700 10px/1 'Barlow Condensed',sans-serif;letter-spacing:1.1px;text-transform:uppercase;color:var(--accent);margin-bottom:8px}
-.startup-title{font:700 24px/1 'Barlow Condensed',sans-serif;letter-spacing:.25px;color:var(--text);max-width:18ch;text-wrap:balance}
-.startup-copy{margin-top:10px;max-width:54ch;font:500 12px/1.7 'Barlow',sans-serif;color:var(--text2)}
-.startup-badge{display:inline-flex;align-items:center;justify-content:center;min-height:36px;padding:0 14px;border:1px solid rgba(108,162,200,.28);border-radius:999px;background:rgba(11,18,24,.44);font:700 10px/1 'Share Tech Mono',monospace;letter-spacing:.4px;color:#e2edf4;white-space:nowrap}
-.startup-action-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.startup-kicker{font:700 10px/1 var(--font-display);letter-spacing:1.1px;text-transform:uppercase;color:var(--accent);margin-bottom:8px}
+.startup-title{font:700 26px/.95 var(--font-display);letter-spacing:.14px;color:var(--text);max-width:18ch;text-wrap:balance}
+.startup-copy{margin-top:10px;max-width:54ch;font:500 12px/1.72 var(--font-body);color:var(--text2)}
+.startup-badge{display:inline-flex;align-items:center;justify-content:center;min-height:36px;padding:0 14px;border:1px solid rgba(108,162,200,.28);border-radius:999px;background:rgba(11,18,24,.44);font:700 10px/1 var(--font-mono);letter-spacing:.4px;color:#e2edf4;white-space:nowrap}
+.startup-action-grid{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,.95fr);grid-template-areas:"new template" "new import";gap:10px}
+.startup-action-grid #startup-new-btn{grid-area:new}
+.startup-action-grid #startup-template-btn{grid-area:template}
+.startup-action-grid #startup-import-btn{grid-area:import}
 .startup-action-card{display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-start;gap:7px;min-height:132px;padding:17px 18px;border:1px solid rgba(142,160,173,.14);border-radius:18px;background:linear-gradient(180deg,rgba(255,255,255,.04),transparent),var(--surface2);color:var(--text);text-align:left;transition:border-color .22s,background .22s,transform .22s,box-shadow .22s;position:relative;overflow:hidden}
 .startup-action-card::before{content:'';position:absolute;inset:auto auto 0 0;width:56px;height:56px;border-radius:50%;background:radial-gradient(circle,rgba(108,162,200,.2),transparent 68%);transform:translate(-22%,22%);pointer-events:none}
-.startup-action-card strong{font:700 15px/1.05 'Barlow Condensed',sans-serif;letter-spacing:.45px;color:var(--text)}
-.startup-action-card span{font:500 12px/1.55 'Barlow',sans-serif;color:var(--text2)}
+.startup-action-card strong{font:700 15px/1.05 var(--font-display);letter-spacing:.3px;color:var(--text)}
+.startup-action-card span{font:500 12px/1.6 var(--font-body);color:var(--text2)}
 .startup-action-card:hover{border-color:rgba(108,162,200,.42);background:linear-gradient(180deg,rgba(108,162,200,.08),transparent),var(--surface3);transform:translateY(-2px);box-shadow:0 18px 32px rgba(3,8,13,.14)}
-.startup-empty{padding:18px 20px;border:1px dashed rgba(142,160,173,.24);border-radius:16px;background:rgba(255,255,255,.02);font:500 12px/1.7 'Barlow',sans-serif;color:var(--text2)}
+.startup-empty{padding:18px 20px;border:1px dashed rgba(142,160,173,.24);border-radius:16px;background:rgba(255,255,255,.02);font:500 12px/1.7 var(--font-body);color:var(--text2)}
 @media (max-width: 760px){
   #startup-modal .modal-box{min-width:0}
   .startup-hero{flex-direction:column}
-  .startup-action-grid{grid-template-columns:1fr}
+  .startup-action-grid{grid-template-columns:1fr;grid-template-areas:"new" "template" "import"}
 }

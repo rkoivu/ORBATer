@@ -6,11 +6,14 @@
     <button class="tb-btn" id="btn-sb" onclick="toggleSidebar()">&#9776;</button>
     <div class="logo"><span class="logo-mark">&#9672;</span><span class="logo-word">ORBATer</span></div>
   </div>
-  <input id="op-name-input" value="OPERATION IRONGATE" title="Click to rename">
+  <div class="tb-meta">
+    <div class="tb-kicker">Operational diagram</div>
+    <input id="op-name-input" value="OPERATION IRONGATE" title="Click to rename">
+  </div>
   <div class="tb-sep"></div>
   <div class="tb-group">
-    <button class="tb-btn" onclick="addRootUnit()">Add Root</button>
-    <button class="tb-btn" id="btn-auto-layout" onclick="autoLayout()">Layout</button>
+    <button class="tb-btn accent" onclick="addRootUnit()">Add Root</button>
+    <button class="tb-btn accent" id="btn-auto-layout" onclick="autoLayout()">Layout</button>
     <select id="layout-mode-sel" onchange="setLayoutMode(this.value)" title="Layout mode">
       <option value="tree">Tree</option>
       <option value="indented">Indented List</option>
@@ -55,7 +58,7 @@
   <div class="tb-sep"></div>
   <div class="tb-group">
     <button class="tb-btn" id="btn-random-orbat">Random</button>
-    <button class="tb-btn" onclick="openTplModal()">Templates</button>
+    <button class="tb-btn accent" onclick="openTplModal()">Templates</button>
     <button class="tb-btn" onclick="openScModal()">Shortcuts</button>
   </div>
   <div class="tb-spacer"></div>
@@ -70,8 +73,8 @@
   <div id="sidebar">
     <div id="sidebar-header">
       <div class="sidebar-heading">
-        <span>Unit Palette</span>
-        <small>Drag symbols to build the ORBAT</small>
+        <span>Unit palette</span>
+        <small>Drag symbols into the workspace to shape the structure.</small>
       </div>
       <button class="tb-btn" style="padding:2px 7px;font-size:9px" onclick="openModal('ci-modal')">Add Custom</button>
     </div>
@@ -103,7 +106,7 @@
     <div id="afsave">&#10003; SAVED</div>
     <div id="readonly-banner" style="display:none"></div>
     <div id="align-bar">
-      <span style="font-family:'Barlow Condensed',sans-serif;font-size:9px;color:var(--text2);letter-spacing:1px">ALIGN:</span>
+      <span style="font-family:var(--font-display);font-size:9px;color:var(--text2);letter-spacing:1px">ALIGN:</span>
       <button class="tb-btn" onclick="alignNodes('left')" title="Align left edges">L</button>
       <button class="tb-btn" onclick="alignNodes('right')" title="Align right edges">R</button>
       <button class="tb-btn" onclick="alignNodes('top')" title="Align tops">T</button>
