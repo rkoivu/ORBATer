@@ -51,6 +51,10 @@
       window.requestIdleCallback(kick, { timeout: 1200 });
       return;
     }
+    if (document.readyState === 'complete') {
+      kick();
+      return;
+    }
     window.addEventListener('load', kick, { once: true });
   }
 
