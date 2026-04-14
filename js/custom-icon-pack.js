@@ -1,4 +1,6 @@
 (function(){
+  if(window.__orbatBootModule ? !window.__orbatBootModule('custom-icon-pack') : window.__orbatCustomIconPackBooted) return;
+  window.__orbatCustomIconPackBooted = true;
   const SYMBOL_PACK = {};
   const attachmentInput = document.getElementById('node-attachment-input');
   const insigniaInput = document.getElementById('node-insignia-input');

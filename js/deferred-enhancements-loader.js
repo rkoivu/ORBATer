@@ -25,6 +25,7 @@
   const diagnostics = window.__orbatDiagnostics = window.__orbatDiagnostics || {};
   const boot = diagnostics.boot = diagnostics.boot || {};
   const deferred = boot.deferred = boot.deferred || {};
+  const init = diagnostics.init = diagnostics.init || { modules: {}, prevented: [] };
   deferred.scheduledAt = deferred.scheduledAt || Date.now();
   deferred.modules = deferred.modules || [];
   deferred.loaded = deferred.loaded || [];
@@ -50,6 +51,27 @@
     Object.assign(deferred, extra);
     window.dispatchEvent(new CustomEvent('orbat:deferred-status', { detail: { ...deferred } }));
   }
+
+  window.__orbatBootModule = function registerModuleInit(name) {
+    if (!name) return true;
+    const entry = init.modules[name] || { attempts: 0, initializedAt: null, duplicatePrevented: 0 };
+    entry.attempts += 1;
+    if (entry.initializedAt) {
+      entry.duplicatePrevented += 1;
+      init.prevented.push({ name, ts: Date.now() });
+      init.modules[name] = entry;
+      window.dispatchEvent(new CustomEvent('orbat:module-init', {
+        detail: { name, duplicatePrevented: true, attempts: entry.attempts }
+      }));
+      return false;
+    }
+    entry.initializedAt = Date.now();
+    init.modules[name] = entry;
+    window.dispatchEvent(new CustomEvent('orbat:module-init', {
+      detail: { name, duplicatePrevented: false, attempts: entry.attempts }
+    }));
+    return true;
+  };
 
   function isCoreReady() {
     return !!(

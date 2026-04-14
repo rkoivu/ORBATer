@@ -1,4 +1,6 @@
 (function(){
+  if(window.__orbatBootModule ? !window.__orbatBootModule('toolbar-menus-auto-organise') : window.__orbatToolbarMenusAutoOrganiseBooted) return;
+  window.__orbatToolbarMenusAutoOrganiseBooted = true;
   const topbar=document.getElementById('topbar');
   const statusbar=document.getElementById('statusbar');
   const dangerBtn=topbar.querySelector('.tb-btn.danger');

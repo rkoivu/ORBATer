@@ -1,4 +1,6 @@
 (function(){
+  if(window.__orbatBootModule ? !window.__orbatBootModule('views-snapshots-command-palette') : window.__orbatViewsSnapshotsBooted) return;
+  window.__orbatViewsSnapshotsBooted = true;
   const LS_VIEWS='orbat_saved_views_v1';
   const LS_SNAPS='orbat_version_snaps_v1';
   const LS_RECENTS='orbat_recent_docs_v1';
@@ -173,13 +175,15 @@
     const deferred=window.__orbatDiagnostics?.boot?.deferred || {};
     const loaded=Array.isArray(deferred.loaded) ? deferred.loaded.length : 0;
     const failed=Array.isArray(deferred.failed) ? deferred.failed.length : 0;
+    const init=window.__orbatDiagnostics?.init || {};
     return {
       status: deferred.status || 'not-started',
       loaded,
       failed,
       total: deferred.total || 0,
       durationMs: deferred.totalDurationMs || null,
-      failures: Array.isArray(deferred.modules) ? deferred.modules.filter(entry=>entry.status==='failed') : []
+      failures: Array.isArray(deferred.modules) ? deferred.modules.filter(entry=>entry.status==='failed') : [],
+      duplicatePreventions: Array.isArray(init.prevented) ? init.prevented.length : 0
     };
   }
   function renderDiagnostics(){
@@ -207,6 +211,7 @@
           <div class="diag-row"><span>Current text boxes</span><strong>${esc(String(Object.keys(doc?.textboxes || {}).length))}</strong></div>
           <div class="diag-row"><span>Deferred boot</span><strong>${esc(bootHealth.status)}</strong></div>
           <div class="diag-row"><span>Enhancement modules</span><strong>${bootHealth.loaded}/${bootHealth.total || (bootHealth.loaded + bootHealth.failed)}</strong></div>
+          <div class="diag-row"><span>Duplicate init blocks</span><strong>${esc(String(bootHealth.duplicatePreventions))}</strong></div>
           <div class="diag-row"><span>Boot duration</span><strong>${bootHealth.durationMs!=null ? `${bootHealth.durationMs} ms` : 'Pending'}</strong></div>
         </section>
         <section class="diag-card">

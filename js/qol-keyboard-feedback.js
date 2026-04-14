@@ -1,4 +1,6 @@
 (function(){
+  if(window.__orbatBootModule ? !window.__orbatBootModule('qol-keyboard-feedback') : window.__orbatQolKeyboardFeedbackBooted) return;
+  window.__orbatQolKeyboardFeedbackBooted = true;
   // QOL: Keyboard shortcuts help + Improved feedback
   
   // Add keyboard shortcuts modal when page loads

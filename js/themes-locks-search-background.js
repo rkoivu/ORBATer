@@ -1,4 +1,6 @@
 (function(){
+  if(window.__orbatBootModule ? !window.__orbatBootModule('themes-locks-search-background') : window.__orbatThemesLocksSearchBackgroundBooted) return;
+  window.__orbatThemesLocksSearchBackgroundBooted = true;
   const head=document.head;
   const style=document.createElement('style');
   style.textContent=`

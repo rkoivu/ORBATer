@@ -1,4 +1,6 @@
 (function(){
+  if(window.__orbatBootModule ? !window.__orbatBootModule('ui-flow-polish') : window.__orbatUiFlowPolishBooted) return;
+  window.__orbatUiFlowPolishBooted = true;
   const q = id => document.getElementById(id);
   const esc = value => String(value ?? '').replace(/[&<>"']/g, match => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[match]));
 

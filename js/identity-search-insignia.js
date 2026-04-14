@@ -1,4 +1,6 @@
 (function(){
+  if(window.__orbatBootModule ? !window.__orbatBootModule('identity-search-insignia') : window.__orbatIdentitySearchInsigniaBooted) return;
+  window.__orbatIdentitySearchInsigniaBooted = true;
   const topbar=document.getElementById('topbar');
   const epInner=document.getElementById('ep-inner');
   const searchInput=document.getElementById('unit-search-input');

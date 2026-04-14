@@ -1,4 +1,6 @@
 (function(){
+  if(window.__orbatBootModule ? !window.__orbatBootModule('history-search-connectors') : window.__orbatHistorySearchConnectorsBooted) return;
+  window.__orbatHistorySearchConnectorsBooted = true;
   // Consolidated post-fix layer
   const topbar=document.getElementById('topbar');
   const canvasWrap=document.getElementById('canvas-wrap');
