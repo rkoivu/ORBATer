@@ -261,6 +261,7 @@
       </div>
       <div class="fg"><label>Bulk: Colour Tint</label><div class="swatch-row" id="mp-swatches"></div></div>
       <div class="psec">Actions</div>
+      <button class="pb" onclick="openBulkRenameModal()">Bulk Rename</button>
       <button class="pb" onclick="autoLayoutSel()">Layout Selection</button>
       <button class="pb warn" onclick="unlinkSel()">Unlink from Parents</button>
       <button class="pb del" onclick="deleteMultiSel()">Delete Selected</button>

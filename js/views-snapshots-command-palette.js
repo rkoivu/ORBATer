@@ -494,6 +494,7 @@
     ensureModal('view-modal','Saved Views',`<div class="fg"><label>Save current view as</label><div style="display:flex;gap:8px"><input id="view-name-input" type="text" placeholder="e.g. Corps overview"><button class="pb" style="width:auto;margin:0" id="save-view-btn">Save</button></div></div><div class="psec">Saved Views</div><div id="view-list"></div><div class="psec">Recent Diagrams</div><div id="recent-doc-list"></div>`);
     ensureModal('snapshot-modal','Version Snapshots',`<div style="display:flex;gap:8px;margin-bottom:10px"><button class="pb" style="width:auto;margin:0" id="snap-now-btn">Create snapshot</button></div><div id="timeline-slider" style="margin-bottom:10px"><input type="range" id="phase-slider" min="0" max="0" value="0" style="width:100%"><div id="phase-label"></div></div><div id="snapshot-list"></div>`);
     ensureModal('cmdk-modal','Command Palette',`<input id="cmdk-input" placeholder="Type a command…"><div id="cmdk-list"></div><div class="cmdk-hint">Enter to run · Esc to close · Cmd/Ctrl+K to open</div>`);
+    ensureModal('bulk-rename-modal','Bulk Rename',`<div class="panel-help" id="bulk-rename-summary">Select one or more units to rename them in one pass.</div><div class="bulk-rename-grid"><div class="fg"><label>Rename Field</label><select id="bulk-rename-target"><option value="name">Unit Name</option><option value="designation">Designation</option><option value="both">Name + Designation</option></select></div><div class="fg"><label>Mode</label><select id="bulk-rename-mode"><option value="prefix">Add prefix</option><option value="suffix">Add suffix</option><option value="replace">Find and replace</option><option value="sequence">Sequential numbering</option></select></div></div><div class="bulk-rename-mode" data-mode="prefix"><div class="fg"><label>Prefix</label><input id="bulk-rename-prefix" type="text" placeholder="e.g. TF-"></div></div><div class="bulk-rename-mode" data-mode="suffix" style="display:none"><div class="fg"><label>Suffix</label><input id="bulk-rename-suffix" type="text" placeholder="e.g. (-)"></div></div><div class="bulk-rename-mode" data-mode="replace" style="display:none"><div class="bulk-rename-grid"><div class="fg"><label>Find</label><input id="bulk-rename-find" type="text" placeholder="e.g. COY"></div><div class="fg"><label>Replace With</label><input id="bulk-rename-replace" type="text" placeholder="e.g. COMPANY"></div></div></div><div class="bulk-rename-mode" data-mode="sequence" style="display:none"><div class="fg"><label>Template</label><input id="bulk-rename-template" type="text" placeholder="e.g. A COY {n}"></div><div class="panel-help">Use <code>{n}</code> where the number should appear. If omitted, the number is appended automatically.</div><div class="bulk-rename-grid"><div class="fg"><label>Start</label><input id="bulk-rename-start" type="number" value="1" min="-9999" step="1"></div><div class="fg"><label>Step</label><input id="bulk-rename-step" type="number" value="1" min="-9999" step="1"></div><div class="fg"><label>Pad</label><input id="bulk-rename-pad" type="number" value="0" min="0" max="6" step="1"></div></div></div><div class="modal-acts"><button class="pb" id="bulk-rename-cancel" style="width:auto;margin:0">Cancel</button><button class="pb" id="bulk-rename-apply" style="width:auto;margin:0;border-color:var(--accent);color:var(--accent)">Apply</button></div>`);
     q('save-view-btn')?.addEventListener('click',()=>{ const name=q('view-name-input').value.trim(); if(!name) return; const views=getViews(); views.unshift({id:Date.now()+Math.random().toString(16).slice(2), name, transform:currentTransform()}); setViews(views.slice(0,20)); q('view-name-input').value=''; renderViews(); toast('View saved'); });
     q('snap-now-btn')?.addEventListener('click',()=>{ snapshotNow('Manual snapshot'); toast('Snapshot created'); });
     updateOrgBtn(); renderViews(); renderSnapshots(); renderRecentDocs(); setReadonlyBanner();
@@ -549,6 +550,58 @@
         if(q('view-name-input')?.value.trim()) return;
         toast('Name the view before saving');
       }, true);
+    }
+    window.openBulkRenameModal=function(){
+      const ids=typeof window.getBulkRenameTargetIds==='function' ? window.getBulkRenameTargetIds() : [];
+      if(!ids.length){ toast('Select one or more units first'); return; }
+      const summary=q('bulk-rename-summary');
+      if(summary) summary.textContent=`Rename ${ids.length} selected unit${ids.length===1?'':'s'} by applying a shared pattern.`;
+      open('bulk-rename-modal');
+      setTimeout(()=>{
+        const mode=q('bulk-rename-mode')?.value || 'prefix';
+        const focusMap={prefix:'bulk-rename-prefix',suffix:'bulk-rename-suffix',replace:'bulk-rename-find',sequence:'bulk-rename-template'};
+        q(focusMap[mode])?.focus();
+        q(focusMap[mode])?.select?.();
+      },30);
+    };
+    const renameMode=q('bulk-rename-mode');
+    const syncBulkRenameMode=()=>{
+      const active=renameMode?.value || 'prefix';
+      document.querySelectorAll('#bulk-rename-modal .bulk-rename-mode').forEach(el=>{
+        el.style.display=el.getAttribute('data-mode')===active ? '' : 'none';
+      });
+    };
+    if(renameMode && renameMode.dataset.bound !== '1'){
+      renameMode.dataset.bound = '1';
+      renameMode.addEventListener('change', syncBulkRenameMode);
+      syncBulkRenameMode();
+    }
+    const renameCancel=q('bulk-rename-cancel');
+    if(renameCancel && renameCancel.dataset.bound !== '1'){
+      renameCancel.dataset.bound = '1';
+      renameCancel.addEventListener('click',()=>close('bulk-rename-modal'));
+    }
+    const renameApply=q('bulk-rename-apply');
+    if(renameApply && renameApply.dataset.bound !== '1'){
+      renameApply.dataset.bound = '1';
+      renameApply.addEventListener('click',()=>{
+        const mode=q('bulk-rename-mode')?.value || 'prefix';
+        const payload={
+          target:q('bulk-rename-target')?.value || 'name',
+          mode,
+          value:mode==='prefix' ? (q('bulk-rename-prefix')?.value || '') : (q('bulk-rename-suffix')?.value || ''),
+          find:q('bulk-rename-find')?.value || '',
+          replace:q('bulk-rename-replace')?.value || '',
+          template:q('bulk-rename-template')?.value || '{n}',
+          start:q('bulk-rename-start')?.value || 1,
+          step:q('bulk-rename-step')?.value || 1,
+          pad:q('bulk-rename-pad')?.value || 0
+        };
+        if(mode==='replace' && !payload.find.trim()){ toast('Enter text to find first'); return; }
+        if(mode==='sequence' && !payload.template.trim()){ toast('Enter a numbering template'); return; }
+        if((mode==='prefix' || mode==='suffix') && !payload.value){ toast(`Enter a ${mode} first`); return; }
+        if(window.bulkRenameSelected && window.bulkRenameSelected(payload)) close('bulk-rename-modal');
+      });
     }
     renderStartupLauncher();
     syncTabOverflowUI();
@@ -948,6 +1001,7 @@
     {name:'Export PDF', aliases:['pdf','print pdf'], run:()=>window.exportPDF&&window.exportPDF()},
     {name:'Import text outline', aliases:['outline import','paste outline','text import'], run:()=>window.openOutlineModal&&window.openOutlineModal()},
     {name:'Toggle minimap', aliases:['mini map','map overview'], run:()=>window.toggleMinimap&&window.toggleMinimap()},
+    {name:'Bulk rename selection', aliases:['rename selected','rename units','prefix names','suffix names','sequential rename'], run:()=>window.openBulkRenameModal&&window.openBulkRenameModal()},
     {name:'Undo', aliases:['back'], run:()=>window.undo&&window.undo()},
     {name:'Redo', aliases:['forward'], run:()=>window.redo&&window.redo()},
     {name:'Save snapshot', aliases:['create snapshot','manual snapshot'], run:()=>snapshotNow('Manual snapshot')},

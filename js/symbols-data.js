@@ -1546,6 +1546,48 @@ function bulkAffil(a){multiSel.forEach(id=>{nodes[id].affil=a;renderNode(id);});
 function bulkStatus(s){multiSel.forEach(id=>{nodes[id].status=s;renderNode(id);});saveState();showToast('Bulk combat status updated');}
 function bulkEchelon(v){if(!v)return;multiSel.forEach(id=>{nodes[id].echelon=v;renderNode(id);});drawConnectors();saveState();document.getElementById('bulk-echelon').value='';}
 function bulkFrame(fs){multiSel.forEach(id=>{nodes[id].frameStatus=fs;renderNode(id);});drawConnectors();saveState();showToast('Bulk frame status updated');}
+function getBulkRenameTargetIds(){
+  const ids=multiSel.size>0?[...multiSel]:(selectedId?[selectedId]:[]);
+  return ids.filter(id=>nodes[id]).sort((a,b)=>{
+    const na=nodes[a],nb=nodes[b];
+    return (na.y-nb.y)||(na.x-nb.x)||String(na.designation||na.name||na.id).localeCompare(String(nb.designation||nb.name||nb.id));
+  });
+}
+function bulkRenameSelected({target='name',mode='prefix',value='',find='',replace='',template='{n}',start=1,step=1,pad=0}={}){
+  const ids=getBulkRenameTargetIds();
+  if(!ids.length){showToast('Select at least one unit first');return false;}
+  const fields=target==='both'?['name','designation']:[target];
+  const startNum=Number.isFinite(+start)?+start:1;
+  const stepNum=Number.isFinite(+step)&&+step!==0?+step:1;
+  const padNum=Math.max(0,Math.floor(Number.isFinite(+pad)?+pad:0));
+  let changed=0;
+  ids.forEach((id,idx)=>{
+    const n=nodes[id];
+    const sequenceValue=String(startNum+(idx*stepNum)).padStart(padNum,'0');
+    fields.forEach(field=>{
+      const current=String(n[field]??'');
+      let next=current;
+      if(mode==='prefix')next=`${value}${current}`;
+      else if(mode==='suffix')next=`${current}${value}`;
+      else if(mode==='replace')next=find?current.split(find).join(replace):current;
+      else if(mode==='sequence'){
+        const rawTemplate=String(template||'{n}');
+        next=rawTemplate.includes('{n}')?rawTemplate.replaceAll('{n}',sequenceValue):`${rawTemplate}${sequenceValue}`;
+      }
+      if(next!==current){n[field]=next;changed++;}
+    });
+    renderNode(id);
+  });
+  if(!changed){showToast('Bulk rename made no changes');return false;}
+  drawConnectors();
+  if(multiSel.size>1)updSelUI();
+  else if(selectedId&&nodes[selectedId])populateEditPanel(selectedId);
+  saveState();
+  showToast(`Renamed ${ids.length} unit${ids.length===1?'':'s'}`);
+  return true;
+}
+window.getBulkRenameTargetIds=getBulkRenameTargetIds;
+window.bulkRenameSelected=bulkRenameSelected;
 
 /* ========================================
    SIDEBAR TOGGLE

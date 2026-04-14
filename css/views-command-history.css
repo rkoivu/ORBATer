@@ -10,6 +10,9 @@
 #cmdk-input{width:100%;background:var(--control-bg-soft);border:1px solid var(--control-border);border-radius:14px;color:var(--text);padding:12px 14px;font-size:13px;margin-bottom:12px;box-shadow:none}
 #cmdk-input:focus{border-color:var(--accent);box-shadow:var(--control-ring)}
 .cmdk-hint{font-size:10px;color:var(--text2);margin-top:10px;text-transform:uppercase;letter-spacing:.75px;font-family:var(--font-display)}
+.bulk-rename-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+#bulk-rename-modal .modal-box{min-width:min(640px,calc(100vw - 40px));max-width:720px}
+#bulk-rename-modal .panel-help code{font-family:var(--font-mono)}
 .cmdk-row.active{border-color:rgba(108,162,200,.55);background:linear-gradient(180deg,rgba(108,162,200,.08),transparent),color-mix(in srgb,var(--accent) 10%,var(--surface2))}
 .tb-btn.org-mode-on{background:rgba(249,115,22,.18);border-color:rgba(251,146,60,.56);color:#ffedd5;box-shadow:none}
 .diff-pill{display:inline-flex;align-items:center;gap:4px;font-family:var(--font-mono);font-size:9px;color:var(--text2);padding:2px 7px;border:1px solid rgba(148,163,184,.16);border-radius:999px;background:rgba(255,255,255,.03)}
@@ -37,6 +40,8 @@
 .startup-empty{padding:18px 20px;border:1px dashed rgba(142,160,173,.24);border-radius:16px;background:rgba(255,255,255,.02);font:500 12px/1.7 var(--font-body);color:var(--text2)}
 @media (max-width: 760px){
   #startup-modal .modal-box{min-width:0}
+  #bulk-rename-modal .modal-box{min-width:0}
+  .bulk-rename-grid{grid-template-columns:1fr}
   .startup-hero{flex-direction:column}
   .startup-action-grid{grid-template-columns:1fr;grid-template-areas:"new" "template" "import" "tour"}
 }
