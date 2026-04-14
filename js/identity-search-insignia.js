@@ -152,19 +152,65 @@
     const type=(UT.find(t=>t.id===n.typeId)||customTypes.find(t=>t.id===n.typeId)||{}).label||n.typeId||'';
     return [n.name, formatSmartLabel(n.name), n.designation, n.commander, n.equipment, n.task, n.higherHQ, n.location, type, ...(n.tags||[])].join(' ').toLowerCase();
   }
+  function nodeParentSearchText(n){
+    if(!n?.parentId || !nodes[n.parentId]) return 'root';
+    const parent=nodes[n.parentId];
+    return [parent.name, formatSmartLabel(parent.name), parent.designation, parent.commander].join(' ').toLowerCase();
+  }
+  function nodePathSearchText(n){
+    const seen=new Set();
+    const parts=[];
+    let cur=n;
+    while(cur && !seen.has(cur.id)){
+      seen.add(cur.id);
+      parts.unshift([cur.name, formatSmartLabel(cur.name), cur.designation].filter(Boolean).join(' '));
+      cur=cur.parentId && nodes[cur.parentId] ? nodes[cur.parentId] : null;
+    }
+    return parts.join(' / ').toLowerCase();
+  }
+  function tokenizeSearchQuery(raw){
+    return String(raw||'').match(/(?:[^\s"]+:"[^"]*"|[^\s"]+|'[^']*'|"[^"]*")+/g) || [];
+  }
+  function stripSearchQuotes(v){
+    const text=String(v||'').trim();
+    if((text.startsWith('"') && text.endsWith('"')) || (text.startsWith("'") && text.endsWith("'"))){
+      return text.slice(1,-1);
+    }
+    return text;
+  }
+  function parseSearchQuery(raw){
+    const terms={text:[],parent:[],path:[]};
+    tokenizeSearchQuery(raw).forEach(token=>{
+      const match=token.match(/^(parent|path):(.*)$/i);
+      if(!match){
+        const value=stripSearchQuotes(token).toLowerCase();
+        if(value) terms.text.push(value);
+        return;
+      }
+      const bucket=match[1].toLowerCase();
+      const value=stripSearchQuotes(match[2]).toLowerCase();
+      if(value) terms[bucket].push(value);
+    });
+    return terms;
+  }
   function refreshSearchAndFilter(){
-    const q=searchQuery.trim().toLowerCase();
+    const parsed=parseSearchQuery(searchQuery);
+    const q=parsed.text.join(' ').trim();
     const tag=tagFilter.trim().toLowerCase();
     let firstHit=null;
     Object.keys(nodes).forEach(id=>{
       const el=document.getElementById('el-'+id); if(!el) return;
       const n=nodes[id];
       const text=nodeSearchText(n);
+      const parentText=nodeParentSearchText(n);
+      const pathText=nodePathSearchText(n);
       const qMatch=!q || text.includes(q);
+      const parentMatch=!parsed.parent.length || parsed.parent.every(term=>parentText.includes(term));
+      const pathMatch=!parsed.path.length || parsed.path.every(term=>pathText.includes(term));
       const tMatch=!tag || (n.tags||[]).some(t=>String(t).toLowerCase().includes(tag));
-      const match=qMatch && tMatch;
+      const match=qMatch && parentMatch && pathMatch && tMatch;
       el.classList.toggle('filtered-out', !match);
-      el.classList.toggle('search-hit', !!q && match);
+      el.classList.toggle('search-hit', !!(q || parsed.parent.length || parsed.path.length) && match);
       if(!firstHit && match) firstHit=id;
     });
     drawConnectors();

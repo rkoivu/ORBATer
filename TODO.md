@@ -4,6 +4,7 @@ This backlog is grouped by estimated implementation effort so the next work can 
 
 ## Recently Completed
 
+- Added `parent:` and `path:` search queries so large ORBATs can be narrowed by parent unit or full lineage.
 - Added NATO symbology help tooltips for node symbols plus frame-status and modifier explanations in the edit panel.
 - Added a visible `Guide` button and startup-launcher tour card so onboarding is easier to discover after first use.
 - Added persistent palette favorites with pin buttons, while keeping recent symbols surfaced for fast repeated placement.
@@ -50,7 +51,6 @@ This backlog is grouped by estimated implementation effort so the next work can 
 - Standardize modal creation and button wiring helpers so patches do not clone logic.
 - Refine mobile and narrow-width handling for the toolbar, tab strip, and side panels.
 - Add explicit connector style controls for Bezier, elbow, and straight routing in the main toolbar.
-- Add search-by-path and search-by-parent queries for large ORBATs.
 - Extend templates into reusable subtree presets that can be inserted under an existing parent, not only as full ORBAT starters.
 - Add export presets for briefing slide, A4 print, and wide-screen command post formats.
 - Add connector labels that can be edited directly on-canvas instead of only through panel state.

@@ -44,7 +44,7 @@
     <button class="tb-btn" id="btn-smart-labels">Smart Labels</button>
     <button class="tb-btn" id="btn-focus" onclick="focusSelection()">Focus</button>
     <button class="tb-btn" id="btn-tag-highlight" onclick="toggleTagHighlight()">Tags</button>
-    <input id="unit-search-input" placeholder="Search /" title="Search units">
+    <input id="unit-search-input" placeholder="Search /" title="Search units. Use parent:NAME or path:HQ terms to narrow large ORBATs. Quotes are supported.">
     <input id="tag-filter-input" placeholder="Tag filter" title="Filter by tag">
   </div>
   <div class="tb-sep"></div>
