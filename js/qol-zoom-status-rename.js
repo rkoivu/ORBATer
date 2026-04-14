@@ -3,21 +3,107 @@
   const statusbar=document.getElementById('statusbar');
   const canvasWrap=document.getElementById('canvas-wrap');
   const RECENT_KEY='orbat_recent_types_v5';
+  const FAVORITES_KEY='orbat_favorite_types_v1';
   let recentTypes=[];
+  let favoriteTypes=[];
   try{ recentTypes=JSON.parse(localStorage.getItem(RECENT_KEY)||'[]'); if(!Array.isArray(recentTypes)) recentTypes=[]; }catch(e){ recentTypes=[]; }
+  try{ favoriteTypes=JSON.parse(localStorage.getItem(FAVORITES_KEY)||'[]'); if(!Array.isArray(favoriteTypes)) favoriteTypes=[]; }catch(e){ favoriteTypes=[]; }
 
   function saveRecentTypes(){ try{ localStorage.setItem(RECENT_KEY, JSON.stringify(recentTypes.slice(0,6))); }catch(e){} }
+  function saveFavoriteTypes(){ try{ localStorage.setItem(FAVORITES_KEY, JSON.stringify(favoriteTypes.slice(0,12))); return true; }catch(e){ return false; } }
   function noteRecentType(typeId){
     if(!typeId) return;
     recentTypes=[typeId].concat(recentTypes.filter(v=>v!==typeId)).slice(0,6);
     saveRecentTypes();
     try{ buildPalette(); }catch(e){}
   }
+  function isFavoriteType(typeId){ return !!typeId && favoriteTypes.includes(typeId); }
+  function toggleFavoriteType(typeId){
+    if(!typeId) return;
+    const next=isFavoriteType(typeId)
+      ? favoriteTypes.filter(v=>v!==typeId)
+      : [typeId].concat(favoriteTypes.filter(v=>v!==typeId)).slice(0,12);
+    favoriteTypes=next;
+    if(!saveFavoriteTypes()){
+      showToast('Favorites could not be saved');
+      return;
+    }
+    try{ buildPalette(); }catch(e){}
+    showToast(isFavoriteType(typeId)?'Added to palette favorites':'Removed from palette favorites');
+  }
+  function getAllPaletteTypes(){ return [...UT,...customTypes]; }
+  function findPaletteType(typeId){ return getAllPaletteTypes().find(u=>u.id===typeId)||null; }
+  function makePaletteItem(ut){
+    const item=document.createElement('div'); item.className='pal-item'; item.draggable=true; item.dataset.typeId=ut.id;
+    if(ut.tip) item.setAttribute('data-tip',ut.tip);
+    item.innerHTML=ut.dataUrl?`<img class="pal-custom-icon" src="${ut.dataUrl}"><span>${ut.label}</span>`:`${(window.getSym||getSym)(ut.id,'friendly','battalion')}<span>${ut.label}</span>`;
+    item.addEventListener('dragstart',onPalDrag);
+    decoratePaletteItem(item);
+    return item;
+  }
+  function decoratePaletteItem(item){
+    if(!item || item.dataset.favoriteBound==='1') return item;
+    item.dataset.favoriteBound='1';
+    const typeId=item.dataset.typeId;
+    if(!typeId) return item;
+    let btn=item.querySelector('.pal-favorite-btn');
+    if(!btn){
+      btn=document.createElement('button');
+      btn.type='button';
+      btn.className='pal-favorite-btn';
+      btn.setAttribute('aria-label','Toggle palette favorite');
+      btn.title='Pin to favorites';
+      btn.addEventListener('click',ev=>{ ev.preventDefault(); ev.stopPropagation(); toggleFavoriteType(typeId); });
+      btn.addEventListener('mousedown',ev=>{ ev.preventDefault(); ev.stopPropagation(); });
+      item.appendChild(btn);
+    }
+    const active=isFavoriteType(typeId);
+    btn.classList.toggle('active',active);
+    btn.textContent=active?'★':'☆';
+    btn.title=active?'Remove from favorites':'Pin to favorites';
+    return item;
+  }
+  function makePaletteSection(titleText, badgeText, items){
+    if(!items.length) return null;
+    const sec=document.createElement('div'); sec.className='palette-section';
+    const title=document.createElement('div'); title.className='palette-section-title';
+    title.innerHTML=badgeText?`${titleText} <span class="pal-recent-badge">${badgeText}</span>`:titleText;
+    const grid=document.createElement('div'); grid.className='palette-grid';
+    title.onclick=()=>{ title.classList.toggle('collapsed'); grid.classList.toggle('hidden'); };
+    items.forEach(ut=>grid.appendChild(makePaletteItem(ut)));
+    sec.appendChild(title); sec.appendChild(grid);
+    return sec;
+  }
+  let syncingPinnedSections=false;
+  function renderPinnedPaletteSections(){
+    if(syncingPinnedSections) return;
+    const scroll=document.getElementById('sidebar-scroll');
+    if(!scroll) return;
+    syncingPinnedSections=true;
+    scroll.querySelectorAll('[data-palette-pinned="1"]').forEach(el=>el.remove());
+    const favorites=favoriteTypes.map(findPaletteType).filter(Boolean);
+    const recents=recentTypes.map(findPaletteType).filter(Boolean);
+    const fragments=[];
+    const favoriteSection=makePaletteSection('Favorites','up to 12',favorites);
+    const recentSection=makePaletteSection('Recent','last 6',recents);
+    if(favoriteSection){ favoriteSection.dataset.palettePinned='1'; fragments.push(favoriteSection); }
+    if(recentSection){ recentSection.dataset.palettePinned='1'; fragments.push(recentSection); }
+    if(fragments.length){
+      const frag=document.createDocumentFragment();
+      fragments.reverse().forEach(sec=>frag.insertBefore(sec, frag.firstChild));
+      scroll.insertBefore(frag, scroll.firstChild);
+    }
+    syncingPinnedSections=false;
+  }
 
   const style=document.createElement('style');
   style.textContent=`
     .rename-inline{width:100%;background:#0f172a;border:1px solid var(--accent);border-radius:4px;color:var(--text);font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:600;text-align:center;padding:2px 4px;outline:none}
     .pal-recent-badge{font-family:'Share Tech Mono',monospace;font-size:8px;color:var(--accent2);margin-left:4px}
+    .pal-favorite-btn{position:absolute;top:5px;right:5px;width:20px;height:20px;border:1px solid rgba(148,163,184,.24);border-radius:999px;background:rgba(15,23,42,.82);color:rgba(203,213,225,.9);font-size:11px;line-height:1;display:flex;align-items:center;justify-content:center;cursor:pointer;opacity:0;transform:translateY(-1px);transition:opacity .15s ease,border-color .15s ease,color .15s ease,background .15s ease}
+    .pal-item:hover .pal-favorite-btn,.pal-item:focus-within .pal-favorite-btn,.pal-favorite-btn.active{opacity:1}
+    .pal-favorite-btn:hover,.pal-favorite-btn:focus-visible{border-color:rgba(245,158,11,.55);color:#fbbf24;background:rgba(36,26,5,.92);outline:none}
+    .pal-favorite-btn.active{border-color:rgba(245,158,11,.58);color:#fbbf24;background:rgba(54,39,9,.95)}
   `;
   document.head.appendChild(style);
 
@@ -98,22 +184,26 @@
   const prevBuildPalette=buildPalette;
   buildPalette=function(){
     prevBuildPalette();
+    renderPinnedPaletteSections();
     const scroll=document.getElementById('sidebar-scroll');
-    if(!scroll || !recentTypes.length) return;
-    const all=[...UT,...customTypes];
-    const items=recentTypes.map(id=>all.find(u=>u.id===id)).filter(Boolean);
-    if(!items.length) return;
-    const sec=document.createElement('div'); sec.className='palette-section';
-    const title=document.createElement('div'); title.className='palette-section-title'; title.innerHTML='Recent <span class="pal-recent-badge">last 6</span>';
-    const grid=document.createElement('div'); grid.className='palette-grid';
-    items.forEach(ut=>{
-      const item=document.createElement('div'); item.className='pal-item'; item.draggable=true; item.dataset.typeId=ut.id;
-      if(ut.tip) item.setAttribute('data-tip',ut.tip);
-      item.innerHTML=ut.dataUrl?`<img class="pal-custom-icon" src="${ut.dataUrl}"><span>${ut.label}</span>`:`${(window.getSym||getSym)(ut.id,'friendly','battalion')}<span>${ut.label}</span>`;
-      item.addEventListener('dragstart',onPalDrag); grid.appendChild(item);
-    });
-    sec.appendChild(title); sec.appendChild(grid); scroll.insertBefore(sec, scroll.firstChild);
+    if(scroll) scroll.querySelectorAll('.pal-item').forEach(decoratePaletteItem);
   };
+
+  const paletteObserver=new MutationObserver(mutations=>{
+    if(syncingPinnedSections) return;
+    let needsPinnedRefresh=false;
+    mutations.forEach(mutation=>{
+      mutation.addedNodes.forEach(node=>{
+        if(!(node instanceof HTMLElement)) return;
+        if(node.matches('.pal-item')) decoratePaletteItem(node);
+        node.querySelectorAll?.('.pal-item').forEach(decoratePaletteItem);
+        if(!node.dataset.palettePinned && node.matches('.palette-section,.panel-help')) needsPinnedRefresh=true;
+      });
+    });
+    if(needsPinnedRefresh) renderPinnedPaletteSections();
+  });
+  const sidebarScroll=document.getElementById('sidebar-scroll');
+  if(sidebarScroll) paletteObserver.observe(sidebarScroll,{childList:true,subtree:true});
 
   const prevCreateNode=createNode;
   createNode=function(d={}){ const id=prevCreateNode(d); try{ noteRecentType((nodes[id]||{}).typeId || d.typeId); }catch(e){} return id; };
