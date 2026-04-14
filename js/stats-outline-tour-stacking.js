@@ -52,6 +52,11 @@
   mkBtn('btn-conflicts','⚠ Check','Detect structure conflicts',()=>openConflictModal(), true);
   mkBtn('btn-outline-import','☰ Import','Import from text outline',()=>openOutlineModal(), true);
   mkBtn('btn-tour','◎ Tour','Guided onboarding tour',()=>startTour(), true);
+  const visibleGuideBtn=document.getElementById('btn-guide');
+  if(visibleGuideBtn){
+    visibleGuideBtn.title='Open the guided onboarding tour';
+    visibleGuideBtn.onclick=()=>startTour();
+  }
 
   // Panel fields: relation label + tags + stats
   function ensurePanelExtras(){

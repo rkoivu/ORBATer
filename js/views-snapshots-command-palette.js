@@ -509,7 +509,7 @@
     const pdfBtn = q('btn-export-pdf'); if(pdfBtn) pdfBtn.textContent = 'Export PDF';
     const cmdBtn = q('btn-cmdk'); if(cmdBtn) cmdBtn.textContent = 'Commands';
     if(!q('btn-launcher')) ensureBtn('btn-launcher','Open','Open the startup launcher',()=>{ renderStartupLauncher(); open('startup-modal'); },'btn-views');
-    ensureModal('startup-modal','Open Diagram',`<div class="startup-shell"><div class="startup-hero"><div><div class="startup-kicker">Recommended flow</div><div class="startup-title">Choose the fastest way into the ORBAT</div><div class="startup-copy">Start blank if you already know the structure, use a template when you need doctrine as a scaffold, or import JSON when the ORBAT already exists.</div></div><div class="startup-badge" id="startup-recent-count">0 recent diagrams</div></div><div class="startup-action-grid"><button class="startup-action-card" id="startup-new-btn" type="button"><strong>Start blank</strong><span>Open an empty canvas and add the root unit yourself.</span></button><button class="startup-action-card" id="startup-template-btn" type="button"><strong>Use template</strong><span>Load a doctrinal structure, then adjust names, tasks, and attachments.</span></button><button class="startup-action-card" id="startup-import-btn" type="button"><strong>Import JSON</strong><span>Resume an existing ORBAT file without rebuilding it manually.</span></button></div><div class="psec">Recent diagrams</div><div id="startup-recent-list"></div></div>`);
+    ensureModal('startup-modal','Open Diagram',`<div class="startup-shell"><div class="startup-hero"><div><div class="startup-kicker">Recommended flow</div><div class="startup-title">Choose the fastest way into the ORBAT</div><div class="startup-copy">Start blank if you already know the structure, use a template when you need doctrine as a scaffold, import JSON when the ORBAT already exists, or take the guided tour if you want the interface explained step by step.</div></div><div class="startup-badge" id="startup-recent-count">0 recent diagrams</div></div><div class="startup-action-grid"><button class="startup-action-card" id="startup-new-btn" type="button"><strong>Start blank</strong><span>Open an empty canvas and add the root unit yourself.</span></button><button class="startup-action-card" id="startup-template-btn" type="button"><strong>Use template</strong><span>Load a doctrinal structure, then adjust names, tasks, and attachments.</span></button><button class="startup-action-card" id="startup-import-btn" type="button"><strong>Import JSON</strong><span>Resume an existing ORBAT file without rebuilding it manually.</span></button><button class="startup-action-card" id="startup-tour-btn" type="button"><strong>Take tour</strong><span>Walk through the canvas, palette, properties panel, and common workflows.</span></button></div><div class="psec">Recent diagrams</div><div id="startup-recent-list"></div></div>`);
     const startupNew = q('startup-new-btn');
     if(startupNew && startupNew.dataset.bound !== '1'){
       startupNew.dataset.bound = '1';
@@ -528,6 +528,14 @@
     if(startupImport && startupImport.dataset.bound !== '1'){
       startupImport.dataset.bound = '1';
       startupImport.addEventListener('click',()=>{ close('startup-modal'); if(typeof window.importJSON==='function') window.importJSON(); });
+    }
+    const startupTour = q('startup-tour-btn');
+    if(startupTour && startupTour.dataset.bound !== '1'){
+      startupTour.dataset.bound = '1';
+      startupTour.addEventListener('click',()=>{
+        close('startup-modal');
+        if(typeof window.startTour==='function') window.startTour();
+      });
     }
     const viewInput = q('view-name-input');
     if(viewInput && viewInput.dataset.enterBound !== '1'){

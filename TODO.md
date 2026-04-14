@@ -4,6 +4,7 @@ This backlog is grouped by estimated implementation effort so the next work can 
 
 ## Recently Completed
 
+- Added a visible `Guide` button and startup-launcher tour card so onboarding is easier to discover after first use.
 - Added persistent palette favorites with pin buttons, while keeping recent symbols surfaced for fast repeated placement.
 - Added command-palette aliases and shorthand matching so common military/search terms find actions more reliably.
 - Added outline export so the current ORBAT or selected branch can be copied/downloaded as indented text.
@@ -38,7 +39,6 @@ This backlog is grouped by estimated implementation effort so the next work can 
 ## Tier 2
 
 - Replace remaining `||` fallback patterns where valid `0`, `false`, or empty-string values can be lost.
-- Add a visible tutorial / onboarding button for first-time users who miss the guided flow.
 - Add a recovery modal when storage quota is close to being exceeded.
 - Add NATO symbol and modifier tooltips so users can understand icons without leaving the app.
 - Harden localStorage failure paths so views, tabs, snapshots, and autosave fail consistently and visibly across every module.

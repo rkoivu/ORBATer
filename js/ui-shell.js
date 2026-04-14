@@ -59,6 +59,7 @@
   <div class="tb-group">
     <button class="tb-btn" id="btn-random-orbat">Random</button>
     <button class="tb-btn accent" onclick="openTplModal()">Templates</button>
+    <button class="tb-btn" id="btn-guide">Guide</button>
     <button class="tb-btn" onclick="openScModal()">Shortcuts</button>
   </div>
   <div class="tb-spacer"></div>
