@@ -128,6 +128,106 @@
 
   function toast(msg){ try{ (window.showToast||function(){})(msg); }catch(e){} }
   function q(id){ return document.getElementById(id); }
+  function formatBytes(bytes=0){
+    const value=Math.max(0, Number(bytes)||0);
+    if(value<1024) return `${value} B`;
+    if(value<1024*1024) return `${(value/1024).toFixed(value<10*1024?1:0)} KB`;
+    return `${(value/(1024*1024)).toFixed(2)} MB`;
+  }
+  function estimateStorageUsage(){
+    const entries=[];
+    let totalBytes=0;
+    try{
+      for(let i=0;i<localStorage.length;i++){
+        const key=localStorage.key(i);
+        if(!key) continue;
+        const value=localStorage.getItem(key) || '';
+        const bytes=(key.length + value.length) * 2;
+        totalBytes += bytes;
+        if(key.startsWith('orbat_')) entries.push({key, bytes});
+      }
+    }catch(e){
+      return {totalBytes:0, entries:[], error:String(e?.message || e)};
+    }
+    entries.sort((a,b)=>b.bytes-a.bytes);
+    return {totalBytes, entries};
+  }
+  function readAutosaveHealth(){
+    try{
+      const raw=localStorage.getItem('orbat_v3');
+      if(!raw) return {state:'missing', label:'No autosave yet', detail:'Create or edit a diagram to generate the first autosave snapshot.'};
+      const payload=JSON.parse(raw);
+      const ageMs=payload?.ts ? (Date.now() - payload.ts) : null;
+      const units=Object.keys(payload?.nodes || {}).length;
+      const label=ageMs!=null ? `Last autosave ${Math.max(0, Math.round(ageMs/1000))}s ago` : 'Autosave present';
+      return {
+        state: ageMs!=null && ageMs > 15*60*1000 ? 'stale' : 'healthy',
+        label,
+        detail: `${units} unit(s) · ${formatBytes(raw.length * 2)}`
+      };
+    }catch(e){
+      return {state:'error', label:'Autosave unreadable', detail:String(e?.message || e)};
+    }
+  }
+  function readDeferredBootHealth(){
+    const deferred=window.__orbatDiagnostics?.boot?.deferred || {};
+    const loaded=Array.isArray(deferred.loaded) ? deferred.loaded.length : 0;
+    const failed=Array.isArray(deferred.failed) ? deferred.failed.length : 0;
+    return {
+      status: deferred.status || 'not-started',
+      loaded,
+      failed,
+      total: deferred.total || 0,
+      durationMs: deferred.totalDurationMs || null,
+      failures: Array.isArray(deferred.modules) ? deferred.modules.filter(entry=>entry.status==='failed') : []
+    };
+  }
+  function renderDiagnostics(){
+    const box=q('diagnostics-body'); if(!box) return;
+    const storage=estimateStorageUsage();
+    const autosave=readAutosaveHealth();
+    const bootHealth=readDeferredBootHealth();
+    const doc=(typeof window.serializeDocument==='function') ? window.serializeDocument() : null;
+    const featureFlags=[
+      {label:'Readonly', value: readonly ? 'On' : 'Off'},
+      {label:'Shared View', value: sharedViewId ? 'Open' : 'Off'},
+      {label:'Layout', value: window.layoutMode || 'tree'},
+      {label:'Theme', value: window.currentTheme || 'dark'},
+      {label:'Rel Labels', value: doc?.showRelLabels === false ? 'Off' : 'On'},
+      {label:'Minimap', value: doc?.minimapVisible === false ? 'Off' : 'On'}
+    ];
+    const topEntries=(storage.entries || []).slice(0,6).map(entry=>`<div class="diag-row"><span>${esc(entry.key)}</span><strong>${formatBytes(entry.bytes)}</strong></div>`).join('') || '<div class="panel-help">No ORBAT storage keys detected yet.</div>';
+    const failures=bootHealth.failures.map(entry=>`<div class="diag-row tone-warn"><span>${esc(entry.src.replace(/^js\//,''))}</span><strong>${esc(entry.error || 'Load failure')}</strong></div>`).join('');
+    box.innerHTML = `
+      <div class="diag-grid">
+        <section class="diag-card">
+          <h3>Runtime</h3>
+          <div class="diag-row"><span>Schema version</span><strong>v${esc(String(doc?.schemaVersion ?? APP_SCHEMA_VERSION ?? 1))}</strong></div>
+          <div class="diag-row"><span>Current units</span><strong>${esc(String(Object.keys(doc?.nodes || {}).length))}</strong></div>
+          <div class="diag-row"><span>Current text boxes</span><strong>${esc(String(Object.keys(doc?.textboxes || {}).length))}</strong></div>
+          <div class="diag-row"><span>Deferred boot</span><strong>${esc(bootHealth.status)}</strong></div>
+          <div class="diag-row"><span>Enhancement modules</span><strong>${bootHealth.loaded}/${bootHealth.total || (bootHealth.loaded + bootHealth.failed)}</strong></div>
+          <div class="diag-row"><span>Boot duration</span><strong>${bootHealth.durationMs!=null ? `${bootHealth.durationMs} ms` : 'Pending'}</strong></div>
+        </section>
+        <section class="diag-card">
+          <h3>Storage</h3>
+          <div class="diag-row"><span>Estimated local usage</span><strong>${formatBytes(storage.totalBytes)}</strong></div>
+          <div class="diag-row"><span>Autosave</span><strong class="diag-pill ${autosave.state}">${esc(autosave.label)}</strong></div>
+          <div class="diag-note">${esc(autosave.detail)}</div>
+          <div class="psec">Largest ORBAT Keys</div>
+          ${topEntries}
+        </section>
+        <section class="diag-card">
+          <h3>Feature Flags</h3>
+          ${featureFlags.map(flag=>`<div class="diag-row"><span>${esc(flag.label)}</span><strong>${esc(String(flag.value))}</strong></div>`).join('')}
+        </section>
+        <section class="diag-card">
+          <h3>Boot Failures</h3>
+          ${failures || '<div class="panel-help">No deferred module failures recorded in this session.</div>'}
+        </section>
+      </div>
+    `;
+  }
   function setReadonlyBanner(){
     const banner=q('readonly-banner');
     if(!banner) return;
@@ -491,8 +591,10 @@
     ensureBtn('btn-export-pdf','⤓ PDF','Export PDF',()=>window.exportPDF&&window.exportPDF(),'btn-random-orbat');
     ensureBtn('btn-cmdk','⌘K','Command palette',()=>window.openCommandPalette&&window.openCommandPalette(),'btn-export-pdf');
     ensureBtn('btn-export-outline','Outline','Copy or download an indented text outline',()=>window.exportOutlineText&&window.exportOutlineText(),'btn-export-pdf');
+    ensureBtn('btn-diagnostics','Health','Diagnostics and startup health',()=>{ renderDiagnostics(); open('diagnostics-modal'); },'btn-snapshots');
     ensureModal('view-modal','Saved Views',`<div class="fg"><label>Save current view as</label><div style="display:flex;gap:8px"><input id="view-name-input" type="text" placeholder="e.g. Corps overview"><button class="pb" style="width:auto;margin:0" id="save-view-btn">Save</button></div></div><div class="psec">Saved Views</div><div id="view-list"></div><div class="psec">Recent Diagrams</div><div id="recent-doc-list"></div>`);
     ensureModal('snapshot-modal','Version Snapshots',`<div style="display:flex;gap:8px;margin-bottom:10px"><button class="pb" style="width:auto;margin:0" id="snap-now-btn">Create snapshot</button></div><div id="timeline-slider" style="margin-bottom:10px"><input type="range" id="phase-slider" min="0" max="0" value="0" style="width:100%"><div id="phase-label"></div></div><div id="snapshot-list"></div>`);
+    ensureModal('diagnostics-modal','Diagnostics',`<div id="diagnostics-body"></div>`);
     ensureModal('cmdk-modal','Command Palette',`<input id="cmdk-input" placeholder="Type a command…"><div id="cmdk-list"></div><div class="cmdk-hint">Enter to run · Esc to close · Cmd/Ctrl+K to open</div>`);
     ensureModal('bulk-rename-modal','Bulk Rename',`<div class="panel-help" id="bulk-rename-summary">Select one or more units to rename them in one pass.</div><div class="bulk-rename-grid"><div class="fg"><label>Rename Field</label><select id="bulk-rename-target"><option value="name">Unit Name</option><option value="designation">Designation</option><option value="both">Name + Designation</option></select></div><div class="fg"><label>Mode</label><select id="bulk-rename-mode"><option value="prefix">Add prefix</option><option value="suffix">Add suffix</option><option value="replace">Find and replace</option><option value="sequence">Sequential numbering</option></select></div></div><div class="bulk-rename-mode" data-mode="prefix"><div class="fg"><label>Prefix</label><input id="bulk-rename-prefix" type="text" placeholder="e.g. TF-"></div></div><div class="bulk-rename-mode" data-mode="suffix" style="display:none"><div class="fg"><label>Suffix</label><input id="bulk-rename-suffix" type="text" placeholder="e.g. (-)"></div></div><div class="bulk-rename-mode" data-mode="replace" style="display:none"><div class="bulk-rename-grid"><div class="fg"><label>Find</label><input id="bulk-rename-find" type="text" placeholder="e.g. COY"></div><div class="fg"><label>Replace With</label><input id="bulk-rename-replace" type="text" placeholder="e.g. COMPANY"></div></div></div><div class="bulk-rename-mode" data-mode="sequence" style="display:none"><div class="fg"><label>Template</label><input id="bulk-rename-template" type="text" placeholder="e.g. A COY {n}"></div><div class="panel-help">Use <code>{n}</code> where the number should appear. If omitted, the number is appended automatically.</div><div class="bulk-rename-grid"><div class="fg"><label>Start</label><input id="bulk-rename-start" type="number" value="1" min="-9999" step="1"></div><div class="fg"><label>Step</label><input id="bulk-rename-step" type="number" value="1" min="-9999" step="1"></div><div class="fg"><label>Pad</label><input id="bulk-rename-pad" type="number" value="0" min="0" max="6" step="1"></div></div></div><div class="modal-acts"><button class="pb" id="bulk-rename-cancel" style="width:auto;margin:0">Cancel</button><button class="pb" id="bulk-rename-apply" style="width:auto;margin:0;border-color:var(--accent);color:var(--accent)">Apply</button></div>`);
     q('save-view-btn')?.addEventListener('click',()=>{ const name=q('view-name-input').value.trim(); if(!name) return; const views=getViews(); views.unshift({id:Date.now()+Math.random().toString(16).slice(2), name, transform:currentTransform()}); setViews(views.slice(0,20)); q('view-name-input').value=''; renderViews(); toast('View saved'); });
@@ -506,6 +608,7 @@
     const orgBtn = q('btn-org-toggle'); if(orgBtn) orgBtn.textContent = 'Mode';
     const viewsBtn = q('btn-views'); if(viewsBtn) viewsBtn.textContent = 'Views';
     const snapsBtn = q('btn-snapshots'); if(snapsBtn) snapsBtn.textContent = 'Snapshots';
+    const diagnosticsBtn = q('btn-diagnostics'); if(diagnosticsBtn) diagnosticsBtn.textContent = 'Health';
     const outlineBtn = q('btn-export-outline'); if(outlineBtn) outlineBtn.textContent = 'Outline';
     const pdfBtn = q('btn-export-pdf'); if(pdfBtn) pdfBtn.textContent = 'Export PDF';
     const cmdBtn = q('btn-cmdk'); if(cmdBtn) cmdBtn.textContent = 'Commands';
@@ -550,6 +653,12 @@
         if(q('view-name-input')?.value.trim()) return;
         toast('Name the view before saving');
       }, true);
+    }
+    const diagnosticsModal=q('diagnostics-modal');
+    if(diagnosticsModal && diagnosticsModal.dataset.bound !== '1'){
+      diagnosticsModal.dataset.bound = '1';
+      window.addEventListener('orbat:deferred-module',()=>{ if(diagnosticsModal.classList.contains('open')) renderDiagnostics(); });
+      window.addEventListener('orbat:deferred-status',()=>{ if(diagnosticsModal.classList.contains('open')) renderDiagnostics(); });
     }
     window.openBulkRenameModal=function(){
       const ids=typeof window.getBulkRenameTargetIds==='function' ? window.getBulkRenameTargetIds() : [];
@@ -997,6 +1106,7 @@
     {name:'Toggle ORBAT mode', aliases:['task org','task organized','task organised','admin mode','orbat mode'], run:()=>q('btn-org-toggle')?.click()},
     {name:'Open saved views', aliases:['views','camera views'], run:()=>q('btn-views')?.click()},
     {name:'Open snapshots', aliases:['snaps','history','timeline'], run:()=>q('btn-snapshots')?.click()},
+    {name:'Open diagnostics', aliases:['health','boot status','storage usage','autosave health'], run:()=>q('btn-diagnostics')?.click()},
     {name:'Export outline text', aliases:['copy outline','outline export','text outline','briefing notes','txt outline'], run:()=>window.exportOutlineText&&window.exportOutlineText()},
     {name:'Export PDF', aliases:['pdf','print pdf'], run:()=>window.exportPDF&&window.exportPDF()},
     {name:'Import text outline', aliases:['outline import','paste outline','text import'], run:()=>window.openOutlineModal&&window.openOutlineModal()},

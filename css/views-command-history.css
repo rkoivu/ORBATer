@@ -13,6 +13,20 @@
 .bulk-rename-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
 #bulk-rename-modal .modal-box{min-width:min(640px,calc(100vw - 40px));max-width:720px}
 #bulk-rename-modal .panel-help code{font-family:var(--font-mono)}
+#diagnostics-modal .modal-box{min-width:min(760px,calc(100vw - 40px));max-width:860px}
+.diag-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.diag-card{padding:16px 16px 14px;border:1px solid rgba(142,160,173,.14);border-radius:18px;background:linear-gradient(180deg,rgba(255,255,255,.04),transparent),var(--surface2);box-shadow:0 12px 24px rgba(3,8,13,.08)}
+.diag-card h3{margin:0 0 12px;font:700 11px/1 var(--font-display);letter-spacing:1px;text-transform:uppercase;color:var(--text2)}
+.diag-row{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:8px 0;border-top:1px solid rgba(148,163,184,.12);font-size:12px}
+.diag-row:first-of-type{border-top:none;padding-top:0}
+.diag-row span{color:var(--text2);overflow-wrap:anywhere}
+.diag-row strong{color:var(--text);text-align:right;overflow-wrap:anywhere}
+.diag-row.tone-warn strong{color:#fca5a5}
+.diag-note{margin-top:8px;font-size:11px;line-height:1.6;color:var(--text2)}
+.diag-pill{display:inline-flex;align-items:center;justify-content:center;min-height:26px;padding:0 10px;border-radius:999px;border:1px solid rgba(148,163,184,.16);background:rgba(255,255,255,.03);font:700 10px/1 var(--font-mono);letter-spacing:.35px}
+.diag-pill.healthy{border-color:rgba(34,197,94,.34);color:#bbf7d0}
+.diag-pill.stale,.diag-pill.missing{border-color:rgba(245,158,11,.34);color:#fde68a}
+.diag-pill.error{border-color:rgba(239,68,68,.34);color:#fecaca}
 .cmdk-row.active{border-color:rgba(108,162,200,.55);background:linear-gradient(180deg,rgba(108,162,200,.08),transparent),color-mix(in srgb,var(--accent) 10%,var(--surface2))}
 .tb-btn.org-mode-on{background:rgba(249,115,22,.18);border-color:rgba(251,146,60,.56);color:#ffedd5;box-shadow:none}
 .diff-pill{display:inline-flex;align-items:center;gap:4px;font-family:var(--font-mono);font-size:9px;color:var(--text2);padding:2px 7px;border:1px solid rgba(148,163,184,.16);border-radius:999px;background:rgba(255,255,255,.03)}
@@ -41,7 +55,9 @@
 @media (max-width: 760px){
   #startup-modal .modal-box{min-width:0}
   #bulk-rename-modal .modal-box{min-width:0}
+  #diagnostics-modal .modal-box{min-width:0}
   .bulk-rename-grid{grid-template-columns:1fr}
+  .diag-grid{grid-template-columns:1fr}
   .startup-hero{flex-direction:column}
   .startup-action-grid{grid-template-columns:1fr;grid-template-areas:"new" "template" "import" "tour"}
 }

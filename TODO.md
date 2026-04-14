@@ -4,6 +4,7 @@ This backlog is grouped by estimated implementation effort so the next work can 
 
 ## Recently Completed
 
+- Added a diagnostics modal for storage usage, schema version, feature flags, autosave health, and deferred boot-module status.
 - Added bulk rename patterns for selected units, including prefix, suffix, find/replace, and sequential numbering templates.
 - Added `parent:` and `path:` search queries so large ORBATs can be narrowed by parent unit or full lineage.
 - Added NATO symbology help tooltips for node symbols plus frame-status and modifier explanations in the edit panel.
@@ -55,7 +56,6 @@ This backlog is grouped by estimated implementation effort so the next work can 
 - Extend templates into reusable subtree presets that can be inserted under an existing parent, not only as full ORBAT starters.
 - Add export presets for briefing slide, A4 print, and wide-screen command post formats.
 - Add connector labels that can be edited directly on-canvas instead of only through panel state.
-- Add a dedicated diagnostics modal for storage usage, schema version, feature flags, and autosave health.
 - Add bulk tag management and saved filters for recurring analytic views.
 - Add smoke-test coverage for tab switching, snapshot restore, import/export, and minimap visibility.
 - Add per-node pinning or anchoring so selected units stay fixed during auto-layout passes.
