@@ -242,7 +242,7 @@ function normalizeNode(id,raw={}){const fallbackX=200+Object.keys(nodes).length*
     id,
     name:raw.name||'New Unit',designation:raw.designation||'',commander:raw.commander||'',
     typeId:raw.typeId||'infantry',echelon:raw.echelon||'battalion',affil:raw.affil||'friendly',
-    strength:raw.strength||'',equipment:raw.equipment||'',readiness:raw.readiness||'',
+    strength:raw.strength||'',equipment:raw.equipment||'',readiness:raw.readiness??'',
     location:raw.location||'',task:raw.task||'',higherHQ:raw.higherHQ||'',notes:raw.notes||'',
     parentId:raw.parentId||null,x:Number.isFinite(+raw.x)?snapV(+raw.x):snapV(fallbackX),y:Number.isFinite(+raw.y)?snapV(+raw.y):snapV(fallbackY),
     status:raw.status||null,tint:raw.tint||null,size:raw.size||'normal',
@@ -543,7 +543,7 @@ function renderNode(id){
     <div class="node-name">${escXml(n.name)}</div>
     ${n.showCmd&&n.commander?`<div class="node-commander">${escXml(n.commander)}</div>`:''}
     ${n.showStr&&n.strength?`<div class="node-strength-lbl">${escXml(n.strength)}${n.equipment?' . '+escXml(n.equipment):''}</div>`:''}
-    ${n.showRdy&&n.readiness?`<div class="node-strength-lbl">Rdy: ${escXml(n.readiness)}%</div>`:''}
+    ${n.showRdy&&n.readiness!==''&&n.readiness!=null?`<div class="node-strength-lbl">Rdy: ${escXml(n.readiness)}%</div>`:''}
     ${n.showTask&&n.task?`<div class="node-task-lbl">${escXml(n.task)}</div>`:''}
     <div class="node-link-btn" onmousedown="startLink(event,'${id}')" title="Drag to set parent">↳</div>
     <div class="node-add-btn" onclick="addChildNode(event,'${id}')" title="Add subordinate">+</div>
@@ -739,7 +739,7 @@ function populateEditPanel(id){
   document.getElementById('ep-echelon').value=n.echelon;
   document.getElementById('ep-strength').value=n.strength;
   document.getElementById('ep-equip').value=n.equipment;
-  document.getElementById('ep-rdy').value=n.readiness||'';
+  document.getElementById('ep-rdy').value=n.readiness??'';
   document.getElementById('ep-loc').value=n.location;
   document.getElementById('ep-task').value=n.task;
   document.getElementById('ep-hhq').value=n.higherHQ||'';

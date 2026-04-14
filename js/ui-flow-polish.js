@@ -141,7 +141,7 @@
     const parent = node.parentId ? nodeMap[node.parentId] : null;
     const children = getChildren(node.id);
     const lineage = getLineage(node).join(' / ');
-    const readiness = node.readiness ? `${node.readiness}%` : 'Not set';
+    const readiness = node.readiness !== '' && node.readiness != null ? `${node.readiness}%` : 'Not set';
     host.innerHTML = `
       <div class="flow-summary-topline">
         <div class="flow-summary-kicker">Selected unit</div>

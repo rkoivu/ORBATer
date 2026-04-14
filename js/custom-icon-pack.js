@@ -106,17 +106,27 @@
   }
 
   attachmentInput?.addEventListener('change', (e)=>{
-    if(!selectedId||!nodes[selectedId]) return;
+    const targetId = selectedId;
+    if(!targetId||!nodes[targetId]) return;
     const files=[...(e.target.files||[])].slice(0,8);
     if(!files.length) return;
     let pending=files.length;
     files.forEach(file=>{
       const reader=new FileReader();
       reader.onload=ev=>{
-        nodes[selectedId].attachments = nodes[selectedId].attachments || [];
-        nodes[selectedId].attachments.push({name:file.name, type:file.type||'', dataUrl:ev.target.result});
+        if(!nodes[targetId]){
+          pending--;
+          if(pending===0) e.target.value='';
+          return;
+        }
+        nodes[targetId].attachments = nodes[targetId].attachments || [];
+        nodes[targetId].attachments.push({name:file.name, type:file.type||'', dataUrl:ev.target.result});
         pending--;
-        if(pending===0){ populateEditPanel(selectedId); saveState(); showToast('Attachment(s) added'); }
+        if(pending===0){
+          if(selectedId===targetId) populateEditPanel(targetId);
+          saveState();
+          showToast('Attachment(s) added');
+        }
       };
       reader.readAsDataURL(file);
     });

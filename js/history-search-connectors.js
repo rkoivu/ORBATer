@@ -153,7 +153,7 @@
       <div class="node-name" title="${_esc(n.name)}">${_esc(displayName)}</div>
       ${n.showCmd&&n.commander?`<div class="node-commander">${_esc(n.commander)}</div>`:''}
       ${n.showStr&&n.strength?`<div class="node-strength-lbl">${_esc(n.strength)}${n.equipment?' · '+_esc(n.equipment):''}</div>`:''}
-      ${n.showRdy&&n.readiness?`<div class="node-strength-lbl">Rdy: ${_esc(n.readiness)}%</div>`:''}
+      ${n.showRdy&&n.readiness!==''&&n.readiness!=null?`<div class="node-strength-lbl">Rdy: ${_esc(n.readiness)}%</div>`:''}
       ${n.showTask&&n.task?`<div class="node-task-lbl">${_esc(n.task)}</div>`:''}
       <div class="node-link-btn" onmousedown="startLink(event,'${id}')" title="Drag to set parent">⤢</div>
       <div class="node-add-btn" onclick="addChildNode(event,'${id}')" title="Add subordinate">+</div>
