@@ -179,13 +179,13 @@
         </select>
       </div>
       <div class="psec">Frame &amp; Modifier</div>
-      <div class="fg"><label>Frame Status</label>
+      <div class="fg"><label id="ep-frame-status-label">Frame Status</label>
         <div class="stat-row">
           <div class="stat-btn" data-fs="present" onclick="setFrameStatus('present')">Present (solid)</div>
           <div class="stat-btn" data-fs="planned" onclick="setFrameStatus('planned')">Planned (dashed)</div>
         </div>
       </div>
-      <div class="fg"><label>Unit Modifier</label>
+      <div class="fg"><label id="ep-modifier-label">Unit Modifier</label>
         <div class="stat-row">
           <div class="stat-btn" data-mod="none" onclick="setMod('none')">None</div>
           <div class="stat-btn" data-mod="reinforced" onclick="setMod('reinforced')">+ Reinforced</div>

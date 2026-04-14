@@ -26,6 +26,33 @@
     tooltip.style.top=Math.max(pad,top)+'px';
   }
   function hideTip(){ tooltip.style.display='none'; }
+  const ECH_MAP={team:'Team / Crew',squad:'Squad / Section',platoon:'Platoon',company:'Company / Battery',battalion:'Battalion / Squadron',regiment:'Regiment',brigade:'Brigade',division:'Division',corps:'Corps',army:'Army',army_group:'Army Group',region:'Region'};
+  const AFF_MAP={friendly:'Friendly',hostile:'Hostile',neutral:'Neutral',unknown:'Unknown'};
+  const FRAME_TIPS={
+    present:'Present: the unit is currently in being. APP-6 style uses a solid frame for present formations.',
+    planned:'Planned: the unit is intended or scheduled but not yet in place. APP-6 style uses a dashed frame for planned formations.'
+  };
+  const MOD_TIPS={
+    none:'No modifier: the unit displays without an extra strength or headquarters marker.',
+    reinforced:'Reinforced: shows that the unit has been strengthened beyond its normal establishment.',
+    reduced:'Reduced: shows that the unit is under strength or operating with fewer elements than normal.',
+    hq:'HQ: marks the unit as a headquarters or command post element.'
+  };
+  function findTypeLabel(typeId){
+    const typeSelect=document.getElementById('ep-type');
+    const option=[...(typeSelect?.options||[])].find(opt=>opt.value===typeId);
+    return option?.textContent||typeId||'Unknown type';
+  }
+  function symbolTooltipText(n){
+    if(!n) return '';
+    const lines=[];
+    lines.push(`${findTypeLabel(n.typeId)} symbol`);
+    lines.push(`Affiliation: ${AFF_MAP[n.affil]||'Unknown'}`);
+    lines.push(`Echelon: ${ECH_MAP[n.echelon]||n.echelon||'Unknown'}`);
+    if(n.frameStatus&&FRAME_TIPS[n.frameStatus]) lines.push(FRAME_TIPS[n.frameStatus]);
+    if(n.mod&&n.mod!=='none'&&MOD_TIPS[n.mod]) lines.push(MOD_TIPS[n.mod]);
+    return lines.join('\n');
+  }
 
   function nodeTooltipText(n){
     const parts=[];
@@ -40,6 +67,40 @@
     if(n.tags&&n.tags.length) parts.push('Tags: '+n.tags.join(', '));
     if(n.notes) parts.push('Notes: '+String(n.notes).replace(/\s+/g,' ').slice(0,140));
     return parts.join('\n');
+  }
+  function bindSymbolAndModifierTips(scope=document){
+    scope.querySelectorAll?.('[data-fs]').forEach(btn=>{
+      if(btn.dataset.tipBound==='1') return;
+      btn.dataset.tipBound='1';
+      const text=FRAME_TIPS[btn.dataset.fs];
+      if(text) btn.title=text;
+      btn.addEventListener('mousemove',ev=>showTip(text,ev.clientX,ev.clientY));
+      btn.addEventListener('mouseleave',hideTip);
+    });
+    scope.querySelectorAll?.('[data-mod]').forEach(btn=>{
+      if(btn.dataset.tipBound==='1') return;
+      btn.dataset.tipBound='1';
+      const text=MOD_TIPS[btn.dataset.mod];
+      if(text) btn.title=text;
+      btn.addEventListener('mousemove',ev=>showTip(text,ev.clientX,ev.clientY));
+      btn.addEventListener('mouseleave',hideTip);
+    });
+    const frameLabel=document.getElementById('ep-frame-status-label');
+    if(frameLabel && frameLabel.dataset.tipBound!=='1'){
+      frameLabel.dataset.tipBound='1';
+      const text='Frame status controls whether the APP-6 unit frame reads as present or planned.';
+      frameLabel.title=text;
+      frameLabel.addEventListener('mousemove',ev=>showTip(text,ev.clientX,ev.clientY));
+      frameLabel.addEventListener('mouseleave',hideTip);
+    }
+    const modifierLabel=document.getElementById('ep-modifier-label');
+    if(modifierLabel && modifierLabel.dataset.tipBound!=='1'){
+      modifierLabel.dataset.tipBound='1';
+      const text='Unit modifiers add APP-6 context such as reinforced, reduced, or headquarters status.';
+      modifierLabel.title=text;
+      modifierLabel.addEventListener('mousemove',ev=>showTip(text,ev.clientX,ev.clientY));
+      modifierLabel.addEventListener('mouseleave',hideTip);
+    }
   }
 
   // Zoom buttons if absent
@@ -172,6 +233,11 @@
       el.dataset.v9TooltipBound='1';
       el.addEventListener('mousemove',ev=>{
         const nameEl=ev.target.closest('.node-name');
+        const symbolEl=ev.target.closest('.node-symbol,.node-mod-badge,.node-status-badge');
+        if(symbolEl){
+          showTip(symbolTooltipText(n),ev.clientX,ev.clientY);
+          return;
+        }
         if(nameEl){
           const text=(nameEl.scrollWidth>nameEl.clientWidth)?(n.name||''):nodeTooltipText(n);
           showTip(text,ev.clientX,ev.clientY);
@@ -184,6 +250,7 @@
     return r;
   };
   Object.keys(nodes||{}).forEach(id=>renderNode(id));
+  bindSymbolAndModifierTips(document);
 
   // ep-tags injection is handled by injectPanelFields() earlier in the script.
   // No duplicate injection needed here.
@@ -236,4 +303,5 @@
 
   // Keep dimming/tooltip state fresh after autos
   updateFocusDimming();
+  bindSymbolAndModifierTips(document);
 })();
