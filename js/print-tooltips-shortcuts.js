@@ -52,6 +52,8 @@
   if(search) search.title='Search units (Enter to jump, / to focus)';
   const tagFilter=document.getElementById('tag-filter-input');
   if(tagFilter) tagFilter.title='Filter units by tag';
+  const diagnosticsBtn=document.getElementById('btn-diagnostics');
+  if(diagnosticsBtn) diagnosticsBtn.title='Open diagnostics (Ctrl/Cmd+Shift+H)';
   const opName=document.getElementById('op-name-input');
   if(opName) opName.title='Operation name';
 

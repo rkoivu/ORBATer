@@ -186,11 +186,30 @@
       duplicatePreventions: Array.isArray(init.prevented) ? init.prevented.length : 0
     };
   }
+  function healthStateSummary(){
+    const autosave=readAutosaveHealth();
+    const boot=readDeferredBootHealth();
+    if(boot.failed>0) return {tone:'error', label:'Issues detected', detail:`${boot.failed} startup module error${boot.failed===1?'':'s'}`};
+    if(autosave.state==='error') return {tone:'error', label:'Autosave error', detail:autosave.detail};
+    if(autosave.state==='stale') return {tone:'warn', label:'Autosave stale', detail:autosave.label};
+    if(autosave.state==='missing') return {tone:'warn', label:'No autosave yet', detail:'Make a change to create the first recovery point'};
+    return {tone:'ok', label:'Healthy', detail:boot.durationMs!=null ? `Boot ${boot.durationMs} ms` : 'Boot telemetry active'};
+  }
+  function syncDiagnosticsButton(){
+    const btn=q('btn-diagnostics');
+    if(!btn) return;
+    const summary=healthStateSummary();
+    btn.classList.remove('health-ok','health-warn','health-error');
+    btn.classList.add(`health-${summary.tone}`);
+    btn.innerHTML=`<span class="health-dot" aria-hidden="true"></span><span>Health</span>`;
+    btn.title=`${summary.label}. ${summary.detail}`;
+  }
   function renderDiagnostics(){
     const box=q('diagnostics-body'); if(!box) return;
     const storage=estimateStorageUsage();
     const autosave=readAutosaveHealth();
     const bootHealth=readDeferredBootHealth();
+    const health=healthStateSummary();
     const doc=(typeof window.serializeDocument==='function') ? window.serializeDocument() : null;
     const featureFlags=[
       {label:'Readonly', value: readonly ? 'On' : 'Off'},
@@ -203,6 +222,17 @@
     const topEntries=(storage.entries || []).slice(0,6).map(entry=>`<div class="diag-row"><span>${esc(entry.key)}</span><strong>${formatBytes(entry.bytes)}</strong></div>`).join('') || '<div class="panel-help">No ORBAT storage keys detected yet.</div>';
     const failures=bootHealth.failures.map(entry=>`<div class="diag-row tone-warn"><span>${esc(entry.src.replace(/^js\//,''))}</span><strong>${esc(entry.error || 'Load failure')}</strong></div>`).join('');
     box.innerHTML = `
+      <div class="diag-hero tone-${esc(health.tone)}">
+        <div>
+          <div class="diag-kicker">System health</div>
+          <div class="diag-title">${esc(health.label)}</div>
+          <div class="diag-copy">${esc(health.detail)}</div>
+        </div>
+        <div class="diag-hero-pills">
+          <span class="diag-pill ${autosave.state}">${esc(autosave.label)}</span>
+          <span class="diag-pill ${bootHealth.failed>0?'error':'healthy'}">${bootHealth.failed>0?`${bootHealth.failed} boot issue${bootHealth.failed===1?'':'s'}`:'Boot clean'}</span>
+        </div>
+      </div>
       <div class="diag-grid">
         <section class="diag-card">
           <h3>Runtime</h3>
@@ -232,6 +262,7 @@
         </section>
       </div>
     `;
+    syncDiagnosticsButton();
   }
   function setReadonlyBanner(){
     const banner=q('readonly-banner');
@@ -681,7 +712,7 @@
     const orgBtn = q('btn-org-toggle'); if(orgBtn) orgBtn.textContent = 'Mode';
     const viewsBtn = q('btn-views'); if(viewsBtn) viewsBtn.textContent = 'Views';
     const snapsBtn = q('btn-snapshots'); if(snapsBtn) snapsBtn.textContent = 'Snapshots';
-    const diagnosticsBtn = q('btn-diagnostics'); if(diagnosticsBtn) diagnosticsBtn.textContent = 'Health';
+    syncDiagnosticsButton();
     const outlineBtn = q('btn-export-outline'); if(outlineBtn) outlineBtn.textContent = 'Outline';
     const pdfBtn = q('btn-export-pdf'); if(pdfBtn) pdfBtn.textContent = 'Export PDF';
     const cmdBtn = q('btn-cmdk'); if(cmdBtn) cmdBtn.textContent = 'Commands';
@@ -788,6 +819,7 @@
     renderStartupLauncher();
     syncTabOverflowUI();
     applyReadonlyLocks();
+    syncDiagnosticsButton();
   };
   let tabDirtyStates = {}; // Track dirty state per tab
   
@@ -1207,6 +1239,7 @@
     const tag = e.target?.tagName || '';
     const isTyping = tag==='INPUT' || tag==='TEXTAREA' || tag==='SELECT' || e.target?.isContentEditable;
     if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==='k'){ e.preventDefault(); window.openCommandPalette(); }
+    if((e.metaKey||e.ctrlKey) && e.shiftKey && e.key.toLowerCase()==='h'){ e.preventDefault(); renderDiagnostics(); open('diagnostics-modal'); return; }
     if(e.key==='Escape' && q('cmdk-modal')?.classList.contains('open')) close('cmdk-modal');
     if(isTyping) return;
     if(e.key === 'F2'){ e.preventDefault(); window.__renameTabPrompt(currentTabId); return; }
