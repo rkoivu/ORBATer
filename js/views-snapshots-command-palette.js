@@ -249,6 +249,74 @@
     banner.style.display='none';
     banner.textContent='';
   }
+  function blockReadonlyMutation(action='This action'){
+    if(!readonly) return false;
+    toast(`${action} is disabled in read-only mode`);
+    return true;
+  }
+  function guardReadonlyFn(name, action, {returnValue=null}={}){
+    const prev=window[name];
+    if(typeof prev!=='function' || prev.__readonlyGuarded) return;
+    const guarded=function(...args){
+      if(blockReadonlyMutation(action)) return returnValue;
+      return prev.apply(this,args);
+    };
+    guarded.__readonlyGuarded=true;
+    guarded.__readonlyOriginal=prev;
+    window[name]=guarded;
+  }
+  function applyReadonlyLocks(){
+    if(!readonly) return;
+    [
+      ['saveState','Saving changes'],
+      ['createNode','Adding units'],
+      ['createTextbox','Adding text boxes'],
+      ['addRootUnit','Adding units'],
+      ['addChildNode','Adding subordinates'],
+      ['addChildToSelected','Adding subordinates'],
+      ['duplicateAsSibling','Duplicating units'],
+      ['duplicateAsChild','Duplicating units'],
+      ['duplicateSelected','Duplicating units'],
+      ['deleteSelected','Deleting units'],
+      ['deleteMultiSel','Deleting units'],
+      ['deleteTextbox','Deleting text boxes'],
+      ['detachNode','Detaching units'],
+      ['unlinkSel','Detaching units'],
+      ['promoteNode','Reorganizing units'],
+      ['demoteNode','Reorganizing units'],
+      ['bulkAffil','Bulk edits'],
+      ['bulkStatus','Bulk edits'],
+      ['bulkEchelon','Bulk edits'],
+      ['bulkFrame','Bulk edits'],
+      ['bulkRenameSelected','Bulk renaming'],
+      ['applyEP','Editing unit details'],
+      ['setAffil','Editing unit details'],
+      ['setStat','Editing unit details'],
+      ['setSize','Editing unit details'],
+      ['setFrameStatus','Editing unit details'],
+      ['setMod','Editing unit details'],
+      ['clearNodeIcon','Editing unit details'],
+      ['toggleRelLabels','Changing document display state'],
+      ['toggleMinimap','Changing document display state'],
+      ['pasteNodes','Pasting units'],
+      ['pasteNodesAtCursor','Pasting units'],
+      ['clearAll','Clearing the diagram'],
+      ['importJSON','Importing diagrams']
+    ].forEach(([name,action])=>guardReadonlyFn(name, action));
+    guardReadonlyFn('openTplModal','Loading templates');
+    guardReadonlyFn('startLink','Reparenting units');
+    guardReadonlyFn('onNMD','Moving units');
+    guardReadonlyFn('onTextboxMouseDown','Moving text boxes');
+    guardReadonlyFn('toggleCollapse','Collapsing branches');
+
+    document.querySelectorAll('#edit-panel input,#edit-panel textarea,#edit-panel select,#edit-panel button,#sidebar button,#sidebar input,#sidebar textarea,#sidebar select').forEach(el=>{
+      if('disabled' in el) el.disabled = true;
+    });
+    document.querySelectorAll('#edit-panel .aff-btn,#edit-panel .stat-btn,#edit-panel .sz-btn,#edit-panel .status-btn,#sidebar .pal-item').forEach(el=>{
+      el.setAttribute('aria-disabled','true');
+      el.style.pointerEvents='none';
+    });
+  }
   function getRecentDocs(){ try{return JSON.parse(localStorage.getItem(LS_RECENTS)||'[]')}catch(e){return []} }
   function setRecentDocs(items){ try{ localStorage.setItem(LS_RECENTS, JSON.stringify(items.slice(0,6))); }catch(e){ console.warn('Failed to save recent docs:', e); toast('Recent diagrams could not be saved.'); } }
   function rememberRecentDoc(doc){
@@ -604,7 +672,7 @@
     ensureModal('bulk-rename-modal','Bulk Rename',`<div class="panel-help" id="bulk-rename-summary">Select one or more units to rename them in one pass.</div><div class="bulk-rename-grid"><div class="fg"><label>Rename Field</label><select id="bulk-rename-target"><option value="name">Unit Name</option><option value="designation">Designation</option><option value="both">Name + Designation</option></select></div><div class="fg"><label>Mode</label><select id="bulk-rename-mode"><option value="prefix">Add prefix</option><option value="suffix">Add suffix</option><option value="replace">Find and replace</option><option value="sequence">Sequential numbering</option></select></div></div><div class="bulk-rename-mode" data-mode="prefix"><div class="fg"><label>Prefix</label><input id="bulk-rename-prefix" type="text" placeholder="e.g. TF-"></div></div><div class="bulk-rename-mode" data-mode="suffix" style="display:none"><div class="fg"><label>Suffix</label><input id="bulk-rename-suffix" type="text" placeholder="e.g. (-)"></div></div><div class="bulk-rename-mode" data-mode="replace" style="display:none"><div class="bulk-rename-grid"><div class="fg"><label>Find</label><input id="bulk-rename-find" type="text" placeholder="e.g. COY"></div><div class="fg"><label>Replace With</label><input id="bulk-rename-replace" type="text" placeholder="e.g. COMPANY"></div></div></div><div class="bulk-rename-mode" data-mode="sequence" style="display:none"><div class="fg"><label>Template</label><input id="bulk-rename-template" type="text" placeholder="e.g. A COY {n}"></div><div class="panel-help">Use <code>{n}</code> where the number should appear. If omitted, the number is appended automatically.</div><div class="bulk-rename-grid"><div class="fg"><label>Start</label><input id="bulk-rename-start" type="number" value="1" min="-9999" step="1"></div><div class="fg"><label>Step</label><input id="bulk-rename-step" type="number" value="1" min="-9999" step="1"></div><div class="fg"><label>Pad</label><input id="bulk-rename-pad" type="number" value="0" min="0" max="6" step="1"></div></div></div><div class="modal-acts"><button class="pb" id="bulk-rename-cancel" style="width:auto;margin:0">Cancel</button><button class="pb" id="bulk-rename-apply" style="width:auto;margin:0;border-color:var(--accent);color:var(--accent)">Apply</button></div>`);
     q('save-view-btn')?.addEventListener('click',()=>{ const name=q('view-name-input').value.trim(); if(!name) return; const views=getViews(); views.unshift({id:Date.now()+Math.random().toString(16).slice(2), name, transform:currentTransform()}); setViews(views.slice(0,20)); q('view-name-input').value=''; renderViews(); toast('View saved'); });
     q('snap-now-btn')?.addEventListener('click',()=>{ snapshotNow('Manual snapshot'); toast('Snapshot created'); });
-    updateOrgBtn(); renderViews(); renderSnapshots(); renderRecentDocs(); setReadonlyBanner();
+    updateOrgBtn(); renderViews(); renderSnapshots(); renderRecentDocs(); setReadonlyBanner(); applyReadonlyLocks();
   }
   const prevEnsureViewsUI = ensureViewsUI;
   ensureViewsUI = function(){
@@ -719,6 +787,7 @@
     }
     renderStartupLauncher();
     syncTabOverflowUI();
+    applyReadonlyLocks();
   };
   let tabDirtyStates = {}; // Track dirty state per tab
   
